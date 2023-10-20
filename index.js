@@ -8,7 +8,6 @@ const db = require("@jkeesee/json-db");
 const fs = require("fs");
 const dotenv = require("dotenv");
 dotenv.config();
-db.disableCache();
 const bcrypt = require("bcrypt");
 const accessCode = bcrypt.hashSync(process.env.ACCESS_CODE, 10);
 const webpush = require("web-push");
