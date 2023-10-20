@@ -1,0 +1,44 @@
+{
+	"background_color": "#ffffff",
+	"description": "The chat app for The Hobo's Guide to the Universe of Texas.",
+	"dir": "ltr",
+	"display": "standalone",
+	"name": "HGUT",
+	"orientation": "portrait",
+	"scope": "/",
+	"short_name": "HGUT",
+	"start_url": "/chat",
+	"theme_color": "#ffffff",
+	"categories": [
+		"books"
+	],
+	"screenshots": [],
+	"icons": [
+		{
+			"src": "/favicon.png",
+			"type": "image/png",
+			"sizes": "1024x1024",
+			"purpose": "any"
+		},
+		{
+			"src": "/favicon.png",
+			"type": "image/png",
+			"sizes": "1024x1024",
+			"purpose": "maskable"
+		}
+	],
+	"shortcuts": [
+		{
+			"name": "Chat",
+			"url": "/chat",
+			"description": ""
+		},
+		{
+			"name": "Voice Chat",
+			"url": "/voice",
+			"description": ""
+		}
+	],
+	"id": "hgut",
+	"lang": "en"
+}
