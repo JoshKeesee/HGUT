@@ -39,7 +39,7 @@ if (!db.get("rooms")) db.set({
 		"disease": {
 			name: "\"The Disease\"",
 			messages: [],
-			allowed: [0, 2, 3, 4],
+			allowed: [2, 3, 4, 6],
 		},
 	},
 });
