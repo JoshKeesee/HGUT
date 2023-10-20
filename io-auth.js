@@ -9,7 +9,7 @@ module.exports = (socket, next) => {
 	if (username) {
 		const users = db.get("users") || {};
 		const r = db.get("rooms") || {};
-		const u = users[profiles[username].id];
+		const u = users[profiles[username].id] || {};
 		socket.user = {
 			...profiles[username],
 			room: u?.room || Object.keys(r)[0],
