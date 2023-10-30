@@ -28,8 +28,6 @@ self.addEventListener("fetch", e => {
 			} catch (error) {
 				const cache = await caches.open(CACHE);
 				const cachedResp = await cache.match(offlineFallbackPage);
-				const cachedIcon = await cache.match(icon);
-				if (e.request.url.endsWith(icon)) return cachedIcon;
 				return cachedResp;
 			}
 		})());
@@ -44,11 +42,12 @@ self.addEventListener("push", e => {
 		icon,
 		image: data.image || false,
 		badge: icon,
+		actions: data.actions || [],
 	});
 });
 
 self.addEventListener("notificationclick", e => {
 	e.notification.close();
-	const fullPath = self.location.origin + "/chat";
-	e.waitUntil(clients.openWindow(fullPath));
+	const path = self.location.origin + "/chat";
+	e.waitUntil(clients.openWindow(path));
 });

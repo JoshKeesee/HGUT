@@ -9,11 +9,11 @@ loading.innerText = "Loading...";
 const maxMessages = 50;
 let user = {}, profiles = {}, maxMessagesReached = false, currMessages = maxMessages, loadingMessages = false, mobile = window.innerWidth < 700, online = {}, rn = [], prev = "";
 
-const linkify = s => {
+const linkify = (s, smooth = false, scroll = false) => {
 	const urlPattern = /\b(?:https?|ftp):\/\/[a-z0-9-+&@#\/%?=~_|!:,.;]*[a-z0-9-+&@#\/%=~_|]/gim;
 	const pseudoUrlPattern = /(^|[^\/])(www\.[\S]+(\b|$))/gim;
 	const emailAddressPattern = /[\w.]+@[a-zA-Z_-]+?(?:\.[a-zA-Z]{2,6})+/gim;
-	if (s.startsWith("/images/")) return "<img src='" + s + "'>";
+	if (s.startsWith("/images/")) return `<img src="${s}" onload="const cms = document.querySelector('#chat-messages'); if (${scroll}) cms.scrollTo({ top: cms.scrollHeight, behavior: '${smooth ? "smooth" : "auto"}' });">`;
 	return s
 		.replace(urlPattern, "<a target='_blank' href='$&'>$&</a>")
 		.replace(pseudoUrlPattern, "$1<a target='_blank' href='http://$2'>$2</a>")
@@ -101,7 +101,7 @@ const addMessage = ([message, u], smooth = true, scroll = true, start = false) =
 	if (u.color) m.style.background = "linear-gradient(to bottom, " + toRgba(u.color, 0.5) + ", " + toRgba(u.color, 0.4) + ")";
 	if (u.color) m.style.boxShadow = "0 5px 20px 1px " + toRgba(u.color, 0.2);
 	if (u.color) m.style.border = "2px solid " + toRgba(u.color, 0.8);
-	m.innerHTML = linkify(message);
+	m.innerHTML = linkify(message, smooth, scroll);
 	if (!myUser) {
 		m.className = "right";
 		cm.appendChild(pc);
@@ -114,8 +114,8 @@ const addMessage = ([message, u], smooth = true, scroll = true, start = false) =
 	if (start) cms.insertBefore(cm, cms.firstChild);
 	else cms.appendChild(cm);
 	updateMessageProfiles();
-	cms.scrollTo({
-		top: scroll ? cms.scrollHeight : 0,
+	if (scroll) cms.scrollTo({
+		top: cms.scrollHeight,
 		behavior: smooth ? "smooth" : "auto",
 	});
 	if (smooth && scroll) cm.animate([
@@ -211,6 +211,7 @@ socket.on("rooms", ([rooms, p]) => {
 			el.style.borderTopLeftRadius = 0;
 			el.style.borderBottomLeftRadius = "10px";
 			el.querySelector("#chat-room-bg").style.opacity = 1;
+			maxMessagesReached = Object.keys(r.messages).length < maxMessages;
 		}
 	});
 	if (!maxMessagesReached) cms.insertBefore(loading, cms.firstChild);
@@ -348,6 +349,7 @@ const switchTheme = (dark = !user.theme, color) => {
 	const lr = document.querySelector(".c-" + user.room) || document.querySelector(".c-" + user.room?.split("-").reverse().join("-")) || document.querySelector("." + user.room) || null;
 	if (lr) lr.style.background = user.theme ? "black" : "white";
 	document.querySelector("meta[name=theme-color]").setAttribute("content", user.theme ? "#000014" : user.accent ? rgbToHex(toRgba(user.color)) : rgbToHex("rgb(0, 0, 255)"));
+	document.querySelectorAll(".loading div").forEach(b => b.style.background = user.theme ? "white" : "black");
 	if (color) {
 		const rgb = toRgba(color, 1, true);
 		const root = document.querySelector(":root");
@@ -375,7 +377,7 @@ const toggleMenu = (s = !user.menu) => {
 input.onkeydown = e => {
 	const i = input.value;
 	if (!i.replace(/\s/g, "").length) return;
-	if (e.key != "Enter" || i.length == 0 || i.length > 250 || loadingMessages) return;
+	if (e.key != "Enter" || i.length == 0 || i.length > 250 || loadingMessages || !socket.connected) return;
 	socket.emit("chat message", i);
 	input.value = "";
 };
@@ -389,7 +391,7 @@ input.onkeyup = e => {
 send.onclick = e => {
 	const i = input.value;
 	if (!i.replace(/\s/g, "").length) return;
-	if (i.length == 0 || i.length > 250 || loadingMessages) return;
+	if (i.length == 0 || i.length > 250 || loadingMessages || !socket.connected) return;
 	socket.emit("chat message", i);
 	input.value = "";
 };
