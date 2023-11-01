@@ -114,7 +114,7 @@ const addMessage = ([message, u], smooth = true, scroll = true, start = false) =
 	if (start) cms.insertBefore(cm, cms.firstChild);
 	else cms.appendChild(cm);
 	updateMessageProfiles();
-	if (scroll) cms.scrollTo({
+	cms.scrollTo({
 		top: cms.scrollHeight,
 		behavior: smooth ? "smooth" : "auto",
 	});

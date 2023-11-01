@@ -4,8 +4,6 @@ const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const server = require("http").createServer(app);
 const io = require("socket.io")(server);
-// const db = require("@jkeesee/json-db");
-// db.condense();
 const { get, set } = require("./db");
 const fs = require("fs");
 const dotenv = require("dotenv");
