@@ -279,7 +279,7 @@ input[type="file"] {
 	text-align: right;
 }
 
-#cont #chat-message:first-child #message {
+#cont #chat-message:nth-child(2) #message {
 	border-top-right-radius: 20px;
 	border-top-left-radius: 20px;
 }
