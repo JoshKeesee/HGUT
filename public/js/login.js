@@ -1,4 +1,4 @@
-let theme = false;
+let theme = false, user = {};
 
 const switchTheme = (dark = !theme) => {
 	theme = dark;

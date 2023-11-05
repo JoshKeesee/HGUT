@@ -201,7 +201,12 @@ input[type="file"] {
 }
 
 #chat-send {
-	padding: 10px;
+	padding: 4px;
+	padding-left: 10px;
+	padding-right: 10px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	font-size: 15px;
 	cursor: pointer;
 	color: inherit;
@@ -217,6 +222,11 @@ input[type="file"] {
 #chat-send:hover {
 	background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.5);
 	border: 2px solid rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.6);
+}
+
+#chat-send svg {
+	width: 25px;
+	height: 25px;
 }
 
 #chat-message {
