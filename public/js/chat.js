@@ -89,7 +89,7 @@ const roomButton = (text, cn, u = true, d) => {
 	return crc;
 };
 
-const addMessage = ([message, u], smooth = true, scroll = true, start = false) => {
+const addMessage = ([message, u, d], smooth = true, scroll = true, start = false) => {
 	const myUser = u.name == user.name;
 	currMessages++;
 	const cms = document.querySelector("#chat-messages");
@@ -122,7 +122,12 @@ const addMessage = ([message, u], smooth = true, scroll = true, start = false) =
 		const n = document.createElement("div");
 		n.id = "name";
 		n.className = myUser ? "right" : "left";
-		n.innerText = myUser ? "" : u.name;
+		n.innerText = (myUser ? "" : u.name ) + (d ? " " + new Date(d).toLocaleString("en-us", {
+			weekday: "long",
+			hour: "numeric",
+			minute: "numeric",
+			hour12: true,
+		}) : "");
 		cont.appendChild(n);
 		cont.appendChild(cm);
 		cms.appendChild(cont);
@@ -220,7 +225,7 @@ socket.on("rooms", ([rooms, p]) => {
 		}
 		if (user.room == k) {
 			if (Object.keys(r.messages).length == 0) cms.innerText = "Sorry, no messages here...";
-			else Object.values(r.messages).forEach(m => addMessage([m.message, profiles[m.name]], false));
+			else Object.values(r.messages).forEach(m => addMessage([m.message, profiles[m.name], m.date], false));
 			const el = cr.querySelector("#chat-room");
 			el.style.background = user.theme ? "black" : "white";
 			el.style.borderTopLeftRadius = "10px";
@@ -257,7 +262,7 @@ socket.on("join room", ([messages, r, u]) => {
 	const cms = document.querySelector("#chat-messages");
 	cms.innerHTML = "";
 	if (messages.length == 0) cms.innerText = "Sorry, no messages here...";
-	else messages.forEach(m => addMessage([m.message, profiles[m.name]], false));
+	else messages.forEach(m => addMessage([m.message, profiles[m.name], m.date], false));
 	user.room = r;
 	maxMessagesReached = currMessages < maxMessages;
 	cms.style = "";
@@ -419,8 +424,6 @@ addFile.onchange = e => {
 };
 
 menu.onclick = () => toggleMenu();
-window.onresize = () => toggleMenu(user.menu);
-window.onload = () => toggleMenu(!mobile);
 
 document.querySelector("#chat-messages").onscroll = e => {
 	const t = e.target.scrollTop;

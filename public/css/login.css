@@ -52,18 +52,15 @@ input {
 	width: calc(100% - 20px);
 	padding: 10px;
 	background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.1);
-	border: 2px solid rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.2);
-	transition: background 0.2s ease, border 0.2s ease;
+	transition: background 0.2s ease;
 }
 
 input:hover {
 	background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.2);
-	border: 2px solid rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.3);
 }
 
 input:focus {
 	background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.3);
-	border: 2px solid rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.4);
 }
 
 .top {

@@ -188,7 +188,7 @@ io.of("chat").on("connection", socket => {
 		if (message.includes("data:")) message = upload(message);
 		if (message.length > 250) return;
 		const rooms = get("rooms");
-		rooms[socket.user.room].messages.push({ message, name: socket.user.name });
+		rooms[socket.user.room].messages.push({ message, name: socket.user.name, date: new Date() });
 		set({ rooms });
 		const users = get("users") || {};
 		const subscriptions = get("subscriptions") || {};
@@ -214,7 +214,7 @@ io.of("chat").on("connection", socket => {
 		set({ users });
 		if (typing[socket.user.room].includes(socket.user.id)) typing[socket.user.room].splice(typing[socket.user.room].indexOf(socket.user.id), 1);
 		io.of(curr).to(socket.user.room).emit("typing", typing[socket.user.room]);
-		io.of(curr).to(socket.user.room).emit("chat message", [message, socket.user]);
+		io.of(curr).to(socket.user.room).emit("chat message", [message, socket.user, new Date()]);
 	});
 
 	socket.on("load messages", lm => {
