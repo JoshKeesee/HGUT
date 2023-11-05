@@ -296,8 +296,8 @@ input[type="file"] {
 	letter-spacing: 0px;
 	text-align: left;
 	background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.4);
-	padding: 12px;
-	font-size: 16px;
+	padding: 15px;
+	font-size: 17px;
 	overflow-x: hidden;
 	overflow-wrap: break-word;
   word-wrap: break-word;
@@ -311,12 +311,10 @@ input[type="file"] {
 	padding: 0px;
 	overflow: hidden;
 	max-width: 70%;
-	min-width: 60%;
 }
 
 #message img {
-	width: inherit;
-	min-width: inherit;
+	width: 100%;
 }
 
 #message.left {
@@ -330,15 +328,15 @@ input[type="file"] {
 .left {
 	border-top-left-radius: 20px;
 	border-bottom-left-radius: 20px;
-	border-top-right-radius: 10px;
-	border-bottom-right-radius: 10px;
+	border-top-right-radius: 5px;
+	border-bottom-right-radius: 5px;
 }
 
 .right {
 	border-top-right-radius: 20px;
 	border-bottom-right-radius: 20px;
-	border-top-left-radius: 10px;
-	border-bottom-left-radius: 10px;
+	border-top-left-radius: 5px;
+	border-bottom-left-radius: 5px;
 }
 
 #typing {

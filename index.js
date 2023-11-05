@@ -201,6 +201,7 @@ io.of("chat").on("connection", socket => {
 				const payload = JSON.stringify({
 					title: "New message",
 					body: `${socket.user.name} sent you a message${!rooms[n] ? " in " + n : ""}.`,
+					icon: profiles[socket.user.id].profile,
 				});
 				webpush.sendNotification(subscriptions[u.id], payload).catch(console.log);
 			}

@@ -79,7 +79,7 @@ body {
 }
 
 #menu #bar {
-	height: 2.5px;
+	height: 3px;
 	width: 100%;
 	border-radius: 3px;
 	transition: background 0.2s ease;

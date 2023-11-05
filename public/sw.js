@@ -1,6 +1,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/5.1.2/workbox-sw.js");
 
-const CACHE = "hgut";
+const VERSION = "v1";
+const CACHE = "hgut" + VERSION;
 const offlineFallbackPage = "offline.html";
 const icon = "favicon.png";
 
@@ -39,9 +40,9 @@ self.addEventListener("push", e => {
 	self.registration.showNotification(
 		data.title, {
 		body: data.body,
-		icon,
+		icon: data.icon || icon,
 		image: data.image || false,
-		badge: icon,
+		badge: "chat.png",
 		actions: data.actions || [],
 	});
 });
