@@ -9,11 +9,12 @@ loading.innerText = "Loading...";
 const maxMessages = 50;
 let user = {}, profiles = {}, maxMessagesReached = false, currMessages = maxMessages, loadingMessages = false, mobile = window.innerWidth < 700, online = {}, rn = [], prev = "";
 
-const linkify = (s, smooth = false, scroll = false) => {
+const linkify = (s, smooth = false, scroll = false, start = false) => {
 	const urlPattern = /\b(?:https?|ftp):\/\/[a-z0-9-+&@#\/%?=~_|!:,.;]*[a-z0-9-+&@#\/%=~_|]/gim;
 	const pseudoUrlPattern = /(^|[^\/])(www\.[\S]+(\b|$))/gim;
 	const emailAddressPattern = /[\w.]+@[a-zA-Z_-]+?(?:\.[a-zA-Z]{2,6})+/gim;
-	if (s.startsWith("/images/")) return `<img src="${s}" onload="const cms = document.querySelector('#chat-messages'); if (${scroll}) cms.scrollTo({ top: cms.scrollHeight, behavior: '${smooth ? "smooth" : "auto"}' });">`;
+	const cms = document.querySelector('#chat-messages');
+	if (s.startsWith("/images/")) return `<img src="${s}">`;
 	return s
 		.replace(urlPattern, "<a target='_blank' href='$&'>$&</a>")
 		.replace(pseudoUrlPattern, "$1<a target='_blank' href='http://$2'>$2</a>")
@@ -98,27 +99,42 @@ const addMessage = ([message, u], smooth = true, scroll = true, start = false) =
 	const pc = getProfile(u, false);
 	const m = document.createElement("div");
 	m.id = "message";
-	if (u.color) m.style.background = "linear-gradient(to bottom, " + toRgba(u.color, 0.5) + ", " + toRgba(u.color, 0.4) + ")";
-	if (u.color) m.style.boxShadow = "0 5px 20px 1px " + toRgba(u.color, 0.2);
-	if (u.color) m.style.border = "2px solid " + toRgba(u.color, 0.8);
-	m.innerHTML = linkify(message, smooth, scroll);
+	if (u.id != user.id) m.style.background = toRgba("#808080", 0.4);
+	m.innerHTML = linkify(message, smooth, scroll, start);
 	if (!myUser) {
 		m.className = "right";
 		cm.appendChild(pc);
 	}
 	cm.appendChild(m);
 	if (myUser) {
+		pc.style.display = "none";
 		m.className = "left";
 		cm.appendChild(pc);
 	}
-	if (start) cms.insertBefore(cm, cms.firstChild);
-	else cms.appendChild(cm);
+	const prev = start ? cms.firstChild : cms.lastChild;
+	if (prev?.className == "u" + u.id) {
+		if (start) prev.insertBefore(cm, prev.children[1]);
+		else prev.appendChild(cm);
+	} else {
+		const cont = document.createElement("div");
+		cont.id = "cont";
+		cont.className = "u" + u.id;
+		const n = document.createElement("div");
+		n.id = "name";
+		n.className = myUser ? "right" : "left";
+		n.innerText = myUser ? "" : u.name;
+		cont.appendChild(n);
+		cont.appendChild(cm);
+		cms.appendChild(cont);
+		if (start) cms.insertBefore(cont, cms.firstChild);
+		else cms.appendChild(cont);
+	}
 	updateMessageProfiles();
-	cms.scrollTo({
+	if (!start) cms.scrollTo({
 		top: cms.scrollHeight,
 		behavior: smooth ? "smooth" : "auto",
 	});
-	if (smooth && scroll) cm.animate([
+	if (smooth && scroll && !start) cm.animate([
 		{
 			transform: "translateY(100%)",
 			borderTopLeftRadius: 20,
@@ -128,8 +144,8 @@ const addMessage = ([message, u], smooth = true, scroll = true, start = false) =
 		},
 		{
 			transform: "translateY(0)",
-			borderTopLeftRadius: myUser ? 20 : 0,
-			borderTopRightRadius: myUser ? 0 : 20,
+			borderTopLeftRadius: myUser ? 20 : 10,
+			borderTopRightRadius: myUser ? 10 : 20,
 			borderBottomLeftRadius: myUser ? 20 : 10,
 			borderBottomRightRadius: myUser ? 10 : 20,
 		},
@@ -207,11 +223,10 @@ socket.on("rooms", ([rooms, p]) => {
 			else Object.values(r.messages).forEach(m => addMessage([m.message, profiles[m.name]], false));
 			const el = cr.querySelector("#chat-room");
 			el.style.background = user.theme ? "black" : "white";
-			el.style.border = "2px solid rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.8)";
-			el.style.borderTopLeftRadius = 0;
+			el.style.borderTopLeftRadius = "10px";
 			el.style.borderBottomLeftRadius = "10px";
 			el.querySelector("#chat-room-bg").style.opacity = 1;
-			maxMessagesReached = Object.keys(r.messages).length < maxMessages;
+			maxMessagesReached = r.messages.length < maxMessages;
 		}
 	});
 	if (!maxMessagesReached) cms.insertBefore(loading, cms.firstChild);
@@ -256,8 +271,7 @@ const switchChat = el => {
 	lr.style = "";
 	lr.querySelector("#chat-room-bg").style = "";
 	el.style.background = user.theme ? "black" : "white";
-	el.style.border = "2px solid rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.8)";
-	el.style.borderTopLeftRadius = 0;
+	el.style.borderTopLeftRadius = "10px";
 	el.style.borderBottomLeftRadius = "10px";
 	el.querySelector("#chat-room-bg").style.opacity = 1;
 	el.querySelector("#unread").style.display = "none";
@@ -273,10 +287,12 @@ const updateMessageProfiles = () => {
 	const cms = document.querySelector("#chat-messages");
 	let last;
 	[].slice.call(cms.children).forEach((e, i) => {
-		const p = e.querySelector("#profile");
-		if (!p) return;
-		if (p.className != last || i == 1) last = p.className;
-		else p.style.opacity = 0;
+		[].slice.call(e.children).forEach((ee, ii) => {
+			const p = ee.querySelector("#profile");
+			if (!p) return;
+			if (p.className != last || ii == 0) last = p.className;
+			else p.style.opacity = 0;
+		});
 	});
 };
 
@@ -291,8 +307,7 @@ const updateProfiles = () => {
 		if (user.room == r.id + "-" + user.id || user.room == user.id + "-" + r.id) {
 			const el = cr.querySelector("#chat-room");
 			el.style.background = user.theme ? "black" : "white";
-			el.style.border = "2px solid rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.8)";
-			el.style.borderTopLeftRadius = 0;
+			el.style.borderTopLeftRadius = "10px";
 			el.style.borderBottomLeftRadius = "10px";
 			el.querySelector("#chat-room-bg").style.opacity = 1;
 		}

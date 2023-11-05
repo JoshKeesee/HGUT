@@ -1,11 +1,12 @@
 const publicKey = "BJVqvnCWx0flqmuHgSv0OQ6VRl-FRTgRKzByVlMf-4iyFStJlJMSn6G90e0LNICbHaGzx5gwRDLttMZ2xDVhRxk";
 
 const registerSw = async p => {
+	const registrations = await navigator.serviceWorker.getRegistrations();
+	for (const r of registrations) r.unregister();
+	
 	const register = await navigator.serviceWorker.register("../sw.js", {
 		scope: "/chat",
 	});
-
-	navigator.serviceWorker.ready.then(r => r.update());
 	
 	if (p != "granted") return;
 

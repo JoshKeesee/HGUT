@@ -23,10 +23,10 @@ const im = "./images";
 const maxMessages = 50;
 const online = {}, typing = {};
 
-const setup = async () => {
+const setup = () => {
 	if (!fs.existsSync(p)) fs.mkdirSync(p);
 	if (!fs.existsSync(im)) fs.mkdirSync(im);
-	if (!(await get("rooms"))) await set({
+	if (!(get("rooms"))) set({
 		rooms: {
 			"main": {
 				name: "Main",
@@ -45,8 +45,8 @@ const setup = async () => {
 			},
 		},
 	});
-	if (!(await get("users"))) await set({ users: {} });
-	Object.keys((await get("rooms"))).forEach(k => typing[k] = []);
+	if (!get("users")) set({ users: {} });
+	Object.keys(get("rooms")).forEach(k => typing[k] = []);
 };
 
 setup();
@@ -87,19 +87,19 @@ app.post("/login", (req, res) => {
 	res.cookie("user", username, { maxAge: 9999999999999, expires: new Date(Date.now() + 9999999999999) });
 	res.redirect("back");
 });
-app.post("/subscribe", async (req, res) => {
+app.post("/subscribe", (req, res) => {
 	if (!req.user) return res.status(201).json({});
-	const subscriptions = await get("subscriptions") || {};
+	const subscriptions = get("subscriptions") || {};
 	const s = req.body;
 	subscriptions[req.user.id] = s;
-	await set({ subscriptions });
+	set({ subscriptions });
 	res.status(201).json({});
 });
 
 io.of("chat").use(ioAuth);
 io.of("voice").use(ioAuth);
 
-io.of("voice").on("connection", async socket => {
+io.of("voice").on("connection", socket => {
 	if (!socket.user) return socket.emit("redirect", "/login");
 	const curr = "voice";
 	if (!online[curr]) online[curr] = {};
@@ -108,7 +108,7 @@ io.of("voice").on("connection", async socket => {
 
 	socket.emit("user", socket.user);
 	socket.emit("profiles", profiles);
-	const switched = {}, users = await get("users") || {};
+	const switched = {}, users = get("users") || {};
 	Object.keys(o).forEach(id => {
 		if (id == socket.user.id) return;
 		const user = users[id];
@@ -135,12 +135,12 @@ io.of("voice").on("connection", async socket => {
 	});
 });
 
-io.of("chat").on("connection", async socket => {
+io.of("chat").on("connection", socket => {
 	if (!socket.user) return socket.emit("redirect", "/login");
 	socket.user.sid = socket.id;
-	const users = await get("users") || {};
+	const users = get("users") || {};
 	users[socket.user.id] = socket.user;
-	await set({ users });
+	set({ users });
 	const curr = "chat";
 	if (!online[curr]) online[curr] = {};
 	const o = online[curr];
@@ -149,7 +149,7 @@ io.of("chat").on("connection", async socket => {
 	socket.join(socket.user.room);
 	socket.emit("user", socket.user);
 	const cr = {};
-	const r = await get("rooms") || {};
+	const r = get("rooms") || {};
 	Object.keys(r).forEach(k => {
 		const v = r[k];
 		if (socket.user.room == k) v.messages = v.messages.slice(-maxMessages);
@@ -173,25 +173,25 @@ io.of("chat").on("connection", async socket => {
 		io.of(curr).to(socket.user.room).emit("typing", typing[socket.user.room]);
 	});
 
-	socket.on("disconnect", async () => {
-		const users = await get("users") || {};
+	socket.on("disconnect", () => {
+		const users = get("users") || {};
 		users[socket.user.id] = socket.user;
 		delete o[socket.user.id];
 		if (typing[socket.user.room].includes(socket.user.id)) typing[socket.user.room].splice(typing[socket.user.room].indexOf(socket.user.id), 1);
 		io.of(curr).to(socket.user.room).emit("typing", typing[socket.user.room]);
 		io.of(curr).emit("online", o);
-		await set({ users });
+		set({ users });
 	});
 
-	socket.on("chat message", async message => {
+	socket.on("chat message", message => {
 		if (!message) return;
 		if (message.includes("data:")) message = upload(message);
 		if (message.length > 250) return;
-		const rooms = await get("rooms");
+		const rooms = get("rooms");
 		rooms[socket.user.room].messages.push({ message, name: socket.user.name });
-		await set({ rooms });
-		const users = await get("users") || {};
-		const subscriptions = await get("subscriptions") || {};
+		set({ rooms });
+		const users = get("users") || {};
+		const subscriptions = get("subscriptions") || {};
 		const a = rooms[socket.user.room].allowed == "all" ? Object.keys(users) : rooms[socket.user.room].allowed;
 		a.forEach(a => {
 			const u = users[a];
@@ -211,20 +211,20 @@ io.of("chat").on("connection", async socket => {
 			}
 			io.of(curr).to(u.sid).emit("unread", u.unread);
 		});
-		await set({ users });
+		set({ users });
 		if (typing[socket.user.room].includes(socket.user.id)) typing[socket.user.room].splice(typing[socket.user.room].indexOf(socket.user.id), 1);
 		io.of(curr).to(socket.user.room).emit("typing", typing[socket.user.room]);
 		io.of(curr).to(socket.user.room).emit("chat message", [message, socket.user]);
 	});
 
-	socket.on("load messages", async lm => {
-		const rooms = await get("rooms");
+	socket.on("load messages", lm => {
+		const rooms = get("rooms");
 		const m = rooms[socket.user.room].messages;
 		socket.emit("load messages", m.slice(Math.max(0, m.length - lm - maxMessages), Math.max(0, m.length - lm)));
 	});
 
-	socket.on("join room", async (room, cb) => {
-		const rooms = await get("rooms");
+	socket.on("join room", (room, cb) => {
+		const rooms = get("rooms");
 		if (!rooms[room]) {
 			const u = room.split("-").map(e => Number(e));
 			if (rooms[u[1] + "-" + u[0]]) room = u[1] + "-" + u[0];
@@ -235,7 +235,7 @@ io.of("chat").on("connection", async socket => {
 					messages: [],
 					allowed: u,
 				};
-				await set({ rooms });
+				set({ rooms });
 			} else return;
 		}
 		if (!rooms[room].allowed.includes(socket.user.id) && rooms[room].allowed != "all") return;
@@ -248,9 +248,9 @@ io.of("chat").on("connection", async socket => {
 		io.of(curr).emit("online", o);
 		socket.join(socket.user.room);
 		if (socket.user.unread.includes(socket.user.room)) socket.user.unread.splice(socket.user.unread.indexOf(socket.user.room), 1);
-		const users = await get("users") || {};
+		const users = get("users") || {};
 		users[socket.user.id] = socket.user;
-		await set({ users });
+		set({ users });
 		socket.emit("typing", typing[socket.user.room]);
 		socket.emit("join room", [rooms[socket.user.room].messages.slice(-maxMessages), room, socket.user.unread]);
 	});
