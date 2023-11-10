@@ -44,11 +44,25 @@ self.addEventListener("push", e => {
 		image: data.image || false,
 		badge: "chat.png",
 		actions: data.actions || [],
+		tag: data.tag || "main",
 	});
 });
 
 self.addEventListener("notificationclick", e => {
 	e.notification.close();
 	const path = self.location.origin + "/chat";
-	e.waitUntil(clients.openWindow(path));
+	if (e.action == "reply") {
+		const message = e.reply;
+		const room = e.notification.tag;
+		fetch("/message", {
+			method: "POST",
+			body: JSON.stringify({
+				message,
+				room,
+			}),
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+	} else e.waitUntil(clients.openWindow(path));
 });

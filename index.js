@@ -95,6 +95,12 @@ app.post("/subscribe", (req, res) => {
 	set({ subscriptions });
 	res.status(201).json({});
 });
+app.post("/message", (req, res) => {
+	if (!req.user) return res.status(201).json({});
+	const r = req.body;
+	req.user.room = r.room;
+	sendMessage(r.message, req.user, "chat", true);
+});
 
 io.of("chat").use(ioAuth);
 io.of("voice").use(ioAuth);
@@ -184,38 +190,7 @@ io.of("chat").on("connection", socket => {
 	});
 
 	socket.on("chat message", message => {
-		if (!message) return;
-		if (message.includes("data:")) message = upload(message);
-		if (message.length > 250) return;
-		const rooms = get("rooms");
-		rooms[socket.user.room].messages.push({ message, name: socket.user.name, date: new Date() });
-		set({ rooms });
-		const users = get("users") || {};
-		const subscriptions = get("subscriptions") || {};
-		const a = rooms[socket.user.room].allowed == "all" ? Object.keys(users) : rooms[socket.user.room].allowed;
-		a.forEach(a => {
-			const u = users[a];
-			if (!u) return;
-			if (subscriptions[u.id] && !Object.keys(o).includes(u.id.toString())) {
-				const n = rooms[socket.user.room].name;
-				const payload = JSON.stringify({
-					title: "New message",
-					body: `${socket.user.name} sent you a message${!rooms[n] ? " in " + n : ""}.`,
-					icon: profiles[socket.user.id].profile,
-				});
-				webpush.sendNotification(subscriptions[u.id], payload).catch(console.log);
-			}
-			if (!Object.keys(o).includes(u.id.toString()) || u.id == socket.user.id || u.room == socket.user.room) return;
-			if (!u.unread) u.unread = [];
-			if (!u.unread.includes(socket.user.room)) {
-				u.unread.push(socket.user.room);
-			}
-			io.of(curr).to(u.sid).emit("unread", u.unread);
-		});
-		set({ users });
-		if (typing[socket.user.room].includes(socket.user.id)) typing[socket.user.room].splice(typing[socket.user.room].indexOf(socket.user.id), 1);
-		io.of(curr).to(socket.user.room).emit("typing", typing[socket.user.room]);
-		io.of(curr).to(socket.user.room).emit("chat message", [message, socket.user, new Date()]);
+		sendMessage(message, socket.user, curr);
 	});
 
 	socket.on("load messages", lm => {
@@ -264,6 +239,53 @@ const upload = file => {
 	const name = im + "/" + length + "." + ext;
 	fs.writeFileSync(name, Buffer.from(file.split(",")[1], "base64"));
 	return name.replace(".", "");
+};
+
+const sendMessage = (message, us, curr, p = false) => {
+	const o = online["chat"];
+	let isImage = false;
+	if (!message) return;
+	if (message.includes("data:")) {
+		message = upload(message);
+		isImage = true;
+	}
+	if (message.length > 250) return;
+	const rooms = get("rooms");
+	rooms[us.room].messages.push({ message, name: us.name, date: new Date() });
+	set({ rooms });
+	const users = get("users") || {};
+	const subscriptions = get("subscriptions") || {};
+	const a = rooms[us.room].allowed == "all" ? Object.keys(users) : rooms[us.room].allowed;
+	a.forEach(a => {
+		const u = users[a];
+		if (!u) return;
+		if (subscriptions[u.id] && !o[u.id]?.visible) {
+			const n = rooms[us.room].name;
+			const payload = JSON.stringify({
+				title: `${us.name}${!rooms[n] ? " in " + n : ""}`,
+				body: `${!isImage ? message : " sent an image"}`,
+				image: isImage ? message : false,
+				icon: profiles[us.name].profile,
+				tag: us.room,
+				actions: [{
+					title: "Reply",
+					action: "reply",
+					type: "text",
+				}],
+			});
+			webpush.sendNotification(subscriptions[u.id], payload).catch(console.log);
+		}
+		if (!o[u.id] || u.id == us.id || u.room == us.room) return;
+		if (!u.unread) u.unread = [];
+		if (!u.unread.includes(us.room)) {
+			u.unread.push(us.room);
+		}
+		io.of(curr).to(u.sid).emit("unread", u.unread);
+	});
+	set({ users });
+	if (typing[us.room].includes(us.id) && !p) typing[us.room].splice(typing[us.room].indexOf(us.id), 1);
+	if (!p) io.of(curr).to(us.room).emit("typing", typing[us.room]);
+	io.of(curr).to(us.room).emit("chat message", [message, us, new Date()]);
 };
 
 server.listen(3000, () => console.log("Server listening on port 3000"));

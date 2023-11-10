@@ -9,12 +9,13 @@ loading.innerText = "Loading...";
 const maxMessages = 50;
 let user = {}, profiles = {}, maxMessagesReached = false, currMessages = maxMessages, loadingMessages = false, mobile = window.innerWidth < 700, online = {}, rn = [], prev = "";
 
-const linkify = (s, smooth = false, scroll = false, start = false) => {
+const linkify = (s, scroll = false, smooth = false, start = false) => {
 	const urlPattern = /\b(?:https?|ftp):\/\/[a-z0-9-+&@#\/%?=~_|!:,.;]*[a-z0-9-+&@#\/%=~_|]/gim;
 	const pseudoUrlPattern = /(^|[^\/])(www\.[\S]+(\b|$))/gim;
 	const emailAddressPattern = /[\w.]+@[a-zA-Z_-]+?(?:\.[a-zA-Z]{2,6})+/gim;
-	const cms = document.querySelector('#chat-messages');
-	if (s.startsWith("/images/")) return `<img src="${s}">`;
+	const emojiPattern = /\p{Extended_Pictographic}/ug;
+	if (s.startsWith("/images/")) return `<img src="${s}" onload="const cms = document.getElementById('#chat-messages'); if (${scroll && smooth}) cms.scrollTo({ top: cms.scrollHeight, behavior: 'smooth' })">`;
+	if (s.replace(emojiPattern, "").length == 0) return `<p style="font-size: 36px">${s}</p>`;
 	return s
 		.replace(urlPattern, "<a target='_blank' href='$&'>$&</a>")
 		.replace(pseudoUrlPattern, "$1<a target='_blank' href='http://$2'>$2</a>")
@@ -94,12 +95,13 @@ const addMessage = ([message, u, d], smooth = true, scroll = true, start = false
 	currMessages++;
 	const cms = document.querySelector("#chat-messages");
 	cms.innerHTML = cms.innerHTML.replace("Sorry, no messages here...", "");
+	const atBottom = Math.abs(cms.scrollHeight - cms.clientHeight - cms.scrollTop) <= 10;
 	const cm = document.createElement("div");
 	cm.id = "chat-message";
 	const pc = getProfile(u, false);
 	const m = document.createElement("div");
 	m.id = "message";
-	if (u.id != user.id) m.style.background = toRgba("#808080", 0.4);
+	m.style.background = toRgba(u.color, 0.4);
 	m.innerHTML = linkify(message, smooth, scroll, start);
 	if (!myUser) {
 		m.className = "right";
@@ -122,12 +124,16 @@ const addMessage = ([message, u, d], smooth = true, scroll = true, start = false
 		const n = document.createElement("div");
 		n.id = "name";
 		n.className = myUser ? "right" : "left";
-		n.innerText = (myUser ? "" : u.name ) + (d ? " " + new Date(d).toLocaleString("en-us", {
+		n.innerText = myUser ? "" : u.name ;
+		const time = document.createElement("div");
+		time.id = "time";
+		time.innerText = d ? new Date(d).toLocaleString("en-us", {
 			weekday: "long",
 			hour: "numeric",
 			minute: "numeric",
 			hour12: true,
-		}) : "");
+		}) : "";
+		n.appendChild(time);
 		cont.appendChild(n);
 		cont.appendChild(cm);
 		cms.appendChild(cont);
@@ -135,27 +141,19 @@ const addMessage = ([message, u, d], smooth = true, scroll = true, start = false
 		else cms.appendChild(cont);
 	}
 	updateMessageProfiles();
-	if (!start) cms.scrollTo({
+	if (!start && atBottom) cms.scrollTo({
 		top: cms.scrollHeight,
 		behavior: smooth ? "smooth" : "auto",
 	});
-	if (smooth && scroll && !start) cm.animate([
+	if (smooth && scroll) cm.animate([
 		{
 			transform: "translateY(100%)",
-			borderTopLeftRadius: 20,
-			borderTopRightRadius: 20,
-			borderBottomLeftRadius: 20,
-			borderBottomRightRadius: 20,
 		},
 		{
 			transform: "translateY(0)",
-			borderTopLeftRadius: myUser ? 20 : 10,
-			borderTopRightRadius: myUser ? 10 : 20,
-			borderBottomLeftRadius: myUser ? 20 : 10,
-			borderBottomRightRadius: myUser ? 10 : 20,
 		},
 	], {
-		duration: 200,
+		duration: 500,
 		easing: "ease",
 	});
 };
@@ -170,7 +168,8 @@ socket.on("typing", t => {
 	let text = "";
 	t.forEach((id, i) => {
 		const u = profiles[Object.keys(profiles).find(e => profiles[e].id == id)];
-		text += i == 0 ? u.name : i == t.length - 1 && t.length == 2 ? " and " + u.name : i == t.length - 1 ? ", and " + u.name : ", " + u.name;
+		const n = u.name.split(" ")[0];
+		text += i == 0 ? n : i == t.length - 1 && t.length == 2 ? " and " + n : i == t.length - 1 ? ", and " + n : ", " + n;
 	});
 	typing.innerText = t.length == 1 ? text + " is typing..." : text + " are typing...";
 });
@@ -247,7 +246,7 @@ socket.on("profiles", p => {
 socket.on("user", u => {
 	user = u;
 	if (!mobile) toggleMenu(user.menu);
-	switchTheme(user.theme, user.accent ? user.color : null);
+	setTimeout(() => switchTheme(user.theme, user.accent ? user.color : null), 100);
 	updateProfiles();
 });
 socket.on("online", u => {
@@ -390,7 +389,7 @@ const toggleMenu = (s = !user.menu) => {
 		cc.style = "";
 		cs.style = "";
 	}
-	cc.style.gridTemplateColumns = !user.menu ? "0 100%" : mobile ? "100% 100%" : "25% calc(75% - 5px)";
+	cc.style.gridTemplateColumns = !user.menu ? "0 100%" : mobile ? "100% 100%" : "25% 75%";
 	socket.emit("menu", user.menu);
 };
 
@@ -424,6 +423,7 @@ addFile.onchange = e => {
 };
 
 menu.onclick = () => toggleMenu();
+document.querySelector("#theme").onclick = () => switchTheme();
 
 document.querySelector("#chat-messages").onscroll = e => {
 	const t = e.target.scrollTop;
@@ -435,7 +435,3 @@ document.querySelector("#chat-messages").onscroll = e => {
 document.onvisibilitychange = () => {
 	socket.emit("visible", document.visibilityState == "visible");
 }
-
-if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) switchTheme(true);
-window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", ({ matches }) => switchTheme(matches));
-document.querySelector("#theme").onclick = () => switchTheme();

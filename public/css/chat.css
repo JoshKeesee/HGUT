@@ -166,16 +166,16 @@
 	border-top-right-radius: 10px;
 	border-bottom-left-radius: 20px;
 	border-bottom-right-radius: 10px;
-	background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.1);
+	background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.2);
 	transition: background 0.2s ease;
 }
 
 #chat-input:hover {
-	background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.2);
+	background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.3);
 }
 
 #chat-input:focus {
-	background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.3);
+	background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.4);
 }
 
 input[type="file"] {
@@ -266,27 +266,39 @@ input[type="file"] {
 }
 
 #cont #name {
-	font-size: 12px;
-	color: gray;
+	font-size: 13px;
+	color: #999999;
+	display: flex;
+	align-items: center;
+	gap: 5px;
+}
+
+#cont #name #time {
+	font-size: 11px;
+	color: #888888;
 }
 
 #cont #name.left {
 	margin-left: 50px;
 	text-align: left;
+	justify-content: flex-start;
 }
 
 #cont #name.right {
 	text-align: right;
+	justify-content: flex-end;
 }
 
-#cont #chat-message:nth-child(2) #message {
+#cont #chat-message:nth-child(2) #message, #cont #chat-message:nth-child(2) #message img {
 	border-top-right-radius: 20px;
 	border-top-left-radius: 20px;
+	transition: border-radius 0.5s ease;
 }
 
-#cont #chat-message:last-child #message {
+#cont #chat-message:last-child #message, #cont #chat-message:last-child #message img {
 	border-bottom-right-radius: 20px;
 	border-bottom-left-radius: 20px;
+	transition: border-radius 0.5s ease;
 }
 
 #message {
@@ -302,19 +314,22 @@ input[type="file"] {
 	overflow-wrap: break-word;
   word-wrap: break-word;
   hyphens: auto;
+	transition: border-radius 0.5s ease;
 }
 
 #message:has(img) {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	padding: 0px;
+	padding: 2px;
 	overflow: hidden;
 	max-width: 70%;
+	max-height: 500px;
 }
 
 #message img {
 	width: 100%;
+	height: 100%;
 }
 
 #message.left {
@@ -325,14 +340,14 @@ input[type="file"] {
 	margin-right: auto;
 }
 
-.left {
+.left, #message.left img {
 	border-top-left-radius: 20px;
 	border-bottom-left-radius: 20px;
 	border-top-right-radius: 5px;
 	border-bottom-right-radius: 5px;
 }
 
-.right {
+.right, #message.right img {
 	border-top-right-radius: 20px;
 	border-bottom-right-radius: 20px;
 	border-top-left-radius: 5px;
