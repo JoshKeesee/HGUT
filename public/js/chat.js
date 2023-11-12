@@ -125,10 +125,10 @@ const addMessage = ([message, u, d], smooth = true, scroll = true, start = false
 		const n = document.createElement("div");
 		n.id = "name";
 		n.className = myUser ? "right" : "left";
-		n.innerText = myUser ? "" : u.name ;
+		n.innerText = myUser ? "" : u.name;
 		const time = document.createElement("div");
 		time.id = "time";
-		time.innerText = d ? (new Date(d)).toLocaleString("en-us", {
+		time.innerHTML = d ? (new Date(d)).toLocaleString("en-us", {
 			weekday: "long",
 			hour: "numeric",
 			minute: "numeric",
@@ -187,7 +187,7 @@ socket.on("load messages", messages => {
 	const h = cms.scrollHeight;
 	if (document.querySelector("#" + loading.id)) loading.remove();
 	messages.reverse().forEach(m => {
-		addMessage([m.message, profiles[m.name]], false, false, true);
+		addMessage([m.message, profiles[m.name], m.date], false, false, true);
 	});
 	if (!maxMessagesReached) cms.insertBefore(loading, cms.firstChild);
 	cms.scrollTo({
