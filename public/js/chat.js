@@ -15,7 +15,7 @@ const linkify = (s, scroll = false, smooth = false, start = false) => {
 	const emailAddressPattern = /[\w.]+@[a-zA-Z_-]+?(?:\.[a-zA-Z]{2,6})+/gim;
 	const emojiPattern = /\p{Extended_Pictographic}/ug;
 	if (s.startsWith("/images/")) return `<img src="${s}" onload="const cms = document.getElementById('#chat-messages'); if (${scroll && smooth}) cms.scrollTo({ top: cms.scrollHeight, behavior: 'smooth' })">`;
-	if (s.replace(emojiPattern, "").length == 0) return `<p style="font-size: 36px">${s}</p>`;
+	if (s.replace(emojiPattern, "").length == 0) return `<p id="emoji">${s}</p>`;
 	return s
 		.replace(urlPattern, "<a target='_blank' href='$&'>$&</a>")
 		.replace(pseudoUrlPattern, "$1<a target='_blank' href='http://$2'>$2</a>")
@@ -95,14 +95,15 @@ const addMessage = ([message, u, d], smooth = true, scroll = true, start = false
 	currMessages++;
 	const cms = document.querySelector("#chat-messages");
 	cms.innerHTML = cms.innerHTML.replace("Sorry, no messages here...", "");
-	const atBottom = Math.abs(cms.scrollHeight - cms.clientHeight - cms.scrollTop) <= 10;
+	const atBottom = Math.abs(cms.scrollHeight - cms.clientHeight - cms.scrollTop) <= 150;
 	const cm = document.createElement("div");
 	cm.id = "chat-message";
 	const pc = getProfile(u, false);
 	const m = document.createElement("div");
 	m.id = "message";
 	m.style.background = toRgba(u.color, 0.4);
-	m.innerHTML = linkify(message, smooth, scroll, start);
+	m.innerHTML = message;
+	m.innerHTML = linkify(m.innerText, smooth, scroll, start);
 	if (!myUser) {
 		m.className = "right";
 		cm.appendChild(pc);
@@ -127,7 +128,7 @@ const addMessage = ([message, u, d], smooth = true, scroll = true, start = false
 		n.innerText = myUser ? "" : u.name ;
 		const time = document.createElement("div");
 		time.id = "time";
-		time.innerText = d ? new Date(d).toLocaleString("en-us", {
+		time.innerText = d ? (new Date(d)).toLocaleString("en-us", {
 			weekday: "long",
 			hour: "numeric",
 			minute: "numeric",

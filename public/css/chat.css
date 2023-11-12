@@ -303,7 +303,7 @@ input[type="file"] {
 
 #message {
 	min-width: 10px;
-	max-width: calc(100% - 150px);
+	max-width: 70%;
 	width: fit-content;
 	letter-spacing: 0px;
 	text-align: left;
@@ -315,6 +315,15 @@ input[type="file"] {
   word-wrap: break-word;
   hyphens: auto;
 	transition: border-radius 0.5s ease;
+}
+
+#message:has(#emoji) {
+	background: none !important;
+	padding: 0
+}
+
+#emoji {
+	font-size: 50px;
 }
 
 #message:has(img) {
