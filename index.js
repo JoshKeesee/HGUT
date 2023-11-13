@@ -288,7 +288,7 @@ const sendMessage = (message, us, curr, p = false) => {
 			});
 			if (!subscriptions[u.id].length) subscriptions[u.id] = [subscriptions[u.id]];
 			subscriptions[u.id].forEach(e => {
-				webpush.sendNotification(e, payload);
+				webpush.sendNotification(e, payload).catch(e => {});
 			});
 		}
 		if (!o[u.id] || u.id == us.id || u.room == us.room) return;
