@@ -197,8 +197,8 @@ body {
 	border-radius: 32px;
 	padding: 2px;
 	padding-left: 27px;
-	margin-top: -10px;
-	margin-bottom: -10px;
+	margin-top: -20px;
+	margin-bottom: -20px;
 	transition: background 0.2s ease, width 0.2s ease;
 }
 
@@ -213,9 +213,9 @@ body {
 }
 
 #online #bg {
-	position: relative;
 	background: black;
 	border-radius: 50%;
+	position: relative;
 	margin-left: -25px;
 	transition: margin 0.2s ease, background 0.2s ease;
 	cursor: pointer;

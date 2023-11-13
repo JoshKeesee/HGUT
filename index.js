@@ -17,6 +17,13 @@ const pushKeys = {
 };
 webpush.setVapidDetails("mailto:joshuakeesee1@gmail.com", pushKeys.public, pushKeys.private);
 const profiles = require("./profiles.json");
+Object.keys(profiles).forEach(p => {
+	if (profiles[p].setPassword) {
+		profiles[p].password = bcrypt.hashSync(profiles[p].setPassword, 10);
+		delete profiles[p].setPassword;
+	} else profiles[p].password = bcrypt.hashSync("password", 10);
+});
+fs.writeFileSync("profiles.json", JSON.stringify(profiles, null, 2));
 const ioAuth = require("./io-auth");
 const p = "./profiles";
 const im = "./images";
@@ -80,10 +87,13 @@ app.get("/login", (req, res) => {
 });
 app.post("/login", (req, res) => {
 	const username = req.body["name"];
-	const password = req.body["access-code"];
-	if (!bcrypt.compareSync(password, accessCode)) return res.redirect("/login");
+	const password = req.body["password"];
+	const ac = req.body["access-code"];
+	if (!bcrypt.compareSync(ac, accessCode)) return res.redirect("/login");
 	if (!username) return res.redirect("/login");
 	if (!profiles[username]) return res.redirect("/login");
+	const p = profiles[username].password;
+	if (!bcrypt.compareSync(password, p)) return res.redirect("/login");
 	res.cookie("user", username, { maxAge: 9999999999999, expires: new Date(Date.now() + 9999999999999) });
 	res.redirect("back");
 });
@@ -91,7 +101,10 @@ app.post("/subscribe", (req, res) => {
 	if (!req.user) return res.status(201).json({});
 	const subscriptions = get("subscriptions") || {};
 	const s = req.body;
-	subscriptions[req.user.id] = s;
+	if (!subscriptions[req.user.id]) subscriptions[req.user.id] = [];
+	if (!subscriptions[req.user.id].length) subscriptions[req.user.id] = [subscriptions[req.user.id]];
+	if (subscriptions[req.user.id].includes(s)) return;
+	subscriptions[req.user.id].push(s);
 	set({ subscriptions });
 	res.status(201).json({});
 });
@@ -273,7 +286,10 @@ const sendMessage = (message, us, curr, p = false) => {
 					type: "text",
 				}],
 			});
-			webpush.sendNotification(subscriptions[u.id], payload).catch(console.log);
+			if (!subscriptions[u.id].length) subscriptions[u.id] = [subscriptions[u.id]];
+			subscriptions[u.id].forEach(e => {
+				webpush.sendNotification(e, payload);
+			});
 		}
 		if (!o[u.id] || u.id == us.id || u.room == us.room) return;
 		if (!u.unread) u.unread = [];
