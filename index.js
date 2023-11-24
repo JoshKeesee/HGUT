@@ -21,7 +21,8 @@ Object.keys(profiles).forEach(p => {
 	if (profiles[p].setPassword) {
 		profiles[p].password = bcrypt.hashSync(profiles[p].setPassword, 10);
 		delete profiles[p].setPassword;
-	} else profiles[p].password = bcrypt.hashSync("password", 10);
+		profiles[p].hasPassword = true;
+	} else if (!profiles[p].hasPassword) profiles[p].password = bcrypt.hashSync("password", 10);
 });
 fs.writeFileSync("profiles.json", JSON.stringify(profiles, null, 2));
 const ioAuth = require("./io-auth");
