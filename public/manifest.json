@@ -31,12 +31,12 @@
 		{
 			"name": "Chat",
 			"url": "/chat",
-			"description": ""
+			"description": "Chat with friends!"
 		},
 		{
 			"name": "Voice Chat",
 			"url": "/voice",
-			"description": ""
+			"description": "Video chat with friends!"
 		}
 	],
 	"id": "hgut",
