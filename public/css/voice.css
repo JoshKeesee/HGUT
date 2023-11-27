@@ -52,7 +52,9 @@
 }
 
 #person {
-	background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.3);
+	user-select: none;
+	position: relative;
+	background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.4);
 	border-radius: 20px;
 	display: flex;
 	align-items: center;
@@ -62,12 +64,63 @@
 }
 
 #person video {
+	z-index: 1;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
 }
 
+#person #name {
+	z-index: 2;
+	position: absolute;
+	bottom: 12px;
+	left: 15px;
+	font-size: 15px;
+	font-weight: 800;
+	letter-spacing: 1px;
+	color: #fff;
+	text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+#person #ring {
+	position: absolute;
+	margin-top: auto;
+	margin-bottom: auto;
+	margin-left: auto;
+	margin-right: auto;
+	width: 70px;
+	height: 70px;
+	border-radius: 70px;
+	border: 1px solid #999;
+	animation: ring 6s infinite;
+	transform-origin: center;
+}
+
+#person #vol {
+	position: absolute;
+	margin-top: auto;
+	margin-bottom: auto;
+	margin-left: auto;
+	margin-right: auto;
+	width: 70px;
+	height: 70px;
+	border-radius: 70px;
+	background: #999;
+	opacity: 0.2;
+	transition: transform 0.8s ease;
+	transform-origin: center;
+}
+
 #person #profile {
+	position: absolute;
+	margin-top: auto;
+	margin-bottom: auto;
+	margin-left: auto;
+	margin-right: auto;
 	font-size: 30px;
 	width: 70px;
 	height: 70px;
@@ -126,11 +179,6 @@
 
 #leave-voice:hover {
 	background: rgba(255, 0, 0, 0.9);
-}
-
-#toggle-chat {
-	margin-top: auto;
-	margin-bottom: auto;
 }
 
 svg {
@@ -236,11 +284,14 @@ svg {
 }
 
 @media screen and (max-width: 700px) {
-	#person #profile {
-		font-size: 20px;
+	#person #ring, #person #profile, #person #name {
 		width: 50px;
 		height: 50px;
 		border-radius: 50px;
+	}
+	
+	#person #profile {
+		font-size: 20px;
 	}
 	
 	#person #profile img {
@@ -263,5 +314,16 @@ svg {
 
 	#people-container:has(#person:nth-child(n + 4)) {
 		grid-template-columns: 33% 33% calc(34% - 10px);
+	}
+}
+
+@keyframes ring {
+	0% {
+		transform: scale(0.5);
+		opacity: 1;
+	}
+	50%, 100% {
+		transform: scale(2.2);
+		opacity: 0;
 	}
 }

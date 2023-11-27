@@ -10,13 +10,20 @@ const chat = document.querySelector("#toggle-chat");
 let stream = null;
 let user = {}, profiles = {}, switched = {}, mobile = window.innerWidth < 700, online = {}, callList = [];
 
+const us = async () => {
+	stream = await navigator.mediaDevices.getUserMedia({ video: { width: { min: 1280 }, height: { min: 720 } }, audio: true });
+	stream.getVideoTracks().forEach(v => v.enabled = false);
+	stream.getAudioTracks().forEach(v => v.enabled = false);
+};
+
 socket.on("chat message", addMessage);
 socket.on("profiles", p => p ? profiles = p : "");
-socket.on("user", u => {
+socket.on("user", async u => {
 	const pec = document.querySelector("#people-container");
 	pec.innerHTML = "";
 	user = u;
 	switchTheme(user.theme, user.accent ? user.color : null);
+	await us();
 	addVideo(user, stream);
 });
 socket.on("online", u => {
@@ -25,10 +32,15 @@ socket.on("online", u => {
 });
 socket.on("camera", ([camera, id]) => {
 	switched[id].camera = camera;
-	const c = document.querySelector("#video-" + id);
+	const v = document.querySelector("#video-" + id);
+	if (!v) return;
+	v.style.display = camera ? "block" : "none";
+});
+socket.on("audio", ([audio, id]) => {
+	switched[id].audio = audio;
+	const c = document.querySelector(".person-" + id);
 	if (!c) return;
-	c.style.display = camera ? "block" : "none";
-	c.parentElement.querySelector("div").style.display = camera ? "none" : "block";
+	c.querySelectorAll("div.a").forEach(e => e.style.display = audio ? "block" : "none");
 });
 socket.on("switched", s => switched = s);
 socket.on("redirect", d => window.location.href = d);
@@ -47,8 +59,40 @@ const addVideo = (p, s) => {
 	};
 	const pr = getProfile(p, false);
 	pr.style.display = switched[p.peerId]?.camera ? "none" : "block";
+	const ring = document.createElement("div");
+	ring.id = "ring";
+	ring.className = "a";
+	ring.style.display = switched[p.peerId]?.audio ? "block" : "none";
+	const vol = document.createElement("div");
+	vol.id = "vol";
+	vol.className = "a";
+	vol.style.display = switched[p.peerId]?.audio ? "block" : "none";
+	const ac = new AudioContext();
+	const sr = ac.createMediaStreamSource(s);
+	const analyzer = ac.createAnalyser();
+	const node = ac.createScriptProcessor(2048, 1, 1);
+	analyzer.smoothingTimeConstant = 0.8;
+	analyzer.fftSize = 1024;
+	sr.connect(analyzer);
+	analyzer.connect(node);
+	node.connect(ac.destination);
+	node.onaudioprocess = () => {
+		const ar = new Uint8Array(analyzer.frequencyBinCount);
+		analyzer.getByteFrequencyData(ar);
+		let values = 0;
+		const l = ar.length;
+		for (let i = 0; i < l; i++) values += ar[i];
+		const av = values / l;
+		vol.style.transform = `scale(${Math.max(Math.min(Math.round((av - 20) / 2), 2.2), 1)})`;
+	};
+	const name = document.createElement("div");
+	name.id = "name";
+	name.innerText = p.name;
+	person.appendChild(ring);
+	person.appendChild(vol);
 	person.appendChild(video);
 	person.appendChild(pr);
+	person.appendChild(name);
 	pec.appendChild(person);
 };
 
@@ -119,12 +163,6 @@ const switchTheme = (dark = !user.theme, color) => {
 	socket.emit("theme", user.theme);
 };
 
-(async () => {
-	stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-	stream.getVideoTracks().forEach(v => v.enabled = false);
-	stream.getAudioTracks().forEach(v => v.enabled = false);
-})();
-
 const toggleCamera = async (set = !user.camera) => {
 	user.camera = set;
 	if (user.camera) cam.style.background = "rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.9)";
@@ -141,7 +179,6 @@ const toggleCamera = async (set = !user.camera) => {
 		stream.getVideoTracks().forEach(v => v.enabled = false);
 	}
 	c.style.display = user.camera ? "block" : "none";
-	c.parentElement.querySelectorAll("div").forEach(e => e.style.display = user.camera ? "none" : "block");
 	socket.emit("camera", user.camera);
 };
 
@@ -150,6 +187,9 @@ const toggleAudio = async (set = !user.audio) => {
 	if (user.audio) mic.style.background = "rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.9)";
 	else mic.style = "";
 	stream.getAudioTracks()[0].enabled = user.audio;
+	const c = document.querySelector(".person-" + user.peerId);
+	if (!c) return;
+	c.querySelectorAll("div.a").forEach(e => e.style.display = user.audio ? "block" : "none");
 	socket.emit("audio", user.audio);
 };
 
@@ -177,8 +217,14 @@ send.onclick = e => {
 };
 
 chat.onclick = () => {
+	user.chat = !user.chat;
+	if (user.chat) chat.style.background = "rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.9)";
+	else chat.style = "";
 	const c = document.querySelector("#main-cont");
 	c.classList.toggle("toggled");
+	const ci = document.querySelector("#chat-input");
+	if (user.chat) ci.focus();
+	else ci.blur();
 };
 
 document.onvisibilitychange = () => socket.emit("visible", document.visibilityState == "visible");

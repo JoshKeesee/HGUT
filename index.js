@@ -144,6 +144,7 @@ io.of("voice").on("connection", socket => {
 	socket.on("audio", a => {
 		socket.user.audio = a;
 		switched[socket.user.peerId].audio = a;
+		socket.broadcast.emit("audio", [a, socket.user.peerId]);
 	});
 
 	socket.on("id", id => {
