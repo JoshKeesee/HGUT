@@ -9,56 +9,6 @@ loading.innerText = "Loading...";
 const maxMessages = 50;
 let user = {}, profiles = {}, maxMessagesReached = false, currMessages = maxMessages, loadingMessages = false, mobile = window.innerWidth < 700, online = {}, rn = [], prev = "";
 
-const linkify = (s, scroll = false, smooth = false, start = false) => {
-	const urlPattern = /\b(?:https?|ftp):\/\/[a-z0-9-+&@#\/%?=~_|!:,.;]*[a-z0-9-+&@#\/%=~_|]/gim;
-	const pseudoUrlPattern = /(^|[^\/])(www\.[\S]+(\b|$))/gim;
-	const emailAddressPattern = /[\w.]+@[a-zA-Z_-]+?(?:\.[a-zA-Z]{2,6})+/gim;
-	const emojiPattern = /\p{Extended_Pictographic}/ug;
-	if (s.startsWith("/images/")) return `<img src="${s}" onload="const cms = document.getElementById('#chat-messages'); if (${scroll && smooth}) cms.scrollTo({ top: cms.scrollHeight, behavior: 'smooth' })">`;
-	if (s.replace(emojiPattern, "").length == 0) return `<p id="emoji">${s}</p>`;
-	return s
-		.replace(urlPattern, "<a target='_blank' href='$&'>$&</a>")
-		.replace(pseudoUrlPattern, "$1<a target='_blank' href='http://$2'>$2</a>")
-		.replace(emailAddressPattern, "<a target='_blank' href='mailto:$&'>$&</a>");
-};
-
-const getProfile = (u, info = true) => {
-	const pc = document.createElement("div");
-	pc.id = "profile";
-	pc.className = u.name.replaceAll(" ", "-");
-	if (u.color) pc.style.background = toRgba(u.color, 0.6);
-	if (u.profile) {
-		const p = document.createElement("img");
-		p.src = u.profile;
-		pc.appendChild(p);
-	} else {
-		pc.innerText = u.name.split(" ").map(e => e[0]).join("");
-	}
-	if (info) {
-		const i = document.createElement("div");
-		i.id = "info";
-		i.style.background = user.theme ? "black" : "white";
-		const cont = document.createElement("div");
-		cont.id = "info-container";
-		const name = document.createElement("div");
-		name.id = "name";
-		name.innerText = u.name;
-		const character = document.createElement("div");
-		character.id = "character";
-		character.innerText = u.character;
-		const born = document.createElement("div");
-		born.id = "character";
-		born.innerText = "Born on " + u.dob;
-		i.appendChild(pc.cloneNode(true));
-		cont.appendChild(name);
-		cont.appendChild(character);
-		cont.appendChild(born);
-		i.appendChild(cont);
-		pc.appendChild(i);
-	}
-	return pc;
-};
-
 const roomButton = (text, cn, u = true, d) => {
 	const crc = document.createElement("div");
 	crc.id = "chat-room-container";
@@ -88,75 +38,6 @@ const roomButton = (text, cn, u = true, d) => {
 	crc.appendChild(o);
 	crc.appendChild(cr);
 	return crc;
-};
-
-const addMessage = ([message, u, d], smooth = true, scroll = true, start = false) => {
-	const myUser = u.name == user.name;
-	currMessages++;
-	const cms = document.querySelector("#chat-messages");
-	cms.innerHTML = cms.innerHTML.replace("Sorry, no messages here...", "");
-	const atBottom = Math.abs(cms.scrollHeight - cms.clientHeight - cms.scrollTop) <= 150;
-	const cm = document.createElement("div");
-	cm.id = "chat-message";
-	const pc = getProfile(u, false);
-	const m = document.createElement("div");
-	m.id = "message";
-	m.style.background = toRgba(u.color, 0.4);
-	m.innerHTML = message;
-	m.innerHTML = linkify(m.innerText, smooth, scroll, start);
-	if (!myUser) {
-		m.className = "right";
-		cm.appendChild(pc);
-	}
-	cm.appendChild(m);
-	if (myUser) {
-		pc.style.display = "none";
-		m.className = "left";
-		cm.appendChild(pc);
-	}
-	const prev = start ? cms.firstChild : cms.lastChild;
-	if (prev?.className == "u" + u.id) {
-		if (start) prev.insertBefore(cm, prev.children[1]);
-		else prev.appendChild(cm);
-	} else {
-		const cont = document.createElement("div");
-		cont.id = "cont";
-		cont.className = "u" + u.id;
-		const n = document.createElement("div");
-		n.id = "name";
-		n.className = myUser ? "right" : "left";
-		n.innerText = myUser ? "" : u.name;
-		const time = document.createElement("div");
-		time.id = "time";
-		time.innerHTML = d ? (new Date(d)).toLocaleString("en-us", {
-			weekday: "long",
-			hour: "numeric",
-			minute: "numeric",
-			hour12: true,
-		}) : "";
-		n.appendChild(time);
-		cont.appendChild(n);
-		cont.appendChild(cm);
-		cms.appendChild(cont);
-		if (start) cms.insertBefore(cont, cms.firstChild);
-		else cms.appendChild(cont);
-	}
-	updateMessageProfiles();
-	if (!start && atBottom) cms.scrollTo({
-		top: cms.scrollHeight,
-		behavior: smooth ? "smooth" : "auto",
-	});
-	if (smooth && scroll) cm.animate([
-		{
-			transform: "translateY(100%)",
-		},
-		{
-			transform: "translateY(0)",
-		},
-	], {
-		duration: 500,
-		easing: "ease",
-	});
 };
 
 socket.on("connect", () => {
@@ -209,7 +90,7 @@ socket.on("rooms", ([rooms, p]) => {
 	crs.innerHTML = "";
 	const cbs = document.querySelector("#chat-book");
 	cbs.innerHTML = "";
-	crs.appendChild(roomButton("Voice Chat (beta)", "", false, () => window.location.href = "/voice"));
+	crs.appendChild(roomButton("Voice Chat", "", false, () => window.open("/voice", "_self")));
 	cbs.appendChild(roomButton("Book Link", "", false, () => window.open("https://docs.google.com/document/d/1xsxMONOYieKK_a87PTJwvmgwRZVNxOE4OhxtWc2oz7I/edit")));
 	Object.keys(rooms).forEach(k => {
 		if (!rooms[k].allowed.includes(user.id) && rooms[k].allowed != "all") return;
@@ -286,19 +167,6 @@ const switchChat = el => {
 	loadingMessages = true;
 	input.value = "";
 	socket.emit("join room", el.className.replace("c-", ""));
-};
-
-const updateMessageProfiles = () => {
-	const cms = document.querySelector("#chat-messages");
-	let last;
-	[].slice.call(cms.children).forEach((e, i) => {
-		[].slice.call(e.children).forEach((ee, ii) => {
-			const p = ee.querySelector("#profile");
-			if (!p) return;
-			if (p.className != last || ii == 0) last = p.className;
-			else p.style.opacity = 0;
-		});
-	});
 };
 
 const updateProfiles = () => {

@@ -8,15 +8,35 @@
 	max-height: 90%;
 }
 
+#main-cont {
+	overflow: hidden;
+	display: grid;
+	grid-template-columns: 100% 0;
+	width: 100%;
+	height: 90%;
+	margin-left: auto;
+	margin-right: auto;
+	transition: grid-template-columns 0.2s ease;
+}
+
+#main-cont.toggled {
+	grid-template-columns: calc(100% - 300px) 300px;
+}
+
+#controls {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
 #people-container {
 	overflow: hidden;
 	display: grid;
 	grid-template-columns: 100%;
+	grid-auto-rows: 1fr;
 	gap: 5px;
-	height: 90%;
-	margin-left: auto;
-	margin-right: auto;
 	width: 100%;
+	height: 100%;
 }
 
 #people-container:has(#person:nth-child(n + 2)) {
@@ -62,7 +82,7 @@
 }
 
 #control-bar {
-	padding: 10px;
+	padding: 5px;
 	background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.2);
 	text-align: center;
 	font-size: 20px;
@@ -79,14 +99,14 @@
 	margin-right: auto;
 }
 
-#toggle-cam, #toggle-mic, #leave-voice {
+#toggle-cam, #toggle-mic, #leave-voice, #toggle-chat {
 	padding: 10px;
-	width: 30px;
-	height: 30px;
-	max-width: 30px;
-	max-height: 30px;
-	min-width: 30px;
-	min-height: 30px;
+	width: 20px;
+	height: 20px;
+	max-width: 20px;
+	max-height: 20px;
+	min-width: 20px;
+	min-height: 20px;
 	background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.5);
 	border-radius: 30px;
 	transition: background 0.2s ease;
@@ -96,7 +116,7 @@
 	cursor: pointer;
 }
 
-#toggle-cam:hover, #toggle-mic:hover {
+#toggle-cam:hover, #toggle-mic:hover, #toggle-chat:hover {
 	background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.6);
 }
 
@@ -108,15 +128,20 @@
 	background: rgba(255, 0, 0, 0.9);
 }
 
+#toggle-chat {
+	margin-top: auto;
+	margin-bottom: auto;
+}
+
 svg {
 	color: white;
-	width: 25px;
-	height: 25px;
+	width: 20px;
+	height: 20px;
 }
 
 #divider {
 	width: 2px;
-	height: 30px;
+	height: 20px;
 	background: gray;
 	margin-left: 5px;
 	margin-right: 5px;
@@ -173,6 +198,41 @@ svg {
 
 #online #bg:not(:last-child):hover {
 	margin-right: 27px;
+}
+
+#chat-messages {
+	height: 90%;
+	max-height: 90%;
+	width: calc(100% - 0);
+	overflow-y: scroll;
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+	border-bottom-right-radius: 20px;
+	border-bottom-left-radius: 20px;
+	transition: opacity 0.2s ease;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+#chat-container {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+	height: 100%;
+	width: 100%;
+	overflow: hidden;
+}
+
+#loading {
+	margin-top: 5px;
+}
+
+#chat-message {
+	width: 100%;
+	max-width: 100%;
+	display: flex;
+	gap: 5px;
 }
 
 @media screen and (max-width: 700px) {

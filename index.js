@@ -29,7 +29,7 @@ const ioAuth = require("./io-auth");
 const p = "./profiles";
 const im = "./images";
 const maxMessages = 50;
-const online = {}, typing = {};
+const online = {}, switched = {}, typing = {};
 
 const setup = () => {
 	if (!fs.existsSync(p)) fs.mkdirSync(p);
@@ -128,30 +128,43 @@ io.of("voice").on("connection", socket => {
 
 	socket.emit("user", socket.user);
 	socket.emit("profiles", profiles);
-	const switched = {}, users = get("users") || {};
-	Object.keys(o).forEach(id => {
-		if (id == socket.user.id) return;
-		const user = users[id];
-		switched[id] = { camera: user.camera, audio: user.audio };
-	});
 	io.of(curr).emit("online", o);
-	socket.emit("switched", switched);
-
+	
 	socket.on("theme", t => socket.user.theme = t);
 	socket.on("visible", v => {
+		if (!o[socket.user.id]) o[socket.user.id] = { visible: false, room: socket.user.room };
 		o[socket.user.id].visible = v;
 		io.of(curr).emit("online", o);
 	});
 	socket.on("camera", c => {
 		socket.user.camera = c;
-		socket.broadcast.emit("camera", [c, socket.user.id]);
+		switched[socket.user.peerId].camera = c;
+		socket.broadcast.emit("camera", [c, socket.user.peerId]);
 	});
-	socket.on("audio", a => socket.user.audio = a);
-	socket.on("update person", c => socket.broadcast.emit("update person", [c, socket.user.id]));
+	socket.on("audio", a => {
+		socket.user.audio = a;
+		switched[socket.user.peerId].audio = a;
+	});
+
+	socket.on("id", id => {
+		socket.user.peerId = id;
+		switched[socket.user.peerId] = { camera: socket.user.camera, audio: socket.user.audio, id: socket.user.id };
+		io.of(curr).emit("switched", switched);
+		socket.broadcast.emit("add person", socket.user);
+	});
+
+	socket.on("chat message", message => {
+		sendMessage(message, socket.user, curr);
+	});
+
+	socket.on("get switched", cb => cb(switched));
 
 	socket.on("disconnect", () => {
 		delete o[socket.user.id];
+		delete switched[socket.user.peerId];
+		socket.broadcast.emit("remove person", socket.user);
 		io.of(curr).emit("online", o);
+		io.of(curr).emit("switched", switched);
 	});
 });
 
@@ -256,7 +269,7 @@ const upload = file => {
 };
 
 const sendMessage = (message, us, curr, p = false) => {
-	const o = online["chat"];
+	const o = online[curr];
 	let isImage = false;
 	if (!message) return;
 	if (message.includes("data:")) {
@@ -264,45 +277,47 @@ const sendMessage = (message, us, curr, p = false) => {
 		isImage = true;
 	}
 	if (message.length > 250) return;
-	const rooms = get("rooms");
-	rooms[us.room].messages.push({ message, name: us.name, date: new Date() });
-	set({ rooms });
-	const users = get("users") || {};
-	const subscriptions = get("subscriptions") || {};
-	const a = rooms[us.room].allowed == "all" ? Object.keys(users) : rooms[us.room].allowed;
-	a.forEach(a => {
-		const u = users[a];
-		if (!u) return;
-		if (subscriptions[u.id] && !o[u.id]?.visible) {
-			const n = rooms[us.room].name;
-			const payload = JSON.stringify({
-				title: `${us.name}${!rooms[n] ? " in " + n : ""}`,
-				body: `${!isImage ? message : " sent an image"}`,
-				image: isImage ? message : false,
-				icon: profiles[us.name].profile,
-				tag: us.room,
-				actions: [{
-					title: "Reply",
-					action: "reply",
-					type: "text",
-				}],
-			});
-			if (!subscriptions[u.id].length) subscriptions[u.id] = [subscriptions[u.id]];
-			subscriptions[u.id].forEach(e => {
-				webpush.sendNotification(e, payload).catch(e => {});
-			});
-		}
-		if (!o[u.id] || u.id == us.id || u.room == us.room) return;
-		if (!u.unread) u.unread = [];
-		if (!u.unread.includes(us.room)) {
-			u.unread.push(us.room);
-		}
-		io.of(curr).to(u.sid).emit("unread", u.unread);
-	});
-	set({ users });
-	if (typing[us.room].includes(us.id) && !p) typing[us.room].splice(typing[us.room].indexOf(us.id), 1);
-	if (!p) io.of(curr).to(us.room).emit("typing", typing[us.room]);
-	io.of(curr).to(us.room).emit("chat message", [message, us, new Date()]);
+	if (curr == "chat") {
+		const rooms = get("rooms");
+		rooms[us.room].messages.push({ message, name: us.name, date: new Date() });
+		set({ rooms });
+		const users = get("users") || {};
+		const subscriptions = get("subscriptions") || {};
+		const a = rooms[us.room].allowed == "all" ? Object.keys(users) : rooms[us.room].allowed;
+		a.forEach(a => {
+			const u = users[a];
+			if (!u) return;
+			if (subscriptions[u.id] && !o[u.id]?.visible) {
+				const n = rooms[us.room].name;
+				const payload = JSON.stringify({
+					title: `${us.name}${!rooms[n] ? " in " + n : ""}`,
+					body: `${!isImage ? message : " sent an image"}`,
+					image: isImage ? message : false,
+					icon: profiles[us.name].profile,
+					tag: us.room,
+					actions: [{
+						title: "Reply",
+						action: "reply",
+						type: "text",
+					}],
+				});
+				if (!subscriptions[u.id].length) subscriptions[u.id] = [subscriptions[u.id]];
+				subscriptions[u.id].forEach(e => {
+					webpush.sendNotification(e, payload).catch(e => {});
+				});
+			}
+			if (!o[u.id] || u.id == us.id || u.room == us.room) return;
+			if (!u.unread) u.unread = [];
+			if (!u.unread.includes(us.room)) {
+				u.unread.push(us.room);
+			}
+			io.of(curr).to(u.sid).emit("unread", u.unread);
+		});
+		set({ users });
+		if (typing[us.room].includes(us.id) && !p) typing[us.room].splice(typing[us.room].indexOf(us.id), 1);
+		if (!p) io.of(curr).to(us.room).emit("typing", typing[us.room]);
+		io.of(curr).to(us.room).emit("chat message", [message, us, new Date()]);
+	} else io.of(curr).emit("chat message", [message, us, new Date()]);
 };
 
 server.listen(3000, () => console.log("Server listening on port 3000"));
