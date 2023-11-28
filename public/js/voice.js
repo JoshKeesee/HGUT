@@ -227,8 +227,6 @@ chat.onclick = () => {
 	else ci.blur();
 };
 
-document.onvisibilitychange = () => socket.emit("visible", document.visibilityState == "visible");
-
 if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) switchTheme(true);
 window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", ({ matches }) => switchTheme(matches));
 document.querySelector("#theme").onclick = () => switchTheme();

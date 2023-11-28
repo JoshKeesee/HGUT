@@ -1,5 +1,7 @@
 const icon = document.querySelector("#icon");
 
+let missed = 0;
+
 const toRgba = (hex, alpha, obj) => {
 	const r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16);
 	if (obj) return { r, g, b };
@@ -79,6 +81,11 @@ const updateMessageProfiles = () => {
 };
 
 const addMessage = ([message, u, d], smooth = true, scroll = true, start = false) => {
+	if (!user.visible) {
+		let t = document.title.replace(/\(\d+\)/, "");
+		missed++;
+		document.title = "(" + missed + ") " + t;
+	}
 	const myUser = u.name == user.name;
 	if (window["currMessages"]) currMessages++;
 	const cms = document.querySelector("#chat-messages");
@@ -142,3 +149,11 @@ const addMessage = ([message, u, d], smooth = true, scroll = true, start = false
 		easing: "ease",
 	});
 };
+
+document.onvisibilitychange = () => {
+	user.visible = document.visibilityState == "visible";
+	const p = window.location.pathname == "/chat" ? " - Chat" : window.location.pathname == "/voice" ? " - Voice Chat" : "";
+	missed = 0;
+	document.title = "HGUT" + p;
+	socket.emit("visible", user.visible);
+}

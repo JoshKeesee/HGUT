@@ -90,7 +90,7 @@ socket.on("rooms", ([rooms, p]) => {
 	crs.innerHTML = "";
 	const cbs = document.querySelector("#chat-book");
 	cbs.innerHTML = "";
-	crs.appendChild(roomButton("Voice Chat", "", false, () => window.open("/voice", "_self")));
+	crs.appendChild(roomButton("Voice Chat", "", false, () => window.open("/voice")));
 	cbs.appendChild(roomButton("Book Link", "", false, () => window.open("https://docs.google.com/document/d/1xsxMONOYieKK_a87PTJwvmgwRZVNxOE4OhxtWc2oz7I/edit")));
 	Object.keys(rooms).forEach(k => {
 		if (!rooms[k].allowed.includes(user.id) && rooms[k].allowed != "all") return;
@@ -127,6 +127,7 @@ socket.on("profiles", p => {
 });
 socket.on("user", u => {
 	user = u;
+	user.visible = document.visibilityState == "visible";
 	if (!mobile) toggleMenu(user.menu);
 	setTimeout(() => switchTheme(user.theme, user.accent ? user.color : null), 100);
 	updateProfiles();
@@ -300,7 +301,3 @@ document.querySelector("#chat-messages").onscroll = e => {
 	loadingMessages = true;
 	socket.emit("load messages", currMessages);
 };
-
-document.onvisibilitychange = () => {
-	socket.emit("visible", document.visibilityState == "visible");
-}

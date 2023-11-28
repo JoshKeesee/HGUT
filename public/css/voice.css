@@ -96,7 +96,7 @@
 	height: 70px;
 	border-radius: 70px;
 	border: 1px solid #999;
-	animation: ring 6s infinite;
+	animation: ring 4s infinite;
 	transform-origin: center;
 }
 
@@ -322,7 +322,7 @@ svg {
 		transform: scale(0.5);
 		opacity: 1;
 	}
-	50%, 100% {
+	70%, 100% {
 		transform: scale(2.2);
 		opacity: 0;
 	}
