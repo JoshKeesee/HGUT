@@ -308,12 +308,16 @@ svg {
 		grid-template-columns: 100%;
 	}
 	
-	#people-container:has(#person:nth-child(n + 3)) {
+	#people-container:has(#person:nth-child(n + 3)), #people-container:has(#person:nth-child(n + 4)) {
 		grid-template-columns: 50% calc(50% - 5px);
 	}
 
-	#people-container:has(#person:nth-child(n + 4)) {
+	#people-container:has(#person:nth-child(n + 5)) {
 		grid-template-columns: 33% 33% calc(34% - 10px);
+	}
+
+	#main-cont.toggled {
+		grid-template-columns: 0 100%;
 	}
 }
 

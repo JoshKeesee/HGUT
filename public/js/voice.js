@@ -56,6 +56,7 @@ const addVideo = (p, s, pres = false) => {
 	video.id = "video-" + p.peerId;
 	video.style.display = switched[p.peerId]?.camera || pres ? "block" : "none";
 	video.srcObject = s;
+	if (p.peerId == user.peerId) video.muted = true;
 	video.onloadedmetadata = () => {
 		video.play();
 	};
