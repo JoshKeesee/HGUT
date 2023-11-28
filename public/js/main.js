@@ -87,7 +87,7 @@ const addMessage = ([message, u, d], smooth = true, scroll = true, start = false
 		document.title = "(" + missed + ") " + t;
 	}
 	const myUser = u.name == user.name;
-	if (window["currMessages"]) currMessages++;
+	if (typeof currMessages != "undefined") currMessages++;
 	const cms = document.querySelector("#chat-messages");
 	cms.innerHTML = cms.innerHTML.replace("Sorry, no messages here...", "");
 	const atBottom = Math.abs(cms.scrollHeight - cms.clientHeight - cms.scrollTop) <= 150;

@@ -340,13 +340,13 @@ input[type="file"] {
 	justify-content: flex-end;
 }
 
-#cont #chat-message:nth-child(2) #message, #cont #chat-message:nth-child(2) #message img {
+#cont #chat-message:nth-child(2) #message, #cont #chat-message:nth-child(2) #message img, #cont #chat-message:has(#emoji) + #chat-message #message {
 	border-top-right-radius: 20px;
 	border-top-left-radius: 20px;
 	transition: border-radius 0.5s ease;
 }
 
-#cont #chat-message:last-child #message, #cont #chat-message:last-child #message img {
+#cont #chat-message:last-child #message, #cont #chat-message:last-child #message img, #cont #chat-message:has(+ #chat-message #emoji) #message {
 	border-bottom-right-radius: 20px;
 	border-bottom-left-radius: 20px;
 	transition: border-radius 0.5s ease;

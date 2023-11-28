@@ -7,6 +7,7 @@ const leave = document.querySelector("#leave-voice");
 const input = document.querySelector("#chat-input");
 const send = document.querySelector("#chat-send");
 const chat = document.querySelector("#toggle-chat");
+const present = document.querySelector("#toggle-presentation");
 let stream = null;
 let user = {}, profiles = {}, switched = {}, mobile = window.innerWidth < 700, online = {}, callList = [];
 
@@ -25,6 +26,7 @@ socket.on("user", async u => {
 	switchTheme(user.theme, user.accent ? user.color : null);
 	await us();
 	addVideo(user, stream);
+	if (user.id != 2) present.remove();
 });
 socket.on("online", u => {
 	online = u;
@@ -45,53 +47,55 @@ socket.on("audio", ([audio, id]) => {
 socket.on("switched", s => switched = s);
 socket.on("redirect", d => window.location.href = d);
 
-const addVideo = (p, s) => {
+const addVideo = (p, s, pres = false) => {
 	const pec = document.querySelector("#people-container");
 	const person = document.createElement("div");
 	person.id = "person";
 	person.className = "person-" + p.peerId;
 	const video = document.createElement("video");
 	video.id = "video-" + p.peerId;
-	video.style.display = switched[p.peerId]?.camera ? "block" : "none";
+	video.style.display = switched[p.peerId]?.camera || pres ? "block" : "none";
 	video.srcObject = s;
 	video.onloadedmetadata = () => {
 		video.play();
 	};
 	const pr = getProfile(p, false);
-	pr.style.display = switched[p.peerId]?.camera ? "none" : "block";
-	const ring = document.createElement("div");
-	ring.id = "ring";
-	ring.className = "a";
-	ring.style.display = switched[p.peerId]?.audio ? "block" : "none";
-	const vol = document.createElement("div");
-	vol.id = "vol";
-	vol.className = "a";
-	vol.style.display = switched[p.peerId]?.audio ? "block" : "none";
-	const ac = new AudioContext();
-	const sr = ac.createMediaStreamSource(s);
-	const analyzer = ac.createAnalyser();
-	const node = ac.createScriptProcessor(2048, 1, 1);
-	analyzer.smoothingTimeConstant = 0.8;
-	analyzer.fftSize = 1024;
-	sr.connect(analyzer);
-	analyzer.connect(node);
-	node.connect(ac.destination);
-	node.onaudioprocess = () => {
-		const ar = new Uint8Array(analyzer.frequencyBinCount);
-		analyzer.getByteFrequencyData(ar);
-		let values = 0;
-		const l = ar.length;
-		for (let i = 0; i < l; i++) values += ar[i];
-		const av = values / l;
-		vol.style.transform = `scale(${Math.max(Math.min(Math.round((av - 20) / 2), 2.2), 1)})`;
-	};
+	const a = s.getAudioTracks().length > 0;
+	if (a) {
+		const ring = document.createElement("div");
+		ring.id = "ring";
+		ring.className = "a";
+		ring.style.display = switched[p.peerId]?.audio ? "block" : "none";
+		const vol = document.createElement("div");
+		vol.id = "vol";
+		vol.className = "a";
+		vol.style.display = switched[p.peerId]?.audio ? "block" : "none";
+		const ac = new AudioContext();
+		const sr = ac.createMediaStreamSource(s);
+		const analyzer = ac.createAnalyser();
+		const node = ac.createScriptProcessor(2048, 1, 1);
+		analyzer.smoothingTimeConstant = 0.8;
+		analyzer.fftSize = 1024;
+		sr.connect(analyzer);
+		analyzer.connect(node);
+		node.connect(ac.destination);
+		node.onaudioprocess = () => {
+			const ar = new Uint8Array(analyzer.frequencyBinCount);
+			analyzer.getByteFrequencyData(ar);
+			let values = 0;
+			const l = ar.length;
+			for (let i = 0; i < l; i++) values += ar[i];
+			const av = values / l;
+			vol.style.transform = `scale(${Math.max(Math.min(Math.round((av - 20) / 2), 2.2), 1)})`;
+		};
+		person.appendChild(ring);
+		person.appendChild(vol);
+	}
+	person.appendChild(video);
+	person.appendChild(pr);
 	const name = document.createElement("div");
 	name.id = "name";
 	name.innerText = p.name;
-	person.appendChild(ring);
-	person.appendChild(vol);
-	person.appendChild(video);
-	person.appendChild(pr);
 	person.appendChild(name);
 	pec.appendChild(person);
 };
@@ -155,6 +159,8 @@ const switchTheme = (dark = !user.theme, color) => {
 	document.querySelectorAll("#bg").forEach(b => b.style.background = user.theme ? "black" : "white");
 	document.querySelector("meta[name=theme-color]").setAttribute("content", user.theme ? "#000014" : user.accent ? rgbToHex(toRgba(user.color)) : rgbToHex("rgb(0, 0, 255)"));
 	document.querySelectorAll(".loading div").forEach(b => b.style.background = user.theme ? "white" : "black");
+	document.querySelectorAll("#ring").forEach(b => b.style.borderColor = user.theme ? "#999" : "#fff");
+	document.querySelectorAll("#vol").forEach(b => b.style.background = user.theme ? "#999" : "#fff");
 	if (color) {
 		const rgb = toRgba(color, 1, true);
 		const root = document.querySelector(":root");
@@ -225,6 +231,15 @@ chat.onclick = () => {
 	const ci = document.querySelector("#chat-input");
 	if (user.chat) ci.focus();
 	else ci.blur();
+};
+
+present.onclick = async () => {
+	user.present = !user.present;
+	if (user.present) present.style.background = "rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.9)";
+	else present.style = "";
+	const p = await navigator.mediaDevices.getDisplayMedia();
+	addVideo(user, p, true);
+	socket.emit("present", user.present);
 };
 
 if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) switchTheme(true);
