@@ -126,9 +126,8 @@ io.of("voice").on("connection", socket => {
 	const o = online[curr];
 	o[socket.user.id] = { visible: true, room: socket.user.room };
 
-	socket.emit("user", socket.user);
-	socket.emit("profiles", profiles);
 	io.of(curr).emit("online", o);
+	socket.emit("profiles", profiles);
 	
 	socket.on("theme", t => socket.user.theme = t);
 	socket.on("visible", v => {
@@ -150,6 +149,7 @@ io.of("voice").on("connection", socket => {
 	socket.on("id", id => {
 		socket.user.peerId = id;
 		switched[socket.user.peerId] = { camera: socket.user.camera, audio: socket.user.audio, id: socket.user.id };
+		socket.emit("user", socket.user);
 		io.of(curr).emit("switched", switched);
 		socket.broadcast.emit("add person", socket.user);
 	});

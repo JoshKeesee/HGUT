@@ -20,15 +20,14 @@ const us = async () => {
 socket.on("chat message", addMessage);
 socket.on("profiles", p => p ? profiles = p : "");
 socket.on("user", async u => {
+	user = u;
 	const pec = document.querySelector("#people-container");
 	pec.innerHTML = "";
 	await us();
-	user = u;
 	switchTheme(user.theme, user.accent ? user.color : null);
-	if (document.startViewTransition) {
-		const transition = document.startViewTransition(() => addVideo(user, stream));
-	} else addVideo(user, stream);
+	addVideo(user, stream);
 	if (user.id != 2) present.remove();
+	updateOnline();
 });
 socket.on("online", u => {
 	online = u;
@@ -50,8 +49,12 @@ socket.on("audio", ([audio, id]) => {
 socket.on("switched", s => switched = s);
 socket.on("redirect", d => window.location.href = d);
 
-const addVideo = async (p, s, pres = false) => {
+const addVideo = async (p, s, big = false, self = false, pres = false) => {
 	const pec = document.querySelector("#people-container");
+	const bg = document.createElement("div");
+	bg.id = "bg";
+	if (big) bg.classList.add("big");
+	if (self) bg.classList.add("self");
 	const person = document.createElement("div");
 	person.id = "person";
 	person.className = "person-" + p.peerId;
@@ -104,9 +107,8 @@ const addVideo = async (p, s, pres = false) => {
 	name.innerText = p.name;
 	person.appendChild(name);
 	person.appendChild(m);
-	const u = performance.now().toString().replace(".", "_") + Math.floor(Math.random() * 1000);
-	person.style.viewTransitionName = u;
-	pec.insertAdjacentHTML("beforeend", person.outerHTML);
+	bg.appendChild(person)
+	pec.appendChild(bg);
 };
 
 const addPerson = p => {
@@ -114,9 +116,7 @@ const addPerson = p => {
 	call.on("stream", async s => {
 		if (callList.includes(p.peerId)) return;
 		callList.push(p.peerId);
-		if (document.startViewTransition) {
-			const transition = document.startViewTransition(() => addVideo(p, s));
-		} else addVideo(p, s);
+		addVideo(p, s);
 	});
 };
 
@@ -138,9 +138,7 @@ peer.on("call", call => {
 		call.on("stream", async s => {
 			if (callList.includes(p.peerId)) return;
 			callList.push(p.peerId);
-			if (document.startViewTransition) {
-				const transition = document.startViewTransition(() => addVideo(p, s));
-			} else addVideo(p, s);
+			addVideo(p, s);
 		});
 	});
 });
@@ -268,9 +266,7 @@ present.onclick = async () => {
 	if (user.present) present.style.background = "rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.9)";
 	else present.style = "";
 	const p = await navigator.mediaDevices.getDisplayMedia();
-	if (document.startViewTransition) {
-		const transition = document.startViewTransition(() => addVideo(user, p, true));
-	} else addVideo(user, p, true);
+	addVideo(user, p, true, false, true);
 	socket.emit("present", user.present);
 };
 
