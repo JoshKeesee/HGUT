@@ -164,8 +164,8 @@ io.of("voice").on("connection", socket => {
 		delete o[socket.user.id];
 		delete switched[socket.user.peerId];
 		socket.broadcast.emit("remove person", socket.user);
-		io.of(curr).emit("online", o);
-		io.of(curr).emit("switched", switched);
+		socket.broadcast.emit("online", o);
+		socket.broadcast.emit("switched", switched);
 	});
 });
 
