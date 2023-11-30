@@ -156,10 +156,6 @@ socket.on("rooms", ([rooms, p]) => {
     }
   });
   if (!maxMessagesReached) cms.insertBefore(loading, cms.firstChild);
-  cms.scrollTo({
-    top: cms.scrollHeight,
-    behavior: "auto",
-  });
   loadingMessages = false;
 });
 socket.on("profiles", (p) => {
@@ -369,9 +365,11 @@ const switchTheme = (dark = !user.theme, color) => {
 };
 
 const toggleMenu = (s = !user.menu) => {
+  const cms = document.querySelector("#chat-messages");
   user.menu = s;
   mobile = window.innerWidth < 700;
-  menu.style.gap = user.menu ? "9px" : "5px";
+  const atBottom =
+    Math.abs(cms.scrollHeight - cms.clientHeight - cms.scrollTop) <= 200;
   const cc = document.querySelector("#chat-container");
   const cs = document.querySelector("#chat-sidebar");
   if (!user.menu) {
@@ -385,6 +383,13 @@ const toggleMenu = (s = !user.menu) => {
     : mobile
       ? "100% 100%"
       : "25% 75%";
+  cc.ontransitionend = () => {
+    if (atBottom)
+      cms.scrollTo({
+        top: cms.scrollHeight,
+        behavior: "auto",
+      });
+  };
   socket.emit("menu", user.menu);
 };
 
