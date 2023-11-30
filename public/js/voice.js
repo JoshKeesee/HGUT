@@ -1,5 +1,11 @@
 const peer = new Peer();
-const socket = io("/voice");
+const socket = io(SERVER + "voice", {
+  path: "/socket.io",
+  transports: ["websocket"],
+  query: {
+    user: document.cookie,
+  },
+});
 const cam = document.querySelector("#toggle-cam");
 const mic = document.querySelector("#toggle-mic");
 const leave = document.querySelector("#leave-voice");

@@ -1,3 +1,4 @@
+const SERVER = "https://3sx4nn-3000.csb.app/";
 const icon = document.querySelector("#icon");
 
 let missed = 0,
@@ -34,7 +35,9 @@ const linkify = (s, scroll = false, smooth = false, start = false) => {
   const emailAddressPattern = /[\w.]+@[a-zA-Z_-]+?(?:\.[a-zA-Z]{2,6})+/gim;
   const emojiPattern = /\p{Extended_Pictographic}/gu;
   if (s.startsWith("/images/"))
-    return `<img src="${s}" onload="const cms = document.getElementById('#chat-messages'); if (${
+    return `<img src="${
+      SERVER + s
+    }" onload="const cms = document.getElementById('#chat-messages'); if (${
       scroll && smooth
     }) cms.scrollTo({ top: cms.scrollHeight, behavior: 'smooth' })">`;
   if (s.replace(emojiPattern, "").length == 0) return `<p id="emoji">${s}</p>`;
@@ -51,7 +54,7 @@ const getProfile = (u, info = true) => {
   if (u.color) pc.style.background = toRgba(u.color, 0.6);
   if (u.profile) {
     const p = document.createElement("img");
-    p.src = u.profile;
+    p.src = SERVER + u.profile;
     pc.appendChild(p);
   } else {
     pc.innerText = u.name

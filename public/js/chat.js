@@ -1,4 +1,10 @@
-const socket = io("/chat");
+const socket = io(SERVER + "chat", {
+  path: "/socket.io",
+  transports: ["websocket"],
+  query: {
+    user: document.cookie,
+  },
+});
 const input = document.querySelector("#chat-input");
 const send = document.querySelector("#chat-send");
 const menu = document.querySelector("#menu");
