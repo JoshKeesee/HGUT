@@ -1,398 +1,470 @@
+:root {
+  --circle: 50%;
+  --max-circle: 100px;
+}
+
 #voice-container {
-	overflow: hidden;
-	display: flex;
-	flex-direction: column;
-	gap: 5px;
-	margin: calc(60px + 4px) 10px 5px;
-	position: absolute;
-	top: 0;
-	bottom: 0;
-	left: 0;
-	right: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: calc(60px + 4px) 10px 5px;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
 }
 
 #main-cont {
-	overflow: hidden;
-	display: grid;
-	grid-template-columns: 100% 0;
-	width: 100%;
-	height: 90%;
-	margin-left: auto;
-	margin-right: auto;
-	transition: grid-template-columns 0.2s ease;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 100% 0;
+  width: 100%;
+  height: 90%;
+  margin-left: auto;
+  margin-right: auto;
+  transition: grid-template-columns 0.2s ease;
 }
 
 #main-cont.toggled {
-	grid-template-columns: calc(100% - 300px) 300px;
+  grid-template-columns: calc(100% - 300px) 300px;
 }
 
 #controls {
-	display: flex;
-	position: relative;
+  display: flex;
+  position: relative;
 }
 
 #people-container {
-	overflow: hidden;
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-	grid-template-rows: repeat(auto-fit, minmax(150px, 1fr));
-	grid-gap: 5px;
-	width: 100%;
-	height: 100%;
-	position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  grid-template-rows: repeat(auto-fit, minmax(150px, 1fr));
+  grid-gap: 5px;
+  width: 100%;
+  height: 100%;
+  position: relative;
 }
 
 #bg {
-	background: #000;
-	border-radius: 20px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: 100%;
-	height: 100%;
-	overflow: hidden;
-	transition: all 0.2s ease;
-	user-select: none;
+  animation: zoom 0.5s ease;
+  background: #000;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  transition:
+    background 0.2s ease,
+    order 0.2s ease;
+  user-select: none;
 }
 
 #person {
-	position: relative;
-	background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.4);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: 100%;
-	height: 100%;
+  position: relative;
+  background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
 }
 
-#bg.big:not(.self) {
-	grid-column: span 2 / span 2;
-	grid-row: span 3 / span 3;
+#bg.big:not(:has(#person.self)) {
+  grid-column: span 2 / span 2;
+  grid-row: span 3 / span 3;
 }
 
-#people-container #bg:not(:only-child).self {
-	position: absolute;
-	bottom: 10px;
-	right: 10px;
-	z-index: 10;
-	width: 250px;
-	height: 150px;
-	outline: 2px solid rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.6);
+#bg:not(:only-child):has(#person.self) {
+  animation: move 0.5s ease;
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  z-index: 10;
+  width: 250px;
+  height: 150px;
+  outline: 2px solid rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.6);
+}
+
+#bg:has(#person.self) {
+  animation: none;
+}
+
+#bg:has(#person.pres) {
+  order: -1;
 }
 
 #person video {
-	z-index: 1;
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
+  z-index: 1;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 #person #name {
-	z-index: 2;
-	position: absolute;
-	bottom: 12px;
-	left: 15px;
-	font-size: 15px;
-	font-weight: 800;
-	letter-spacing: 1px;
-	color: #fff;
-	text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  z-index: 2;
+  position: absolute;
+  bottom: 12px;
+  left: 15px;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #fff;
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 }
 
 #person #muted {
-	z-index: 2;
-	position: absolute;
-	top: 12px;
-	right: 15px;
-	width: 20px;
-	height: 20px;
-	background: rgba(20, 20, 40, 0.8);
-	color: #fff;
-	padding: 5px;
-	border-radius: 20px;
+  z-index: 2;
+  position: absolute;
+  top: 12px;
+  right: 15px;
+  width: 20px;
+  height: 20px;
+  background: rgba(20, 20, 40, 0.8);
+  color: #fff;
+  padding: 5px;
+  border-radius: 20px;
 }
 
 #person #ring {
-	position: absolute;
-	margin-top: auto;
-	margin-bottom: auto;
-	margin-left: auto;
-	margin-right: auto;
-	width: 20%;
-	aspect-ratio: 1 / 1;
-	border-radius: 50%;
-	border: 1px solid #999;
-	animation: ring 4s infinite;
-	transform-origin: center;
+  position: absolute;
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-left: auto;
+  margin-right: auto;
+  width: 20%;
+  max-width: var(--max-circle);
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  border: 1px solid #999;
+  animation: ring 4s infinite;
+  transform-origin: center;
 }
 
 #person #vol {
-	position: absolute;
-	margin-top: auto;
-	margin-bottom: auto;
-	margin-left: auto;
-	margin-right: auto;
-	width: 20%;
-	aspect-ratio: 1 / 1;
-	border-radius: 50%;
-	background: #999;
-	opacity: 0.2;
-	transition: transform 0.2s ease;
-	transform-origin: center;
+  position: absolute;
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-left: auto;
+  margin-right: auto;
+  width: 20%;
+  max-width: var(--max-circle);
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  background: #999;
+  opacity: 0.2;
+  transition: transform 0.2s ease;
+  transform-origin: center;
 }
 
 #person #profile {
-	position: absolute;
-	margin-top: auto;
-	margin-bottom: auto;
-	margin-left: auto;
-	margin-right: auto;
-	font-size: 30px;
-	width: 20%;
-	height: fit-content;
-	padding: 4px;
-	border-radius: 50%;
+  position: absolute;
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 30px;
+  max-width: 100px;
+  width: 20%;
+  max-width: var(--max-circle);
+  height: fit-content;
+  padding: 4px;
+  border-radius: 50%;
 }
 
 #person #profile img {
-	width: 100%;
-	height: 100%;
-	border-radius: 50%;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
 }
 
 #meeting-cont {
-	font-size: 20px;
-	font-weight: 800;
-	letter-spacing: 1px;
-	position: absolute;
-	top: 50%;
-	left: 0;
-	transform: translateY(-50%);
-	user-select: none;
-	display: flex;
-	transition: font-size 0.2s ease;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  user-select: none;
+  display: flex;
+  transition: font-size 0.2s ease;
 }
 
 #meeting-cont * {
-	transition: opacity 0.2s ease;
+  transition: opacity 0.2s ease;
 }
 
 #meeting-cont #divider {
-	background: #000;
-	margin-left: 15px;
-	margin-right: 15px;
-	transition: opacity 0.2s ease;
+  background: #000;
+  margin-left: 15px;
+  margin-right: 15px;
+  transition: opacity 0.2s ease;
 }
 
 #control-bar {
-	padding: 5px;
-	text-align: center;
-	font-size: 20px;
-	font-weight: 900;
-	user-select: none;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: 10px;
-	position: relative;
-	width: fit-content;
-	margin-left: auto;
-	margin-right: auto;
-	transition: gap 0.2s ease;
+  padding: 5px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 900;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  position: relative;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+  transition: gap 0.2s ease;
 }
 
-#toggle-cam, #toggle-mic, #leave-voice, #toggle-chat, #toggle-presentation {
-	padding: 10px;
-	width: 20px;
-	height: 20px;
-	background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.5);
-	border-radius: 30px;
-	transition: all 0.2s ease;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	cursor: pointer;
+#toggle-cam,
+#toggle-mic,
+#leave-voice,
+#toggle-chat,
+#toggle-presentation {
+  padding: 10px;
+  width: 20px;
+  height: 20px;
+  background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.5);
+  border-radius: 30px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }
 
-#toggle-chat:hover, #toggle-presentation:hover {
-	background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.6);
+#toggle-chat:hover,
+#toggle-presentation:hover {
+  background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.6);
 }
 
-#toggle-cam, #toggle-mic {
-	background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.8);
+#toggle-cam,
+#toggle-mic {
+  background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.8);
 }
 
-#toggle-cam:hover, #toggle-mic:hover {
-	background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.9);
+#toggle-cam:hover,
+#toggle-mic:hover {
+  background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.9);
 }
 
-#toggle-cam.toggled, #toggle-mic.toggled, #leave-voice {
-	background: rgba(255, 0, 0, 0.8);
+#toggle-cam.toggled,
+#toggle-mic.toggled,
+#leave-voice {
+  background: rgba(255, 0, 0, 0.8);
 }
 
-#toggle-cam.toggled:hover, #toggle-mic.toggled:hover, #leave-voice:hover {
-	background: rgba(255, 0, 0, 0.9);
+#toggle-cam.toggled:hover,
+#toggle-mic.toggled:hover,
+#leave-voice:hover {
+  background: rgba(255, 0, 0, 0.9);
 }
 
 #leave-voice {
-	width: 45px;
+  width: 45px;
 }
 
 svg {
-	color: white;
-	width: 20px;
-	height: 20px;
+  color: white;
+  width: 20px;
+  height: 20px;
 }
 
 #divider {
-	width: 2px;
-	height: 20px;
-	background: gray;
-	margin-left: 5px;
-	margin-right: 5px;
-	overflow: hidden;
-	border-radius: 2px;
-	transition: background 0.2s ease;
+  width: 2px;
+  height: 20px;
+  background: gray;
+  margin-left: 5px;
+  margin-right: 5px;
+  overflow: hidden;
+  border-radius: 2px;
+  transition: background 0.2s ease;
 }
 
 .left {
-	border-top-left-radius: 20px;
-	border-bottom-left-radius: 20px;
-	border-top-right-radius: 10px;
-	border-bottom-right-radius: 10px;
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
 }
 
 .right {
-	border-top-right-radius: 20px;
-	border-bottom-right-radius: 20px;
-	border-top-left-radius: 10px;
-	border-bottom-left-radius: 10px;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
 }
 
 #online {
-	display: flex;
-	border-radius: 32px;
-	padding: 2px;
-	padding-left: 27px;
-	margin-top: -10px;
-	margin-bottom: -10px;
-	transition: background 0.2s ease, width 0.2s ease;
+  display: flex;
+  border-radius: 32px;
+  padding: 2px;
+  padding-left: 27px;
+  margin-top: -10px;
+  margin-bottom: -10px;
+  transition:
+    background 0.2s ease,
+    width 0.2s ease;
 }
 
 #online:empty {
-	display: none;
+  display: none;
 }
 
-#online #profile, #online #profile img {
-	font-size: 14px;
-	width: 30px;
-	height: 30px;
+#online #profile,
+#online #profile img {
+  font-size: 14px;
+  width: 30px;
+  height: 30px;
 }
 
 #online #bg {
-	position: relative;
-	background: black;
-	border-radius: 50%;
-	margin-left: -25px;
-	transition: margin 0.2s ease, background 0.2s ease;
-	cursor: pointer;
+  position: relative;
+  background: black;
+  border-radius: 50%;
+  margin-left: -25px;
+  transition:
+    margin 0.2s ease,
+    background 0.2s ease;
+  cursor: pointer;
 }
 
 #online #bg:not(:first-child):hover {
-	margin-left: 2px;
+  margin-left: 2px;
 }
 
 #online #bg:not(:last-child):hover {
-	margin-right: 27px;
+  margin-right: 27px;
 }
 
 #chat-messages {
-	height: 90%;
-	max-height: 90%;
-	width: calc(100% - 0);
-	overflow-y: scroll;
-	display: flex;
-	flex-direction: column;
-	gap: 5px;
-	border-bottom-right-radius: 20px;
-	border-bottom-left-radius: 20px;
-	transition: opacity 0.2s ease;
-	padding-left: 10px;
-	padding-right: 10px;
+  height: 90%;
+  max-height: 90%;
+  width: calc(100% - 0);
+  overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  border-bottom-right-radius: 20px;
+  border-bottom-left-radius: 20px;
+  transition: opacity 0.2s ease;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 #chat-container {
-	display: flex;
-	flex-direction: column;
-	gap: 5px;
-	height: 100%;
-	width: 100%;
-	overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
 }
 
 #loading {
-	margin-top: 5px;
+  margin-top: 5px;
 }
 
 #chat-message {
-	width: 100%;
-	max-width: 100%;
-	display: flex;
-	gap: 5px;
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  gap: 5px;
 }
 
 @media screen and (max-width: 1080px) {
-	#bg.big:not(.self) {
-		grid-column: span 2 / span 2;
-		grid-row: span 2 / span 2;
-	}
+  #bg.big:not(.self) {
+    grid-column: span 2 / span 2;
+    grid-row: span 2 / span 2;
+  }
 }
 
 @media screen and (max-width: 800px) {
-	#control-bar {
-		gap: 5px;
-	}
-	
-	#toggle-presentation {
-		width: 0;
-		height: 0;
-		margin-left: -15px;
-		margin-right: -10px;
-		opacity: 0;
-		pointer-events: none;
-	}
+  #control-bar {
+    gap: 5px;
+  }
 
-	#meeting-cont div:not(#time) {
-		opacity: 0;
-	}
+  #toggle-presentation {
+    width: 0;
+    height: 0;
+    margin-left: -15px;
+    margin-right: -10px;
+    opacity: 0;
+    pointer-events: none;
+  }
 
-	#person #ring, #person #profile, #person #vol {
-		width: 50px;
-		height: 50px;
-	}
+  #meeting-cont div:not(#time) {
+    opacity: 0;
+  }
+
+  #person #ring,
+  #person #profile,
+  #person #vol {
+    width: 50px;
+    height: 50px;
+  }
 }
 
 @media screen and (max-width: 700px) {
-	#person #profile {
-		font-size: 20px;
-	}
+  #person #profile {
+    font-size: 20px;
+  }
 
-	#main-cont.toggled {
-		grid-template-columns: 0 100%;
-	}
+  #main-cont.toggled {
+    grid-template-columns: 0 100%;
+  }
 }
 
 @keyframes ring {
-	0% {
-		transform: scale(0.5);
-		opacity: 1;
-	}
-	70%, 100% {
-		transform: scale(2.2);
-		opacity: 0;
-	}
+  0% {
+    transform: scale(0.5);
+    opacity: 1;
+  }
+  70%,
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+@keyframes move {
+  0% {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+  }
+  100% {
+    position: absolute;
+    top: calc(100% - 10px - 150px);
+    bottom: 10px;
+    left: calc(100% - 10px - 250px);
+    right: 10px;
+    width: 250px;
+    height: 150px;
+  }
+}
+
+@keyframes zoom {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
