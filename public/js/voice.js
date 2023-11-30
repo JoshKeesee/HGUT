@@ -117,7 +117,7 @@ const addVideo = async (p, s, self = false, big = false, pre = false) => {
   person.appendChild(pr);
   const name = document.createElement("div");
   name.id = "name";
-  name.innerText = p.name;
+  name.innerText = p.peerId == user.peerId ? "You" : p.name;
   person.appendChild(name);
   person.appendChild(m);
   bg.appendChild(person);

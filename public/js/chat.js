@@ -99,6 +99,7 @@ socket.on("load messages", (messages) => {
 });
 socket.on("chat message", addMessage);
 socket.on("rooms", ([rooms, p]) => {
+  loadingMessages = true;
   rn = Object.keys(rooms);
   if (p) {
     profiles = p;
@@ -153,6 +154,7 @@ socket.on("rooms", ([rooms, p]) => {
     top: cms.scrollHeight,
     behavior: "auto",
   });
+  loadingMessages = false;
 });
 socket.on("profiles", (p) => {
   profiles = p;
