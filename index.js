@@ -30,8 +30,13 @@ Object.keys(profiles).forEach((p) => {
     profiles[p].password = bcrypt.hashSync("password", 10);
 });
 fs.writeFileSync("profiles.json", JSON.stringify(profiles, null, 2));
+const ioAuth = require("./io-auth");
 const p = "./profiles";
 const im = "./images";
+const maxMessages = 50;
+const online = {},
+  switched = {},
+  typing = {};
 
 const setup = () => {
   if (!fs.existsSync(p)) fs.mkdirSync(p);
