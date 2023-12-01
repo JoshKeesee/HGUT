@@ -174,12 +174,9 @@ const addVideo = async (p, s, self = false, big = false, pre = false) => {
 };
 
 const addPerson = (p) => {
-  console.log(p.peerId);
-  console.log(user.peerId);
   if (p.peerId == user.peerId) return;
   const call = peer.call(p.peerId, stream);
   call.on("stream", async (s) => {
-    console.log(s);
     if (callList.includes(p.peerId)) return;
     callList.push(p.peerId);
     addVideo(p, s);
