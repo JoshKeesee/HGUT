@@ -141,7 +141,7 @@ body {
   font-weight: 1000;
   letter-spacing: 1px;
   background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.4);
-  border-radius: 40px;
+  border-radius: 35px;
   transition:
     width 0.2s ease,
     height 0.2s ease,

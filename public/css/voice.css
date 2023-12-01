@@ -47,7 +47,7 @@
   position: relative;
 }
 
-#bg {
+#people-container #bg {
   animation: zoom 0.5s ease;
   background: #000;
   border-radius: 20px;
@@ -76,12 +76,16 @@
   height: 100%;
 }
 
-#bg.big:not(:has(#person.self)) {
+#people-container #bg.big:not(:has(#person.self)) {
   grid-column: span 2 / span 2;
   grid-row: span 3 / span 3;
 }
 
-#bg:not(:only-child):has(#person.self) {
+#people-container #bg:has(#person.pres) {
+  order: -1;
+}
+
+#people-container #bg:has(#person.self):not(:only-child) {
   animation: move 0.5s ease;
   position: absolute;
   bottom: 10px;
@@ -92,12 +96,8 @@
   outline: 2px solid rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.6);
 }
 
-#bg:has(#person.self) {
+#people-container #bg:has(#person.self) {
   animation: none;
-}
-
-#bg:has(#person.pres) {
-  order: -1;
 }
 
 #person #video {
@@ -173,18 +173,18 @@
   margin-left: auto;
   margin-right: auto;
   font-size: 30px;
-  max-width: 100px;
   width: 20%;
-  max-width: var(--max-circle);
   height: fit-content;
+  max-width: var(--max-circle);
   padding: 4px;
+  overflow: hidden;
   border-radius: 50%;
 }
 
 #person #profile img {
   width: 100%;
   height: 100%;
-  border-radius: 50%;
+  object-fit: fill;
 }
 
 #meeting-cont {
@@ -343,7 +343,7 @@ svg {
 }
 
 @media screen and (max-width: 1080px) {
-  #bg.big:not(.self) {
+  #people-container #bg.big:not(.self) {
     grid-column: span 2 / span 2;
     grid-row: span 2 / span 2;
   }

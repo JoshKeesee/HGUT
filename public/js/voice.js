@@ -177,7 +177,9 @@ const addVideo = async (p, s, self = false, big = false, pre = false) => {
 
 const addPerson = (p) => {
   if (p.peerId == user.peerId) return;
-  const call = peer.call(p.peerId, stream);
+  const call = peer.call(p.peerId, stream, {
+    metadata: { pres: false, id: user.peerId },
+  });
   call.on("stream", async (s) => {
     if (callList.includes(p.peerId)) return;
     callList.push(p.peerId);
@@ -217,14 +219,14 @@ peer.on("call", (call) => {
     );
     p.peerId = call.peer;
     const pre = sw[p.peerId].present ? true : false;
+    const id = pre ? "pres-" + p.peerId : p.peerId;
     call.answer(stream);
     call.on("stream", async (s) => {
-      const id = pre ? "pres-" + p.peerId : p.peerId;
       if (callList.includes(id)) return;
       callList.push(id);
       addVideo(p, s, false, pre, pre);
     });
-    if (pres) peer.call(p.peerId, pres);
+    if (pres) peer.call(p.peerId, pres, { metadata: { pres: true, id } });
   });
 });
 
@@ -353,7 +355,9 @@ const togglePresent = async () => {
     pres.getVideoTracks()[0].onended = togglePresent;
     for (const e of callList) {
       if (e == peer.id || e.includes("pres")) return;
-      const call = peer.call(e, pres);
+      const call = peer.call(e, pres, {
+        metadata: { pres: true, id: "pres-" + peer.id },
+      });
     }
     addVideo(user, pres, false, true, true);
   } else {
@@ -364,8 +368,11 @@ const togglePresent = async () => {
         pres.removeTrack(v);
       });
     for (const key in peer.connections) {
-      const c = peer.connections[key][1];
-      if (c) c.close();
+      const c = peer.connections[key];
+      c.forEach((v) => {
+        if (v.metadata.pres && v.metadata.id == "pres-" + user.peerId)
+          v.close();
+      });
     }
     removePerson(user, true);
     pres = null;
