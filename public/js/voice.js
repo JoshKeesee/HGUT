@@ -198,10 +198,12 @@ socket.on("add person", addPerson);
 socket.on("remove person", removePerson);
 peer.on("open", (id) => {
   user.peerId = id;
-  if (socket.connected) socket.emit("id", id);
+  socket.emit("id", id);
 });
-socket.on("connect", () => {
-  if (user.peerId) socket.emit("id", user.peerId);
+socket.on("disconnect", () => {
+  const reload = confirm("You have been disconnected. Reload?");
+  if (reload) window.location.reload();
+  else leave.click();
 });
 peer.on("call", (call) => {
   socket.emit("get switched", async (sw) => {
