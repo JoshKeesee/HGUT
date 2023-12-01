@@ -308,48 +308,6 @@ svg {
   border-bottom-left-radius: 10px;
 }
 
-#online {
-  display: flex;
-  border-radius: 32px;
-  padding: 2px;
-  padding-left: 27px;
-  margin-top: -10px;
-  margin-bottom: -10px;
-  transition:
-    background 0.2s ease,
-    width 0.2s ease;
-}
-
-#online:empty {
-  display: none;
-}
-
-#online #profile,
-#online #profile img {
-  font-size: 14px;
-  width: 30px;
-  height: 30px;
-}
-
-#online #bg {
-  position: relative;
-  background: black;
-  border-radius: 50%;
-  margin-left: -25px;
-  transition:
-    margin 0.2s ease,
-    background 0.2s ease;
-  cursor: pointer;
-}
-
-#online #bg:not(:first-child):hover {
-  margin-left: 2px;
-}
-
-#online #bg:not(:last-child):hover {
-  margin-right: 27px;
-}
-
 #chat-messages {
   height: 90%;
   max-height: 90%;
