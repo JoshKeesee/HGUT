@@ -79,8 +79,10 @@ const animateGridItems = (prevPositions, id = null) => {
   const pec = document.querySelector("#people-container");
   const p = pec.getBoundingClientRect();
   Object.keys(prevPositions).forEach((e, i) => {
-    if (e.includes(id)) return;
-    const c = document.querySelector("." + e);
+    const cl = e.split(" ");
+    if (e.includes(id) && cl[1] != "big") return;
+    const c = document.querySelector("." + cl[0]);
+    if (!c) return;
     const prev = prevPositions[e];
     const pos = c.getBoundingClientRect();
     if (
@@ -185,7 +187,8 @@ const addPerson = (p) => {
 
 const removePerson = (p, pre = false) => {
   if (p.peerId == user.peerId && !pre) return;
-  callList.splice(callList.indexOf(p.peerId), 1);
+  const i = p.present ? "pres-" + p.peerId : p.peerId;
+  if (callList.includes(i)) callList.splice(callList.indexOf(i), 1);
   const prevPositions = {};
   const pec = document.querySelector("#people-container");
   [].slice.call(pec.children).forEach((c) => {
@@ -197,7 +200,7 @@ const removePerson = (p, pre = false) => {
   animateGridItems(prevPositions, p.peerId);
 };
 
-socket.on("remove person", removePerson);
+socket.on("remove person", ([u, pres = false]) => removePerson(u, pres));
 peer.on("open", (id) => {
   user.peerId = id;
   socket.emit("id", id);
@@ -216,10 +219,12 @@ peer.on("call", (call) => {
     const pre = sw[p.peerId].present ? true : false;
     call.answer(stream);
     call.on("stream", async (s) => {
-      if (callList.includes(p.peerId) && !pre) return;
-      callList.push(p.peerId);
+      const id = pre ? "pres-" + p.peerId : p.peerId;
+      if (callList.includes(id)) return;
+      callList.push(id);
       addVideo(p, s, false, pre, pre);
     });
+    if (pres) peer.call(p.peerId, pres);
   });
 });
 
@@ -347,13 +352,21 @@ const togglePresent = async () => {
     socket.emit("present", user.peerId);
     pres.getVideoTracks()[0].onended = togglePresent;
     for (const e of callList) {
-      if (e == peer.id) return;
+      if (e == peer.id || e.includes("pres")) return;
       const call = peer.call(e, pres);
     }
     addVideo(user, pres, false, true, true);
   } else {
     present.style = "";
-    if (pres) pres.getTracks().forEach((v) => v.stop());
+    if (pres)
+      pres.getTracks().forEach((v) => {
+        v.stop();
+        pres.removeTrack(v);
+      });
+    for (const key in peer.connections) {
+      const c = peer.connections[key][1];
+      if (c) c.close();
+    }
     removePerson(user, true);
     pres = null;
     socket.emit("present", null);
