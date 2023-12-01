@@ -26,7 +26,7 @@ const vidConstraints = {
 };
 
 const us = async () => {
-	if (stream) return;
+  if (stream) return;
   stream = await navigator.mediaDevices.getUserMedia({
     video: vidConstraints,
     audio: true,
@@ -39,7 +39,7 @@ socket.on("chat message", addMessage);
 socket.on("profiles", (p) => (p ? (profiles = p) : ""));
 socket.on("user", async (u) => {
   user = u;
-	await us();
+  await us();
   const pec = document.querySelector("#people-container");
   pec.innerHTML = "";
   switchTheme(user.theme, user.accent ? user.color : null);
@@ -54,7 +54,9 @@ socket.on("online", (u) => {
 socket.on("camera", ([camera, id]) => {
   switched[id].camera = camera;
   const c = document.querySelector(".person-" + id);
-  c.querySelectorAll("#video").forEach(v => v.style.display = camera ? "block" : "none");
+  c.querySelectorAll("#video").forEach(
+    (v) => (v.style.display = camera ? "block" : "none"),
+  );
 });
 socket.on("audio", ([audio, id]) => {
   switched[id].audio = audio;
@@ -69,8 +71,8 @@ socket.on("audio", ([audio, id]) => {
 socket.on("switched", (s) => (switched = s));
 socket.on("redirect", (d) => (window.location.href = d));
 socket.on("call list", async (c) => {
-	await us();
-	c.forEach(p => p.peerId != user.peerId ? addPerson(p) : "");
+  await us();
+  c.forEach(addPerson);
 });
 
 const animateGridItems = (prevPositions, id = null) => {
@@ -129,7 +131,7 @@ const addVideo = async (p, s, self = false, big = false, pre = false) => {
 			<path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L472.1 344.7c15.2-26 23.9-56.3 23.9-88.7V216c0-13.3-10.7-24-24-24s-24 10.7-24 24v40c0 21.2-5.1 41.1-14.2 58.7L416 300.8V96c0-53-43-96-96-96s-96 43-96 96v54.3L38.8 5.1zM344 430.4c20.4-2.8 39.7-9.1 57.3-18.2l-43.1-33.9C346.1 382 333.3 384 320 384c-70.7 0-128-57.3-128-128v-8.7L144.7 210c-.5 1.9-.7 3.9-.7 6v40c0 89.1 66.2 162.7 152 174.4V464H248c-13.3 0-24 10.7-24 24s10.7 24 24 24h72 72c13.3 0 24-10.7 24-24s-10.7-24-24-24H344V430.4z"/>
 		</svg>
  `;
-  m.style.display = switched[p.peerId]?.audio ? "block" : "none";
+  m.style.display = switched[p.peerId]?.audio ? "none" : "block";
   const pr = getProfile(p, false);
   const a = s.getAudioTracks().length > 0;
   if (a) {
@@ -172,8 +174,12 @@ const addVideo = async (p, s, self = false, big = false, pre = false) => {
 };
 
 const addPerson = (p) => {
+  console.log(p.peerId);
+  console.log(user.peerId);
+  if (p.peerId == user.peerId) return;
   const call = peer.call(p.peerId, stream);
   call.on("stream", async (s) => {
+    console.log(s);
     if (callList.includes(p.peerId)) return;
     callList.push(p.peerId);
     addVideo(p, s);
@@ -182,7 +188,7 @@ const addPerson = (p) => {
 
 const removePerson = (p, pre = false) => {
   if (p.peerId == user.peerId && !pre) return;
-	callList.splice(callList.indexOf(p.peerId), 1);
+  callList.splice(callList.indexOf(p.peerId), 1);
   const prevPositions = {};
   const pec = document.querySelector("#people-container");
   [].slice.call(pec.children).forEach((c) => {
@@ -194,14 +200,13 @@ const removePerson = (p, pre = false) => {
   animateGridItems(prevPositions, p.peerId);
 };
 
-socket.on("add person", addPerson);
 socket.on("remove person", removePerson);
 peer.on("open", (id) => {
   user.peerId = id;
   socket.emit("id", id);
 });
 socket.on("disconnect", () => {
-	const reload = confirm("You have been disconnected. Reload?");
+  const reload = confirm("You have been disconnected. Reload?");
   if (reload) window.location.reload();
 });
 peer.on("call", (call) => {
@@ -298,7 +303,9 @@ const toggleCamera = async (set = !user.camera) => {
   const c = document.querySelector(".person-" + user.peerId);
   if (user.camera) stream.getVideoTracks().forEach((v) => (v.enabled = true));
   else stream.getVideoTracks().forEach((v) => (v.enabled = false));
-  c.querySelectorAll("#video").forEach(v => v.style.display = user.camera ? "block" : "none");
+  c.querySelectorAll("#video").forEach(
+    (v) => (v.style.display = user.camera ? "block" : "none"),
+  );
   socket.emit("camera", user.camera);
 };
 
