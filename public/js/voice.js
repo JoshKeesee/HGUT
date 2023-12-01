@@ -26,6 +26,7 @@ const vidConstraints = {
 };
 
 const us = async () => {
+	if (stream) return;
   stream = await navigator.mediaDevices.getUserMedia({
     video: vidConstraints,
     audio: true,
@@ -38,9 +39,9 @@ socket.on("chat message", addMessage);
 socket.on("profiles", (p) => (p ? (profiles = p) : ""));
 socket.on("user", async (u) => {
   user = u;
+	await us();
   const pec = document.querySelector("#people-container");
   pec.innerHTML = "";
-  await us();
   switchTheme(user.theme, user.accent ? user.color : null);
   addVideo(user, stream, true);
   if (user.id != 2) present.remove();
@@ -52,16 +53,12 @@ socket.on("online", (u) => {
 });
 socket.on("camera", ([camera, id]) => {
   switched[id].camera = camera;
-  const v = document.querySelector("#video-" + id);
-  if (!v) return;
-  v.style.display = camera ? "block" : "none";
-  if (camera) v.querySelector("video").play();
-  else v.querySelector("video").pause();
+  const c = document.querySelector(".person-" + id);
+  c.querySelectorAll("#video").forEach(v => v.style.display = camera ? "block" : "none");
 });
 socket.on("audio", ([audio, id]) => {
   switched[id].audio = audio;
   const c = document.querySelector(".person-" + id);
-  if (!c) return;
   c.querySelectorAll("div.a").forEach(
     (e) => (e.style.display = audio ? "block" : "none"),
   );
@@ -71,6 +68,10 @@ socket.on("audio", ([audio, id]) => {
 });
 socket.on("switched", (s) => (switched = s));
 socket.on("redirect", (d) => (window.location.href = d));
+socket.on("call list", async (c) => {
+	await us();
+	c.forEach(p => p.peerId != user.peerId ? addPerson(p) : "");
+});
 
 const animateGridItems = (prevPositions, id = null) => {
   const pec = document.querySelector("#people-container");
@@ -116,7 +117,7 @@ const addVideo = async (p, s, self = false, big = false, pre = false) => {
   if (self) person.classList.add("self");
   if (pre) person.classList.add("pres");
   const video = document.createElement("video");
-  video.id = "video-" + id;
+  video.id = "video";
   video.style.display = switched[id]?.camera || pre ? "block" : "none";
   video.srcObject = s;
   if (p.peerId == user.peerId) video.muted = true;
@@ -173,17 +174,15 @@ const addVideo = async (p, s, self = false, big = false, pre = false) => {
 const addPerson = (p) => {
   const call = peer.call(p.peerId, stream);
   call.on("stream", async (s) => {
-    socket.emit("get switched", (sw) => {
-      switched = sw;
-      if (callList.includes(p.peerId)) return;
-      callList.push(p.peerId);
-      addVideo(p, s);
-    });
+    if (callList.includes(p.peerId)) return;
+    callList.push(p.peerId);
+    addVideo(p, s);
   });
 };
 
 const removePerson = (p, pre = false) => {
   if (p.peerId == user.peerId && !pre) return;
+	callList.splice(callList.indexOf(p.peerId), 1);
   const prevPositions = {};
   const pec = document.querySelector("#people-container");
   [].slice.call(pec.children).forEach((c) => {
@@ -202,9 +201,8 @@ peer.on("open", (id) => {
   socket.emit("id", id);
 });
 socket.on("disconnect", () => {
-  const reload = confirm("You have been disconnected. Reload?");
+	const reload = confirm("You have been disconnected. Reload?");
   if (reload) window.location.reload();
-  else leave.click();
 });
 peer.on("call", (call) => {
   socket.emit("get switched", async (sw) => {
@@ -297,15 +295,10 @@ const toggleCamera = async (set = !user.camera) => {
     cam.querySelector("svg.on").style.display = "none";
     cam.querySelector("svg.off").style.display = "block";
   }
-  const c = document.querySelector("#video-" + user.peerId);
-  if (user.camera) {
-    c.play();
-    stream.getVideoTracks().forEach((v) => (v.enabled = true));
-  } else {
-    c.pause();
-    stream.getVideoTracks().forEach((v) => (v.enabled = false));
-  }
-  c.style.display = user.camera ? "block" : "none";
+  const c = document.querySelector(".person-" + user.peerId);
+  if (user.camera) stream.getVideoTracks().forEach((v) => (v.enabled = true));
+  else stream.getVideoTracks().forEach((v) => (v.enabled = false));
+  c.querySelectorAll("#video").forEach(v => v.style.display = user.camera ? "block" : "none");
   socket.emit("camera", user.camera);
 };
 
