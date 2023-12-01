@@ -197,7 +197,11 @@ const removePerson = (p, pre = false) => {
 socket.on("add person", addPerson);
 socket.on("remove person", removePerson);
 peer.on("open", (id) => {
-  socket.emit("id", id);
+  user.peerId = id;
+  if (socket.connected) socket.emit("id", id);
+});
+socket.on("connect", () => {
+  if (user.peerId) socket.emit("id", user.peerId);
 });
 peer.on("call", (call) => {
   socket.emit("get switched", async (sw) => {
