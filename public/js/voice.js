@@ -300,9 +300,11 @@ const toggleCamera = async (set = !user.camera) => {
   const c = document.querySelector(".person-" + user.peerId);
   if (user.camera) stream.getVideoTracks().forEach((v) => (v.enabled = true));
   else stream.getVideoTracks().forEach((v) => (v.enabled = false));
-  c.querySelectorAll("#video").forEach(
-    (v) => (v.style.display = user.camera ? "block" : "none"),
-  );
+  c.querySelectorAll("#video").forEach((v) => {
+    v.srcObject = stream;
+    v.onmetadataloaded = () => v.play();
+    v.style.display = user.camera ? "block" : "none";
+  });
   socket.emit("camera", user.camera);
 };
 
