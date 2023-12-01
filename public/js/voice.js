@@ -44,7 +44,6 @@ socket.on("user", async (u) => {
   pec.innerHTML = "";
   switchTheme(user.theme, user.accent ? user.color : null);
   addVideo(user, stream, true);
-  if (user.id != 2) present.remove();
   updateOnline();
 });
 socket.on("online", (u) => {
