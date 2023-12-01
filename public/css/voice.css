@@ -59,7 +59,10 @@
   overflow: hidden;
   transition:
     background 0.2s ease,
-    order 0.2s ease;
+    order 0.2s ease,
+    transform 0.2s ease,
+    width 0.2s ease,
+    height 0.2s ease;
   user-select: none;
 }
 

@@ -1,6 +1,5 @@
 const peer = new Peer();
 const socket = io(SERVER + "voice", {
-  path: "/socket.io",
   transports: ["websocket"],
   query: {
     user: document.cookie,
@@ -19,11 +18,16 @@ let user = {},
   profiles = {},
   switched = {},
   online = {},
-  callList = [];
+  callList = [],
+  gridA = [];
+const vidConstraints = {
+  width: { min: 1280 },
+  height: { min: 720 },
+};
 
 const us = async () => {
   stream = await navigator.mediaDevices.getUserMedia({
-    video: { width: { min: 1280 }, height: { min: 720 } },
+    video: vidConstraints,
     audio: true,
   });
   stream.getVideoTracks().forEach((v) => (v.enabled = false));
@@ -51,6 +55,8 @@ socket.on("camera", ([camera, id]) => {
   const v = document.querySelector("#video-" + id);
   if (!v) return;
   v.style.display = camera ? "block" : "none";
+  if (camera) v.querySelector("video").play();
+  else v.querySelector("video").pause();
 });
 socket.on("audio", ([audio, id]) => {
   switched[id].audio = audio;
@@ -66,14 +72,46 @@ socket.on("audio", ([audio, id]) => {
 socket.on("switched", (s) => (switched = s));
 socket.on("redirect", (d) => (window.location.href = d));
 
+const animateGridItems = (prevPositions, id = null) => {
+  const pec = document.querySelector("#people-container");
+  const p = pec.getBoundingClientRect();
+  Object.keys(prevPositions).forEach((e, i) => {
+    if (e.includes(id)) return;
+    const c = document.querySelector("." + e);
+    const prev = prevPositions[e];
+    const pos = c.getBoundingClientRect();
+    if (
+      Math.floor(prev.left) == Math.floor(pos.left) &&
+      Math.floor(prev.top) == Math.floor(pos.top) &&
+      Math.floor(prev.width) == Math.floor(pos.width) &&
+      Math.floor(prev.height) == Math.floor(pos.height)
+    )
+      return;
+    c.style.transition = "none";
+    c.style.transform = `translate(${prev.left - p.left}px, ${
+      prev.top - p.top
+    }px)`;
+    c.style.width = prev.width + "px";
+    c.style.height = prev.height + "px";
+    setTimeout(() => {
+      c.style = "";
+    }, i * 50);
+  });
+};
+
 const addVideo = async (p, s, self = false, big = false, pre = false) => {
   const pec = document.querySelector("#people-container");
+  const prevPositions = {};
+  [].slice.call(pec.children).forEach((c) => {
+    prevPositions[c.className] = c.getBoundingClientRect();
+  });
+  const id = pre ? "pres-" + p.peerId : p.peerId;
   const bg = document.createElement("div");
   bg.id = "bg";
+  bg.classList.add("bg-" + id);
   if (big) bg.classList.add("big");
   const person = document.createElement("div");
   person.id = "person";
-  const id = pre ? "pres-" + p.peerId : p.peerId;
   person.classList.add("person-" + id);
   if (self) person.classList.add("self");
   if (pre) person.classList.add("pres");
@@ -128,23 +166,32 @@ const addVideo = async (p, s, self = false, big = false, pre = false) => {
   person.appendChild(m);
   bg.appendChild(person);
   pec.appendChild(bg);
+  animateGridItems(prevPositions, user.peerId);
 };
 
 const addPerson = (p) => {
   const call = peer.call(p.peerId, stream);
   call.on("stream", async (s) => {
-    if (callList.includes(p.peerId)) return;
-    callList.push(p.peerId);
-    addVideo(p, s);
+    socket.emit("get switched", (sw) => {
+      switched = sw;
+      if (callList.includes(p.peerId)) return;
+      callList.push(p.peerId);
+      addVideo(p, s);
+    });
   });
 };
 
 const removePerson = (p, pre = false) => {
   if (p.peerId == user.peerId && !pre) return;
+  const prevPositions = {};
+  const pec = document.querySelector("#people-container");
+  [].slice.call(pec.children).forEach((c) => {
+    prevPositions[c.className] = c.getBoundingClientRect();
+  });
   const id = pre ? "pres-" + p.peerId : p.peerId;
-  console.log(id);
   const c = document.querySelectorAll(".person-" + id);
   c.forEach((e) => e.parentElement.remove());
+  animateGridItems(prevPositions, p.peerId);
 };
 
 socket.on("add person", addPerson);
@@ -153,14 +200,13 @@ peer.on("open", (id) => {
   socket.emit("id", id);
 });
 peer.on("call", (call) => {
-  socket.emit("get switched", (sw) => {
+  socket.emit("get switched", async (sw) => {
     switched = sw;
     const p = Object.values(profiles).find(
       (e) => e.id == sw[Object.keys(sw).find((k) => k == call.peer)].id,
     );
     p.peerId = call.peer;
     const pre = sw[p.peerId].present ? true : false;
-    console.log(pre);
     call.answer(stream);
     call.on("stream", async (s) => {
       if (callList.includes(p.peerId) && !pre) return;
@@ -246,13 +292,10 @@ const toggleCamera = async (set = !user.camera) => {
   }
   const c = document.querySelector("#video-" + user.peerId);
   if (user.camera) {
+    c.play();
     stream.getVideoTracks().forEach((v) => (v.enabled = true));
-    c.muted = true;
-    c.srcObject = stream;
-    c.onloadedmetadata = () => c.play();
   } else {
     c.pause();
-    c.src = null;
     stream.getVideoTracks().forEach((v) => (v.enabled = false));
   }
   c.style.display = user.camera ? "block" : "none";
@@ -289,7 +332,7 @@ const togglePresent = async () => {
       "rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.9)";
     try {
       pres = await navigator.mediaDevices.getDisplayMedia({
-        video: true,
+        video: vidConstraints,
         audio: true,
       });
     } catch (e) {
