@@ -135,7 +135,7 @@
   border-radius: 20px;
 }
 
-#person #ring {
+#person #ring, #person #vol {
   position: absolute;
   margin-top: auto;
   margin-bottom: auto;
@@ -145,25 +145,18 @@
   max-width: var(--max-circle);
   aspect-ratio: 1 / 1;
   border-radius: 50%;
-  border: 1px solid #999;
-  animation: ring 4s infinite;
   transform-origin: center;
 }
 
+#person #ring {
+	border: 1px solid #999;
+	animation: ring 4s infinite;
+}
+
 #person #vol {
-  position: absolute;
-  margin-top: auto;
-  margin-bottom: auto;
-  margin-left: auto;
-  margin-right: auto;
-  width: 20%;
-  max-width: var(--max-circle);
-  aspect-ratio: 1 / 1;
-  border-radius: 50%;
-  background: #999;
-  opacity: 0.2;
-  transition: transform 0.2s ease;
-  transform-origin: center;
+	background: #999;
+	transition: transform 0.2s ease;
+	opacity: 0.2;
 }
 
 #person #profile {

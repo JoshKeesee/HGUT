@@ -138,18 +138,18 @@ const addVideo = async (p, s, self = false, big = false, pre = false) => {
   if (a) {
     const ring = document.createElement("div");
     ring.id = "ring";
-    ring.className = "a";
+    ring.classList.add("a");
     ring.style.display = switched[p.peerId]?.audio ? "block" : "none";
     const vol = document.createElement("div");
     vol.id = "vol";
-    vol.className = "a";
+    vol.classList.add("a");
     vol.style.display = switched[p.peerId]?.audio ? "block" : "none";
     const ac = new AudioContext();
     const sr = ac.createMediaStreamSource(s);
     await ac.audioWorklet.addModule(worklet);
     const node = new AudioWorkletNode(ac, "audio-monitor", {
       parameterData: {
-        clipLevel: 0,
+        clipLevel: 0.5,
         averaging: 0.98,
         clipLag: 750,
       },
@@ -325,7 +325,8 @@ const toggleAudio = async (set = !user.audio) => {
     mic.querySelector("svg.on").style.display = "none";
     mic.querySelector("svg.off").style.display = "block";
   }
-  stream.getAudioTracks()[0].enabled = user.audio;
+	if (user.audio) stream.getAudioTracks().forEach((v) => (v.enabled = true));
+	else stream.getAudioTracks().forEach((v) => (v.enabled = false));
   const c = document.querySelector(".person-" + user.peerId);
   if (!c) return;
   c.querySelectorAll("div.a").forEach(

@@ -1,4 +1,4 @@
-const SERVER = "https://3sx4nn-3000.csb.app/";
+const SERVER = "https://db.hgut.repl.co/";
 const icon = document.querySelector("#icon");
 
 let missed = 0,
