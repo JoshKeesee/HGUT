@@ -11,6 +11,13 @@ body {
   transition: all 0.2s ease;
 }
 
+body,
+html {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
 ::-webkit-scrollbar {
   width: 0;
 }
@@ -27,7 +34,11 @@ body {
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 10px;
+  max-width: 100%;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 5px;
 }
 
 .light {
@@ -59,30 +70,13 @@ body {
   user-select: none;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 5px;
   position: relative;
-}
-
-#menu {
-  display: flex;
-  gap: 5px;
-  height: 100%;
-  width: 30px;
-  flex-direction: column;
-  transition: gap 0.2s ease;
-  cursor: pointer;
-}
-
-#menu #bar {
-  height: 3px;
-  width: 100%;
-  border-radius: 3px;
-  transition: background 0.2s ease;
 }
 
 #icon {
@@ -101,8 +95,6 @@ body {
 #theme {
   width: 25px;
   height: 25px;
-  background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.1);
-  border: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.2) solid 2px;
   padding: 5px;
   border-radius: 10px;
   cursor: pointer;
@@ -117,8 +109,7 @@ body {
 }
 
 #theme:hover {
-  border: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.4) solid 2px;
-  background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.3);
+  background: rgba(150, 150, 150, 0.2);
 }
 
 #theme svg {
@@ -137,6 +128,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
   font-size: 18px;
   font-weight: 1000;
   letter-spacing: 1px;
@@ -432,6 +424,52 @@ input[type="file"] {
   border-bottom-right-radius: 20px;
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
+}
+
+#tabs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+#tabs .tab {
+  position: relative;
+  text-align: center;
+  font-size: 10px;
+  padding: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  width: 25px;
+  height: 25px;
+}
+
+#tabs .tab svg {
+  opacity: 1;
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  width: 25px;
+  height: 25px;
+  transition: opacity 0.2s ease;
+}
+
+#tabs .tab:not(.selected) svg.solid,
+#tabs .tab.selected svg:not(.solid) {
+  opacity: 0;
+}
+
+#tabs .tab.selected {
+  background: rgba(150, 150, 150, 0.2);
+}
+
+#tabs .tab div {
+  display: none;
+}
+
+#tabs .tab:hover {
+  background: rgba(150, 150, 150, 0.2);
 }
 
 @font-face {

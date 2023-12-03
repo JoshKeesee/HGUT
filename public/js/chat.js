@@ -7,11 +7,11 @@ const socket = io(SERVER + "chat", {
 });
 const input = document.querySelector("#chat-input");
 const send = document.querySelector("#chat-send");
-const menu = document.querySelector("#menu");
 const addFile = document.querySelector("#add-file");
 const loading = document.createElement("div");
 loading.id = "loading";
-loading.innerText = "Loading...";
+loading.className = "loading";
+for (let i = 0; i < 4; i++) loading.appendChild(document.createElement("div"));
 const maxMessages = 50;
 let user = {},
   profiles = {},
@@ -20,6 +20,7 @@ let user = {},
   mobile = window.innerWidth < 700,
   online = {},
   rn = [],
+  rns = {},
   prev = "";
 
 const roomButton = (text, cn, u = true, d) => {
@@ -107,6 +108,10 @@ socket.on("chat message", addMessage);
 socket.on("rooms", ([rooms, p]) => {
   loadingMessages = true;
   rn = Object.keys(rooms);
+  const vs = Object.values(rooms);
+  rn.forEach((r, i) => {
+    rns[r] = vs[i].name;
+  });
   if (p) {
     profiles = p;
     updateProfiles();
@@ -115,12 +120,7 @@ socket.on("rooms", ([rooms, p]) => {
   cms.innerHTML = "";
   const crs = document.querySelector("#chat-rooms");
   crs.innerHTML = "";
-  const cbs = document.querySelector("#chat-book");
-  cbs.innerHTML = "";
   crs.appendChild(
-    roomButton("Voice Chat", "", false, () => window.open("/voice", "_self")),
-  );
-  cbs.appendChild(
     roomButton("Book Link", "", false, () =>
       window.open(
         "https://docs.google.com/document/d/1xsxMONOYieKK_a87PTJwvmgwRZVNxOE4OhxtWc2oz7I/edit",
@@ -136,10 +136,8 @@ socket.on("rooms", ([rooms, p]) => {
     if (
       !Object.values(profiles).find((e) => e.id == u[0]) &&
       !Object.values(profiles).find((e) => e.id == u[1])
-    ) {
-      if (k == "writers") cbs.appendChild(cr);
-      else crs.appendChild(cr);
-    }
+    )
+      crs.appendChild(cr);
     if (user.room == k) {
       if (Object.keys(r.messages).length == 0)
         cms.innerText = "Sorry, no messages here...";
@@ -153,6 +151,16 @@ socket.on("rooms", ([rooms, p]) => {
       el.style.borderBottomLeftRadius = "10px";
       el.querySelector("#chat-room-bg").style.opacity = 1;
       maxMessagesReached = r.messages.length < maxMessages;
+      let n = r.name;
+      if (Number(n.split("-")[0])) {
+        const p = Object.values(profiles).find(
+          (e) =>
+            (e.id == n.split("-")[0] || e.id == n.split("-")[1]) &&
+            e.id != user.id,
+        );
+        if (p) n = p.name;
+      }
+      document.querySelector("#chat-name").innerHTML = n;
     }
   });
   if (!maxMessagesReached) cms.insertBefore(loading, cms.firstChild);
@@ -165,7 +173,6 @@ socket.on("profiles", (p) => {
 socket.on("user", (u) => {
   user = u;
   user.visible = document.visibilityState == "visible";
-  if (!mobile) toggleMenu(user.menu);
   setTimeout(
     () => switchTheme(user.theme, user.accent ? user.color : null),
     100,
@@ -191,6 +198,7 @@ socket.on("join room", ([messages, r, u]) => {
   user.room = r;
   maxMessagesReached = currMessages < maxMessages;
   cms.style = "";
+  if (!maxMessagesReached) cms.insertBefore(loading, cms.firstChild);
 });
 socket.on("redirect", (d) => (window.location.href = d));
 
@@ -215,9 +223,18 @@ const switchChat = (el) => {
   el.querySelector("#unread").style.display = "none";
   const cms = document.querySelector("#chat-messages");
   cms.style.opacity = 0;
-  if (user.menu && mobile) toggleMenu();
   loadingMessages = true;
   input.value = "";
+  switchTab(tabs.querySelector("#messages"));
+  let n = rns[el.className.replace("c-", "")];
+  if (Number(n.split("-")[0])) {
+    const p = Object.values(profiles).find(
+      (e) =>
+        (e.id == n.split("-")[0] || e.id == n.split("-")[1]) && e.id != user.id,
+    );
+    if (p) n = p.name;
+  }
+  document.querySelector("#chat-name").innerHTML = n;
   socket.emit("join room", el.className.replace("c-", ""));
 };
 
@@ -325,9 +342,6 @@ const switchTheme = (dark = !user.theme, color) => {
     .querySelectorAll("#online")
     .forEach((o) => (o.className = d + "-box"));
   document
-    .querySelectorAll("#menu #bar")
-    .forEach((b) => (b.className = user.theme ? "light-box" : "dark-box"));
-  document
     .querySelectorAll("#profile #info")
     .forEach((b) => (b.style.background = user.theme ? "black" : "white"));
   document
@@ -362,35 +376,6 @@ const switchTheme = (dark = !user.theme, color) => {
     );
   }
   socket.emit("theme", user.theme);
-};
-
-const toggleMenu = (s = !user.menu) => {
-  const cms = document.querySelector("#chat-messages");
-  user.menu = s;
-  mobile = window.innerWidth < 700;
-  const atBottom =
-    Math.abs(cms.scrollHeight - cms.clientHeight - cms.scrollTop) <= 200;
-  const cc = document.querySelector("#chat-container");
-  const cs = document.querySelector("#chat-sidebar");
-  if (!user.menu) {
-    cc.style.gap = 0;
-  } else {
-    cc.style = "";
-    cs.style = "";
-  }
-  cc.style.gridTemplateColumns = !user.menu
-    ? "0 100%"
-    : mobile
-      ? "100% 100%"
-      : "25% 75%";
-  cc.ontransitionend = () => {
-    if (atBottom)
-      cms.scrollTo({
-        top: cms.scrollHeight,
-        behavior: "auto",
-      });
-  };
-  socket.emit("menu", user.menu);
 };
 
 input.onkeydown = (e) => {
@@ -430,7 +415,6 @@ addFile.onchange = (e) => {
   fr.readAsDataURL(img);
 };
 
-menu.onclick = () => toggleMenu();
 document.querySelector("#theme").onclick = () => switchTheme();
 
 document.querySelector("#chat-messages").onscroll = (e) => {

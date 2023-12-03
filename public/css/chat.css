@@ -1,217 +1,245 @@
 #chat-container {
-	overflow: hidden;
-	display: grid;
-	grid-template-columns: 0 100%;
-	gap: 0;
-	margin-top: 5px;
-	height: 100%;
-	max-height: 90%;
-	transition: grid-template-columns 0.2s ease, gap 0.2s ease;
-	border-top-left-radius: 10px;
-	border-top-right-radius: 10px;
-	border-bottom-left-radius: 20px;
-	border-bottom-right-radius: 20px;
+  overflow: hidden;
+  display: flex;
+  gap: 0;
+  margin-top: 5px;
+  height: 100%;
+  transition:
+    grid-template-columns 0.2s ease,
+    gap 0.2s ease;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  border-bottom-left-radius: 20px;
+}
+
+#chat-name {
+  font-weight: 600;
+  font-size: 20px;
+  text-align: left;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  border-bottom-right-radius: 10px;
+  background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.3);
+  backdrop-filter: blur(5px);
+  padding: 10px;
+  user-select: none;
+}
+
+#container:has(#header #tabs #messages.selected) #chat-container #chat-box {
+  display: flex;
+}
+
+#container:has(#header #tabs #chats.selected) #chat-container #chat-sidebar {
+  display: flex;
 }
 
 #chat-sidebar {
-	display: flex;
-	flex-direction: column;
-	gap: 5px;
-	padding: 10px;
-	overflow-y: hidden;
-	border-top-left-radius: 10px;
-	border-top-right-radius: 10px;
-	border-bottom-right-radius: 10px;
-	border-bottom-left-radius: 20px;
-	background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.2);
-	user-select: none;
-	transition: opacity 0.2s ease;
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  padding: 10px;
+  width: 100%;
+  overflow-y: hidden;
+  user-select: none;
+  transition: opacity 0.2s ease;
 }
 
 #sidebar-title {
-	font-weight: 600;
-	font-size: 20px;
+  font-weight: 600;
+  font-size: 20px;
 }
 
-#chat-rooms, #chat-people, #chat-book {
-	overflow-y: auto;
-	direction: ltr;
-	display: flex;
-	flex-direction: column;
-	gap: 5px;
-	border-top-left-radius: 0;
-	border-top-right-radius: 20px;
-	border-bottom-right-radius: 20px;
-	border-bottom-left-radius: 10px;
+#chat-rooms,
+#chat-people,
+#chat-book {
+  overflow-y: auto;
+  direction: ltr;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+  border-bottom-left-radius: 10px;
 }
 
 #chat-room-container {
-	display: flex;
-	align-items: center;
-	gap: 5px;
-	height: fit-content;
-	width: 100%;
-	flex: 1 1;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: fit-content;
+  width: 100%;
+  flex: 1 1;
 }
 
 #chat-room {
-	position: relative;
-	width: 100%;
-	height: fit-content;
-	font-size: 15px;
-	padding: 10px;
-	cursor: pointer;
-	background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.05);
-	border-top-left-radius: 20px;
-	border-top-right-radius: 20px;
-	border-bottom-right-radius: 20px;
-	border-bottom-left-radius: 20px;
-	transition: background 0.2s ease, border-radius 0.2s ease;
-	display: flex;
-	align-items: center;
-	overflow: hidden;
+  position: relative;
+  width: 100%;
+  height: fit-content;
+  font-size: 15px;
+  padding: 10px;
+  cursor: pointer;
+  background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.05);
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+  border-bottom-left-radius: 20px;
+  transition:
+    background 0.2s ease,
+    border-radius 0.2s ease;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
 }
 
 #chat-room:hover {
-	background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.2);
+  background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.2);
 }
 
 #chat-room div {
-	z-index: 1;
+  z-index: 1;
 }
 
 #chat-room-bg {
-	position: absolute;
-	top: 0;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	z-index: 0;
-	background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.6);
-	opacity: 0;
-	transition: opacity 0.2s ease;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 0;
+  background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.6);
+  opacity: 0;
+  transition: opacity 0.2s ease;
 }
 
 #room-name {
-	display: block;
-	width: calc(100% - 10px);
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
+  display: block;
+  width: calc(100% - 10px);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 #unread {
-	position: relative;
-	width: 8px;
-	height: 8px;
-	background: rgb(255, 60, 60);
-	border-radius: 8px;
-	margin-left: auto;
+  position: relative;
+  width: 8px;
+  height: 8px;
+  background: rgb(255, 60, 60);
+  border-radius: 8px;
+  margin-left: auto;
 }
 
 #unread #ping {
-	position: absolute;
-	opacity: 0.75;
-	display: inline-flex;
-	width: 100%;
-	height: 100%;
-	animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+  position: absolute;
+  opacity: 0.75;
+  display: inline-flex;
+  width: 100%;
+  height: 100%;
+  animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
 
 #chat-box {
-	display: flex;
-	flex: auto 1 1;
-	flex-direction: column;
-	text-align: center;
-	border-top-left-radius: 10px;
-	border-top-right-radius: 10px;
-	border-bottom-left-radius: 10px;
-	border-bottom-right-radius: 20px;
-	overflow: hidden;
-	transition: background 0.2s ease;
+  position: relative;
+  display: none;
+  flex: auto 1 1;
+  flex-direction: column;
+  text-align: center;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 20px;
+  overflow: hidden;
+  transition: background 0.2s ease;
 }
 
 #chat-messages {
-	height: 90%;
-	max-height: 90%;
-	width: calc(100% - 0);
-	overflow-y: scroll;
-	display: flex;
-	flex-direction: column;
-	gap: 5px;
-	border-bottom-right-radius: 20px;
-	border-bottom-left-radius: 20px;
-	transition: opacity 0.2s ease;
-	padding-left: 10px;
-	padding-right: 10px;
+  height: 100%;
+  width: calc(100% - 0);
+  overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  border-bottom-right-radius: 20px;
+  border-bottom-left-radius: 20px;
+  transition: opacity 0.2s ease;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 #loading {
-	margin-top: 5px;
+  margin-top: 5px;
 }
 
 #chat-message {
-	width: 100%;
-	max-width: 100%;
-	display: flex;
-	gap: 5px;
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  gap: 5px;
 }
 
 #info-container {
-	width: 100%;
-	display: flex;
-	flex-direction: column;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 #info-container #name {
-	width: max-content;
-	font-size: 15px;
-	font-weight: 1000;
+  width: max-content;
+  font-size: 15px;
+  font-weight: 1000;
 }
 
 #info-container #character {
-	display: block;
-	overflow-x: hidden;
-	font-size: 10px;
-	overflow-wrap: break-word;
-	word-wrap: break-word;
-	hyphens: auto;
+  display: block;
+  overflow-x: hidden;
+  font-size: 10px;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
 }
 
 #typing {
-	opacity: 0;
-	height: 15px;
-	transition: opacity 0.2s ease;
-	overflow: hidden;
-	font-size: 12px;
-	margin-bottom: 5px;
+  opacity: 0;
+  height: 15px;
+  transition: opacity 0.2s ease;
+  overflow: hidden;
+  font-size: 12px;
+  margin-bottom: 5px;
 }
 
 a {
-	color: #0000ff;
-	text-decoration: underline;
+  color: #0000ff;
+  text-decoration: underline;
 }
 
 @media screen and (max-width: 700px) {
-	#chat-sidebar {
-		border-bottom-right-radius: 20px;
-	}
+  #chat-sidebar {
+    border-bottom-right-radius: 20px;
+  }
 
-	#chat-box {
-		border-bottom-left-radius: 20px;
-	}
+  #chat-box {
+    border-bottom-left-radius: 20px;
+  }
 }
 
 @font-face {
   font-family: "Product Sans";
   font-style: normal;
   font-weight: 400;
-  src: local("Open Sans"), local("OpenSans"), url("https://fonts.gstatic.com/s/productsans/v5/HYvgU2fE2nRJvZ5JFAumwegdm0LZdjqr5-oayXSOefg.woff2") format("woff2");
+  src:
+    local("Open Sans"),
+    local("OpenSans"),
+    url("https://fonts.gstatic.com/s/productsans/v5/HYvgU2fE2nRJvZ5JFAumwegdm0LZdjqr5-oayXSOefg.woff2")
+      format("woff2");
 }
 
 @keyframes ping {
-	75%, 100% {
-		transform: scale(2);
-		opacity: 0;
-	}
+  75%,
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
 }

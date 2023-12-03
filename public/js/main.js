@@ -192,3 +192,19 @@ document.onvisibilitychange = () => {
   document.title = "HGUT" + p;
   socket.emit("visible", user.visible);
 };
+
+const tabs = document.querySelector("#tabs");
+
+tabs
+  .querySelectorAll("div.tab")
+  .forEach((e) => (e.onclick = () => switchTab(e)));
+
+const switchTab = (tab) => {
+  tabs
+    .querySelectorAll("div.tab")
+    .forEach((e) => e.classList.remove("selected"));
+  tab.classList.add("selected");
+  if (tab.id == "voice" && window.location.pathname != "/voice")
+    window.location.href = "/voice";
+  else if (window.location.pathname != "/chat") window.location.href = "/chat";
+};
