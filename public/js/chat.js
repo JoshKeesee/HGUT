@@ -226,7 +226,7 @@ const switchChat = (el) => {
   loadingMessages = true;
   input.value = "";
   switchTab(tabs.querySelector("#messages"));
-  let n = rns[el.className.replace("c-", "")];
+  let n = rns[el.className.replace("c-", "")] || el.className.replace("c-", "");
   if (Number(n.split("-")[0])) {
     const p = Object.values(profiles).find(
       (e) =>
