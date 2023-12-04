@@ -438,7 +438,7 @@ input[type="file"] {
   text-align: center;
   font-size: 10px;
   padding: 5px;
-  border-radius: 5px;
+  border-radius: 10px;
   cursor: pointer;
   transition: background 0.2s ease;
   width: 25px;
