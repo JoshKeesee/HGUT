@@ -11,6 +11,7 @@
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
   border-bottom-left-radius: 20px;
+  position: relative;
 }
 
 #chat-name {
@@ -29,10 +30,12 @@
 }
 
 #container:has(#header #tabs #messages.selected) #chat-container #chat-box {
+  animation: zoom 0.2s ease;
   display: flex;
 }
 
 #container:has(#header #tabs #chats.selected) #chat-container #chat-sidebar {
+  animation: zoom 0.2s ease;
   display: flex;
 }
 
@@ -53,17 +56,12 @@
 }
 
 #chat-rooms,
-#chat-people,
-#chat-book {
+#chat-people {
   overflow-y: auto;
   direction: ltr;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
   gap: 5px;
-  border-top-left-radius: 0;
-  border-top-right-radius: 20px;
-  border-bottom-right-radius: 20px;
-  border-bottom-left-radius: 10px;
 }
 
 #chat-room-container {
@@ -78,8 +76,10 @@
 #chat-room {
   position: relative;
   width: 100%;
-  height: fit-content;
-  font-size: 15px;
+  height: 50px;
+  font-size: 20px;
+  font-weight: 1000;
+  letter-spacing: 1px;
   padding: 10px;
   cursor: pointer;
   background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.05);
@@ -223,6 +223,10 @@ a {
   #chat-box {
     border-bottom-left-radius: 20px;
   }
+
+  #chat-room {
+    height: fit-content;
+  }
 }
 
 @font-face {
@@ -241,5 +245,18 @@ a {
   100% {
     transform: scale(2);
     opacity: 0;
+  }
+}
+
+@keyframes zoom {
+  0% {
+    display: flex;
+    transform: scale(0.8) translateY(20%);
+    opacity: 0;
+  }
+  100% {
+    display: flex;
+    transform: scale(1) translateY(0px);
+    opacity: 1;
   }
 }

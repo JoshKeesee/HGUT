@@ -222,7 +222,8 @@ const switchChat = (el) => {
   el.querySelector("#chat-room-bg").style.opacity = 1;
   el.querySelector("#unread").style.display = "none";
   const cms = document.querySelector("#chat-messages");
-  cms.style.opacity = 0;
+  cms.innerHTML = "";
+  cms.appendChild(loading);
   loadingMessages = true;
   input.value = "";
   switchTab(tabs.querySelector("#messages"));
