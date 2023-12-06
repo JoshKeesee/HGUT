@@ -19,7 +19,11 @@ const registerSw = async (p) => {
 
   await fetch(SERVER + "subscribe", {
     method: "POST",
-    body: JSON.stringify(subscription),
+    body: JSON.stringify({
+			subscription,
+			user: decodeURI(document.cookie.split(";").find(c => c.startsWith("user=")).split("=")[1]),
+			mobile: navigator.userAgent.includes("Mobile"),
+		}),
     headers: {
       "Content-Type": "application/json",
     },

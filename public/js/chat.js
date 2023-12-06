@@ -20,7 +20,6 @@ let user = {},
   mobile = window.innerWidth < 700,
   online = {},
   rn = [],
-  rns = {},
   prev = "";
 
 const roomButton = (text, cn, u = true, d) => {
@@ -94,8 +93,8 @@ socket.on("load messages", (messages) => {
   const cms = document.querySelector("#chat-messages");
   const h = cms.scrollHeight;
   if (document.querySelector("#" + loading.id)) loading.remove();
-  messages.reverse().forEach((m) => {
-    addMessage([m.message, profiles[m.name], m.date], false, false, true);
+  messages.reverse().forEach((m, i) => {
+    addMessage([m.message, profiles[m.name], m.date, messages.reverse()[i - 1]], false, false, true);
   });
   if (!maxMessagesReached) cms.insertBefore(loading, cms.firstChild);
   cms.scrollTo({
@@ -104,7 +103,11 @@ socket.on("load messages", (messages) => {
   });
   loadingMessages = false;
 });
-socket.on("chat message", addMessage);
+socket.on("chat message", ([m, u, d, lm, a]) => {
+	if (!(a.includes(user.id) || a == "all")) return;
+	if (u.room == user.room) addMessage([m, u, d, lm]);
+	else createNotification([m, u, u.room]);
+});
 socket.on("rooms", ([rooms, p]) => {
   loadingMessages = true;
   rn = Object.keys(rooms);
@@ -142,13 +145,11 @@ socket.on("rooms", ([rooms, p]) => {
       if (Object.keys(r.messages).length == 0)
         cms.innerText = "Sorry, no messages here...";
       else
-        Object.values(r.messages).forEach((m) =>
-          addMessage([m.message, profiles[m.name], m.date], false),
+        Object.values(r.messages).forEach((m, i) =>
+          addMessage([m.message, profiles[m.name], m.date, r.messages[i - 1]], false),
         );
       const el = cr.querySelector("#chat-room");
       el.style.background = user.theme ? "black" : "white";
-      el.style.borderTopLeftRadius = "10px";
-      el.style.borderBottomLeftRadius = "10px";
       el.querySelector("#chat-room-bg").style.opacity = 1;
       maxMessagesReached = r.messages.length < maxMessages;
       let n = r.name;
@@ -175,7 +176,7 @@ socket.on("user", (u) => {
   user.visible = document.visibilityState == "visible";
   setTimeout(
     () => switchTheme(user.theme, user.accent ? user.color : null),
-    100,
+    100
   );
   updateProfiles();
 });
@@ -192,8 +193,8 @@ socket.on("join room", ([messages, r, u]) => {
   cms.innerHTML = "";
   if (messages.length == 0) cms.innerText = "Sorry, no messages here...";
   else
-    messages.forEach((m) =>
-      addMessage([m.message, profiles[m.name], m.date], false),
+    messages.forEach((m, i) =>
+      addMessage([m.message, profiles[m.name], m.date, messages[i - 1]], false),
     );
   user.room = r;
   maxMessagesReached = currMessages < maxMessages;
@@ -217,8 +218,6 @@ const switchChat = (el) => {
   lr.style = "";
   lr.querySelector("#chat-room-bg").style = "";
   el.style.background = user.theme ? "black" : "white";
-  el.style.borderTopLeftRadius = "10px";
-  el.style.borderBottomLeftRadius = "10px";
   el.querySelector("#chat-room-bg").style.opacity = 1;
   el.querySelector("#unread").style.display = "none";
   const cms = document.querySelector("#chat-messages");
@@ -227,6 +226,8 @@ const switchChat = (el) => {
   loadingMessages = true;
   input.value = "";
   switchTab(tabs.querySelector("#messages"));
+	const cn = document.querySelector("#chat-name");
+	cn.innerHTML = "";
   let n = rns[el.className.replace("c-", "")] || el.className.replace("c-", "");
   if (Number(n.split("-")[0])) {
     const p = Object.values(profiles).find(
@@ -235,8 +236,10 @@ const switchChat = (el) => {
     );
     if (p) n = p.name;
   }
-  document.querySelector("#chat-name").innerHTML = n;
-  socket.emit("join room", el.className.replace("c-", ""));
+  setTimeout(() => {
+		cn.innerHTML = n;
+		socket.emit("join room", el.className.replace("c-", ""));
+	}, 200);
 };
 
 const updateProfiles = () => {
@@ -265,8 +268,6 @@ const updateProfiles = () => {
       ) {
         const el = cr.querySelector("#chat-room");
         el.style.background = user.theme ? "black" : "white";
-        el.style.borderTopLeftRadius = "10px";
-        el.style.borderBottomLeftRadius = "10px";
         el.querySelector("#chat-room-bg").style.opacity = 1;
       }
     });

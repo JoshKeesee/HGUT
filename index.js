@@ -63,6 +63,10 @@ app.post("/login", (req, res) => {
 	});
 	res.redirect("back");
 });
+app.get("/logout", (req, res) => {
+	res.clearCookie("user");
+	res.redirect("/");
+});
 
 app.listen(3000, () => {
 	console.log("Listening on port 3000");

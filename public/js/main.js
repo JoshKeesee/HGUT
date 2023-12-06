@@ -1,8 +1,11 @@
 const SERVER = "https://db.hgut.repl.co/";
 const icon = document.querySelector("#icon");
 
+const devMode = true;
+
 let missed = 0,
-  loadingMessages = false;
+  loadingMessages = false,
+	rns = {};
 
 const toRgba = (hex, alpha, obj) => {
   const r = parseInt(hex.slice(1, 3), 16),
@@ -101,7 +104,7 @@ const updateMessageProfiles = () => {
 };
 
 const addMessage = (
-  [message, u, d],
+  [message, u, d, lm = null],
   smooth = true,
   scroll = true,
   start = false,
@@ -136,7 +139,8 @@ const addMessage = (
     cm.appendChild(pc);
   }
   const prev = start ? cms.firstChild : cms.lastChild;
-  if (prev?.className == "u" + u.id) {
+	const ld = lm ? lm.date : null;
+  if (prev?.className == "u" + u.id && new Date(d).getTime() - new Date(ld).getTime() < 60000) {
     if (start) prev.insertBefore(cm, prev.children[1]);
     else prev.appendChild(cm);
   } else {
@@ -206,5 +210,75 @@ const switchTab = (tab) => {
   tab.classList.add("selected");
   if (tab.id == "voice" && window.location.pathname != "/voice")
     window.location.href = "/voice";
+	else if (tab.id == "logout")
+			window.location.href = "/logout";
   else if (window.location.pathname != "/chat") window.location.href = "/chat";
 };
+
+const createNotification = ([m, u, r]) => {
+	if (!rns[r]) rns[r] = r;
+	const notifications = document.querySelector("#notifications");
+	const n = document.createElement("div");
+	n.id = "notification";
+	const p = getProfile(u, false);
+	const cont = document.createElement("div");
+	cont.id = "cont";
+	const name = document.createElement("div");
+	name.id = "n";
+	const room = Number(rns[r].split("-")[0]) ? "" : " in <b>" + rns[r] + "</b>";
+	name.innerHTML = "<b>" + u.name.split(" ")[0] + "</b> sent you a message" + room;
+	const message = document.createElement("div");
+	message.id = "m";
+	message.innerText = m;
+	const x = document.createElement("div");
+	x.id = "x";
+	const xSvg = document.createElementNS(
+		"http://www.w3.org/2000/svg",
+		"svg",
+	);
+	xSvg.setAttribute("width", "24");
+	xSvg.setAttribute("height", "24");
+	xSvg.setAttribute("viewBox", "0 0 24 24");
+	xSvg.setAttribute("fill", "currentColor");
+	xSvg.setAttribute("stroke", "currentColor");
+	xSvg.setAttribute("stroke-width", "2");
+	xSvg.setAttribute("stroke-linecap", "round");
+	xSvg.setAttribute("stroke-linejoin", "round");
+	xSvg.innerHTML = `<path d="M18 6L6 18M6 6l12 12"/>`;
+	x.appendChild(xSvg);
+	cont.appendChild(name);
+	cont.appendChild(message);
+	n.appendChild(p);
+	n.appendChild(cont);
+	n.appendChild(x);
+	n.onclick = e => {
+		clearNotification(n);
+		if (e.target.id == "x") return;
+		const lr =
+			document.querySelector(".c-" + r) ||
+			document.querySelector(".c-" + r.split("-").reverse().join("-")) ||
+			document.querySelector("." + r);
+		switchChat(lr);
+	};
+	setTimeout(() => clearNotification(n), 10000);
+	notifications.insertBefore(n, notifications.firstChild);
+};
+
+const clearNotification = (n) => {
+	n.style.opacity = 0;
+	n.style.transform = "translateX(100%)";
+	n.style.marginBottom = "-60px";
+	setTimeout(() => n.remove(), 3000);
+};
+
+const checkDev = () => {
+	if (!devMode) return;
+	const u = document.cookie.split(";").find(e => e.includes("user=")).split("user=")[1];
+	if (u != "Joshua%20Keesee") return;
+	const dev = document.createElement("script");
+	dev.src = "https://cdn.jsdelivr.net/npm/eruda";
+	dev.onload = () => eruda.init();
+	document.body.appendChild(dev);
+};
+
+window.onload = checkDev;

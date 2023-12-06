@@ -5,6 +5,7 @@
   margin: 0;
   border: none;
   outline: none;
+	overscroll-behavior: contain;
 }
 
 body {
@@ -74,49 +75,20 @@ html {
   border-bottom-right-radius: 20px;
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 5px;
   position: relative;
+}
+
+#header #online {
+	margin-left: auto;
 }
 
 #icon {
   width: 40px;
   height: 40px;
-  margin: -10px;
+  margin: -10px -5px;
   margin-right: 0;
   cursor: pointer;
-}
-
-#header-title {
-  margin-left: auto;
-  margin-right: auto;
-}
-
-#theme {
-  width: 25px;
-  height: 25px;
-  padding: 5px;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 15px;
-  font-weight: 500;
-  letter-spacing: 0px;
-  transition: background 0.2s ease;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-#theme:hover {
-  background: rgba(150, 150, 150, 0.2);
-}
-
-#theme svg {
-  position: absolute;
-  width: 25px;
-  height: 25px;
-  transition: opacity 0.2s ease;
 }
 
 #profile {
@@ -235,6 +207,8 @@ html {
 
 #chat-input-box {
   display: flex;
+	align-items: center;
+	justify-content: center;
   gap: 5px;
   padding: 10px;
   padding-top: 0;
@@ -265,25 +239,7 @@ input[type="file"] {
   display: none;
 }
 
-#chat-input-box label {
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-#chat-input-box svg {
-  width: 30px;
-  height: 30px;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-
-#chat-input-box svg:hover {
-  transform: scale(1.1);
-}
-
-#chat-send {
+#chat-send, #chat-input-box label {
   padding: 4px;
   padding-left: 10px;
   padding-right: 10px;
@@ -293,23 +249,28 @@ input[type="file"] {
   font-size: 15px;
   cursor: pointer;
   color: inherit;
+	height: 100%;
+	background: rgba(150, 150, 150, 0.1);
   border-top-left-radius: 10px;
   border-top-right-radius: 20px;
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 20px;
-  background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.3);
-  border: 2px solid rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.4);
-  transition:
-    background 0.2s ease,
-    border 0.2s ease;
+  transition: background 0.2s ease;
 }
 
-#chat-send:hover {
-  background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.5);
-  border: 2px solid rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.6);
+#chat-send:hover, #chat-input-box label:hover {
+	background: rgba(150, 150, 150, 0.2);
 }
 
-#chat-send svg {
+#chat-input-box label {
+	padding: 5px;
+	padding-left: 5px;
+	padding-right: 5px;
+	border-radius: 50px;
+	height: fit-content;
+}
+
+#chat-input-box svg {
   width: 25px;
   height: 25px;
 }
@@ -464,12 +425,109 @@ input[type="file"] {
   background: rgba(150, 150, 150, 0.2);
 }
 
+#tabs .tab.red.selected {
+	background: rgba(150, 0, 0, 0.8);
+}
+
 #tabs .tab div {
   display: none;
 }
 
 #tabs .tab:hover {
   background: rgba(150, 150, 150, 0.2);
+}
+
+#tabs .tab.red:hover {
+	color: #fff;
+	background: rgba(150, 0, 0, 0.8);
+}
+
+#notifications {
+	position: absolute;
+	z-index: 999;
+	top: 64px;
+	right: 0;
+}
+
+#notification {
+	user-select: none;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 400px;
+	height: 40px;
+	gap: 10px;
+	margin-bottom: 5px;
+	margin-right: 15px;
+	background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.5);
+	backdrop-filter: blur(5px);
+	padding: 10px;
+	border-radius: 20px;
+	cursor: pointer;
+	transition: margin 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+	animation: slide 0.8s ease;
+}
+
+#notification #profile {
+	width: 40px;
+	height: 40px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+#notification #profile img {
+	width: 100%;
+	height: 100%;
+	border-radius: 50%;
+}
+
+#notification #cont {
+	width: calc(100% - 60px);
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
+	overflow: hidden;
+}
+
+#notification #n {
+	font-size: 17px;
+}
+
+#notification #m {
+	display: block;
+	font-size: 15px;
+	color: #d2d2d2;
+	width: calc(100% - 10px);
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	direction: ltr;
+}
+
+#notification #x {
+	position: absolute;
+	top: -7px;
+	right: -7px;
+	background: #000;
+	color: #fff;
+	padding: 2px;
+	border-radius: 50%;
+	width: 15px;
+	height: 15px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	transition: background 0.2s ease;
+}
+
+#notification #x:hover {
+	background: #333;
+}
+
+#notification:nth-child(n + 5) {
+	opacity: 0;
 }
 
 @font-face {
@@ -481,4 +539,22 @@ input[type="file"] {
     local("OpenSans"),
     url("https://fonts.gstatic.com/s/productsans/v5/HYvgU2fE2nRJvZ5JFAumwegdm0LZdjqr5-oayXSOefg.woff2")
       format("woff2");
+}
+
+@media screen and (max-width: 700px) {
+	#notification {
+		width: 250px;
+	}
+}
+
+@keyframes slide {
+	0% {
+		transform: translateX(100%);
+		margin-bottom: -60px;
+	}
+	50% { margin-bottom: 5px }
+	100% {
+		transform: translateX(0);
+		margin-bottom: 5px;
+	}
 }
