@@ -127,7 +127,7 @@ const updateEditOnclick = () => {
 			m.focus();
 			m.onblur = () => {
 				m.contentEditable = false;
-				if (m.innerText == val || m.innerText.length == 0) return m.innerText = val;
+				if (m.innerText == val || m.innerText.length == 0) return m.innerHTML = linkify(val);
 				m.innerHTML = linkify(m.innerText);
 				socket.emit("edit", {
 					id,
