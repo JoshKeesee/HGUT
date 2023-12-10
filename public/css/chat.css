@@ -73,7 +73,6 @@ body:has(#header #tabs #chats.selected) #notifications {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
   gap: 5px;
-	width: 100%;
 	overflow-x: hidden;
 }
 
@@ -87,7 +86,6 @@ body:has(#header #tabs #chats.selected) #notifications {
 
 #chat-room {
   position: relative;
-	width: 100%;
   height: 50px;
   font-size: 20px;
   font-weight: 1000;
@@ -104,7 +102,7 @@ body:has(#header #tabs #chats.selected) #notifications {
     border-radius 0.2s ease;
   display: flex;
   align-items: center;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 #chat-room:hover {
@@ -129,7 +127,7 @@ body:has(#header #tabs #chats.selected) #notifications {
 
 #room-name {
   display: block;
-  width: calc(100% - 20px);
+	width: calc(100% - 50px);
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -177,6 +175,7 @@ body:has(#header #tabs #chats.selected) #notifications {
   border-top-right-radius: 10px;
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 20px;
+	background: radial-gradient(circle, rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.1) 0%, transparent 100%);
   overflow: hidden;
   transition: background 0.2s ease;
 }
@@ -188,7 +187,6 @@ body:has(#header #tabs #chats.selected) #notifications {
   overflow-y: scroll;
   display: flex;
   flex-direction: column;
-  gap: 5px;
   border-bottom-right-radius: 20px;
   border-bottom-left-radius: 20px;
   transition: opacity 0.2s ease;
@@ -198,34 +196,6 @@ body:has(#header #tabs #chats.selected) #notifications {
 
 #loading {
   margin-top: 5px;
-}
-
-#chat-message {
-  width: 100%;
-  max-width: 100%;
-  display: flex;
-  gap: 5px;
-}
-
-#info-container {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-#info-container #name {
-  width: max-content;
-  font-size: 15px;
-  font-weight: 1000;
-}
-
-#info-container #character {
-  display: block;
-  overflow-x: hidden;
-  font-size: 10px;
-  overflow-wrap: break-word;
-  word-wrap: break-word;
-  hyphens: auto;
 }
 
 #typing {
@@ -244,9 +214,12 @@ a {
 
 @media screen and (max-width: 700px) {
   #chat-sidebar {
-		grid-template-columns: auto;
     border-bottom-right-radius: 20px;
   }
+
+	#chat-rooms, #chat-people {
+		grid-template-columns: auto;
+	}
 
   #chat-box {
     border-bottom-left-radius: 20px;

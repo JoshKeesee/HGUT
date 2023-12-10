@@ -41,13 +41,13 @@ const roomButton = (text, cn, u = true, d) => {
   if (u) {
     const unread = document.createElement("div");
     unread.id = "unread";
-		const dot = document.createElement("span");
-		dot.id = "dot";
+    const dot = document.createElement("span");
+    dot.id = "dot";
     const ping = document.createElement("span");
     ping.id = "ping";
-		unread.appendChild(ping);
-		unread.appendChild(dot);
-		cr.appendChild(unread);
+    unread.appendChild(ping);
+    unread.appendChild(dot);
+    cr.appendChild(unread);
     if (typeof d != "undefined") unread.style.display = d ? "block" : "none";
     else unread.style.display = user.unread.includes(cn) ? "block" : "none";
   }
@@ -96,9 +96,14 @@ socket.on("load messages", (messages) => {
   const cms = document.querySelector("#chat-messages");
   const h = cms.scrollHeight;
   if (document.querySelector("#" + loading.id)) loading.remove();
-	const rev = messages.reverse();
+  const rev = messages.reverse();
   rev.forEach((m, i) => {
-    addMessage([m.message, profiles[m.name], m.date, rev[i - 1]], false, false, true);
+    addMessage(
+      [m.message, profiles[m.name], m.date, rev[i - 1]],
+      false,
+      false,
+      true,
+    );
   });
   if (!maxMessagesReached) cms.insertBefore(loading, cms.firstChild);
   cms.scrollTo({
@@ -108,9 +113,9 @@ socket.on("load messages", (messages) => {
   loadingMessages = false;
 });
 socket.on("chat message", ([m, u, d, lm, a]) => {
-	if (!(a.includes(user.id) || a == "all")) return;
-	if (u.room == user.room) addMessage([m, u, d, lm]);
-	else createNotification([m, u, u.room]);
+  if (!(a.includes(user.id) || a == "all")) return;
+  if (u.room == user.room) addMessage([m, u, d, lm]);
+  else createNotification([m, u, u.room]);
 });
 socket.on("rooms", ([rooms, p]) => {
   loadingMessages = true;
@@ -150,11 +155,15 @@ socket.on("rooms", ([rooms, p]) => {
         cms.innerText = "Sorry, no messages here...";
       else
         Object.values(r.messages).forEach((m, i) =>
-          addMessage([m.message, profiles[m.name], m.date, r.messages[i - 1]], false));
+          addMessage(
+            [m.message, profiles[m.name], m.date, r.messages[i - 1]],
+            false,
+          ),
+        );
       const el = cr.querySelector("#chat-room");
       el.style.background = user.theme ? "black" : "white";
       el.querySelector("#chat-room-bg").style.opacity = 1;
-			currMessages = r.messages.length;
+      currMessages = r.messages.length;
       maxMessagesReached = currMessages < maxMessages;
       let n = r.name;
       if (Number(n.split("-")[0])) {
@@ -180,7 +189,7 @@ socket.on("user", (u) => {
   user.visible = document.visibilityState == "visible";
   setTimeout(
     () => switchTheme(user.theme, user.accent ? user.color : null),
-    100
+    100,
   );
   updateProfiles();
 });
@@ -197,7 +206,9 @@ socket.on("join room", ([messages, r, u]) => {
   cms.innerHTML = "";
   if (messages.length == 0) cms.innerText = "Sorry, no messages here...";
   else
-    messages.forEach((m, i) => addMessage([m.message, profiles[m.name], m.date, messages[i - 1]], false));
+    messages.forEach((m, i) =>
+      addMessage([m.message, profiles[m.name], m.date, messages[i - 1]], false),
+    );
   user.room = r;
   maxMessagesReached = currMessages < maxMessages;
   cms.style = "";
@@ -228,8 +239,8 @@ const switchChat = (el) => {
   loadingMessages = true;
   input.value = "";
   switchTab(tabs.querySelector("#messages"));
-	const cn = document.querySelector("#chat-name");
-	cn.innerHTML = "";
+  const cn = document.querySelector("#chat-name");
+  cn.innerHTML = "";
   let n = rns[el.className.replace("c-", "")] || el.className.replace("c-", "");
   if (Number(n.split("-")[0])) {
     const p = Object.values(profiles).find(
@@ -239,9 +250,9 @@ const switchChat = (el) => {
     if (p) n = p.name;
   }
   setTimeout(() => {
-		cn.innerHTML = n;
-		socket.emit("join room", el.className.replace("c-", ""));
-	}, 200);
+    cn.innerHTML = n;
+    socket.emit("join room", el.className.replace("c-", ""));
+  }, 200);
 };
 
 const updateProfiles = () => {
@@ -289,7 +300,7 @@ const updateOnline = () => {
       const bg = document.createElement("div");
       bg.id = "bg";
       bg.style.background = user.theme ? "black" : "white";
-      const pc = getProfile(r);
+      const pc = getProfile(r, true);
       pc.onclick = () =>
         switchChat(
           document.querySelector(
@@ -340,7 +351,7 @@ const updateOnline = () => {
 const switchTheme = (dark = !user.theme, color) => {
   user.theme = dark;
   const d = dark ? "dark" : "light";
-	const th = dark ? "black" : "white";
+  const th = dark ? "black" : "white";
   document.body.className = d;
   document.querySelector("#chat-box").className = d + "-box";
   document
@@ -349,9 +360,7 @@ const switchTheme = (dark = !user.theme, color) => {
   document
     .querySelectorAll("#profile #info")
     .forEach((b) => (b.style.background = th));
-  document
-    .querySelectorAll("#bg")
-    .forEach((b) => (b.style.background = th));
+  document.querySelectorAll("#bg").forEach((b) => (b.style.background = th));
   document.querySelector("#light-icon").style.opacity = user.theme ? 0 : 1;
   document.querySelector("#dark-icon").style.opacity = user.theme ? 1 : 0;
   const lr =
@@ -372,10 +381,10 @@ const switchTheme = (dark = !user.theme, color) => {
     );
   document
     .querySelectorAll(".loading div")
-    .forEach((b) => (b.style.background = user.theme ? "white" : "black"));
-	document
-		.querySelectorAll("#unread")
-		.forEach((b) => (b.style.background = user.theme ? "black" : "white"));
+    .forEach((b) => (b.style.background = user.theme ? "radial-gradient(#fff, transparent)" : "radial-gradient(#000, transparent)"));
+  document
+    .querySelectorAll("#unread")
+    .forEach((b) => (b.style.background = user.theme ? "black" : "white"));
   if (color) {
     const rgb = toRgba(color, 1, true);
     const root = document.querySelector(":root");

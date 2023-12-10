@@ -243,7 +243,7 @@ const updateOnline = () => {
         const bg = document.createElement("div");
         bg.id = "bg";
         bg.style.background = user.theme ? "black" : "white";
-        const pc = getProfile(r);
+        const pc = getProfile(r, true);
         pc.style.opacity = online[k].visible ? 1 : 0.5;
         bg.appendChild(pc);
         o.appendChild(bg);
@@ -271,9 +271,9 @@ const switchTheme = (dark = !user.theme, color) => {
           ? rgbToHex(toRgba(user.color))
           : rgbToHex("rgb(0, 0, 255)"),
     );
-  document
-    .querySelectorAll(".loading div")
-    .forEach((b) => (b.style.background = user.theme ? "white" : "black"));
+	document
+	.querySelectorAll(".loading div")
+	.forEach((b) => (b.style.background = user.theme ? "radial-gradient(#fff, transparent)" : "radial-gradient(#000, transparent)"));
   document
     .querySelectorAll("#ring")
     .forEach((b) => (b.style.borderColor = user.theme ? "#999" : "#fff"));
