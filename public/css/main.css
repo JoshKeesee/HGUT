@@ -9,6 +9,7 @@
 }
 
 body {
+	background-image: radial-gradient(circle, rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.2) 0%, transparent 100%);
   transition: all 0.2s ease;
 }
 
@@ -44,12 +45,12 @@ html {
 }
 
 .light {
-  background: rgba(235, 235, 255, 1);
+  background-color: rgba(235, 235, 255, 1);
   color: black;
 }
 
 .dark {
-  background: rgba(0, 0, 20, 1);
+  background-color: rgba(0, 0, 20, 1);
   color: white;
 }
 
