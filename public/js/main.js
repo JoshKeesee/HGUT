@@ -5,7 +5,7 @@ const devMode = true;
 
 let missed = 0,
   loadingMessages = false,
-	rns = {};
+  rns = {};
 
 const toRgba = (hex, alpha, obj) => {
   const r = parseInt(hex.slice(1, 3), 16),
@@ -48,6 +48,15 @@ const linkify = (s, scroll = false, smooth = false, start = false) => {
     .replace(urlPattern, "<a target='_blank' href='$&'>$&</a>")
     .replace(pseudoUrlPattern, "$1<a target='_blank' href='http://$2'>$2</a>")
     .replace(emailAddressPattern, "<a target='_blank' href='mailto:$&'>$&</a>");
+};
+
+const getSvg = (id, path) => {
+	const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+	svg.setAttribute("id", id);
+	svg.setAttribute("viewBox", "0 0 512 512");
+	svg.setAttribute("fill", "currentColor");
+	svg.innerHTML = `<path d="${path}"/>`;
+	return svg;
 };
 
 const getProfile = (u, info = true) => {
@@ -103,11 +112,16 @@ const updateMessageProfiles = () => {
   });
 };
 
+const replyMessage = (el, message, u, date) => {
+  if (u.id != user.id) return;
+  console.log("yep");
+};
+
 const addMessage = (
   [message, u, d, lm = null],
   smooth = true,
   scroll = true,
-  start = false,
+  start = false
 ) => {
   if (!user.visible && !loadingMessages) {
     let t = document.title.replace(/\(\d+\)/, "");
@@ -128,19 +142,58 @@ const addMessage = (
   m.style.background = toRgba(u.color, 0.4);
   m.innerHTML = message;
   m.innerHTML = linkify(m.innerText, smooth, scroll, start);
+  const opts = document.createElement("div");
+  opts.id = "options";
+	if (myUser) {
+	  const edit = document.createElement("div");
+	  edit.id = "edit";
+		edit.onclick = () => {
+			const text = document.createElement("textarea");
+			text.id = "edit-message";
+			text.value = message;
+			text.style.width = m.clientWidth + "px";
+			text.style.height = getComputedStyle(m).height;
+			text.onblur = () => text.value.length > 0 ? m.innerHTML = linkify(text.value) : "";
+			text.onkeydown = (e) => {
+				if (e.key == "Enter") {
+					text.value.length > 0 ? m.innerHTML = linkify(text.value) : "";
+				}
+			};
+			text.oninput = () => text.style.width = (text.value.length * (getComputedStyle(text).fontSize.replace("px", "") / 2)) + "px";
+			m.innerHTML = "";
+			m.appendChild(text);
+			text.focus();
+		};
+		const editSvg = getSvg("edit-svg", "M441 58.9L453.1 71c9.4 9.4 9.4 24.6 0 33.9L424 134.1 377.9 88 407 58.9c9.4-9.4 24.6-9.4 33.9 0zM209.8 256.2L344 121.9 390.1 168 255.8 302.2c-2.9 2.9-6.5 5-10.4 6.1l-58.5 16.7 16.7-58.5c1.1-3.9 3.2-7.5 6.1-10.4zM373.1 25L175.8 222.2c-8.7 8.7-15 19.4-18.3 31.1l-28.6 100c-2.4 8.4-.1 17.4 6.1 23.6s15.2 8.5 23.6 6.1l100-28.6c11.8-3.4 22.5-9.7 31.1-18.3L487 138.9c28.1-28.1 28.1-73.7 0-101.8L474.9 25C446.8-3.1 401.2-3.1 373.1 25zM88 64C39.4 64 0 103.4 0 152V424c0 48.6 39.4 88 88 88H360c48.6 0 88-39.4 88-88V312c0-13.3-10.7-24-24-24s-24 10.7-24 24V424c0 22.1-17.9 40-40 40H88c-22.1 0-40-17.9-40-40V152c0-22.1 17.9-40 40-40H200c13.3 0 24-10.7 24-24s-10.7-24-24-24H88z");
+		edit.appendChild(editSvg);
+		opts.appendChild(edit);
+	}
+	const reply = document.createElement("div");
+	reply.id = "reply";
+	const replySvg = getSvg("reply-svg", "M205 34.8c11.5 5.1 19 16.6 19 29.2v64H336c97.2 0 176 78.8 176 176c0 113.3-81.5 163.9-100.2 174.1c-2.5 1.4-5.3 1.9-8.1 1.9c-10.9 0-19.7-8.9-19.7-19.7c0-7.5 4.3-14.4 9.8-19.5c9.4-8.8 22.2-26.4 22.2-56.7c0-53-43-96-96-96H224v64c0 12.6-7.4 24.1-19 29.2s-25 3-34.4-5.4l-160-144C3.9 225.7 0 217.1 0 208s3.9-17.7 10.6-23.8l160-144c9.4-8.5 22.9-10.6 34.4-5.4z");
+	reply.appendChild(replySvg);
+	opts.appendChild(reply);
+  cm.appendChild(opts);
   if (!myUser) {
+    cm.className = "right";
     m.className = "right";
-    cm.appendChild(pc);
+    opts.className = "left";
+		cm.appendChild(pc);
   }
-  cm.appendChild(m);
+	cm.appendChild(m);
   if (myUser) {
     pc.style.display = "none";
+    cm.className = "left";
     m.className = "left";
-    cm.appendChild(pc);
+    opts.className = "right";
+		cm.appendChild(pc);
   }
   const prev = start ? cms.firstChild : cms.lastChild;
-	const ld = lm ? lm.date : null;
-  if (prev?.className == "u" + u.id && new Date(d).getTime() - new Date(ld).getTime() < 60000) {
+  const ld = lm ? lm.date : null;
+  if (
+    prev?.className == "u" + u.id &&
+    new Date(d).getTime() - new Date(ld).getTime() < 60000
+  ) {
     if (start) prev.insertBefore(cm, prev.children[1]);
     else prev.appendChild(cm);
   } else {
@@ -177,10 +230,7 @@ const addMessage = (
   if (smooth && scroll)
     cm.animate(
       [{ transform: "translateY(100%)" }, { transform: "translateY(0)" }],
-      {
-        duration: 500,
-        easing: "ease",
-      },
+      { duration: 500, easing: "ease" }
     );
 };
 
@@ -190,8 +240,8 @@ document.onvisibilitychange = () => {
     window.location.pathname == "/chat"
       ? " - Chat"
       : window.location.pathname == "/voice"
-        ? " - Voice Chat"
-        : "";
+      ? " - Voice Chat"
+      : "";
   missed = 0;
   document.title = "HGUT" + p;
   socket.emit("visible", user.visible);
@@ -210,75 +260,75 @@ const switchTab = (tab) => {
   tab.classList.add("selected");
   if (tab.id == "voice" && window.location.pathname != "/voice")
     window.location.href = "/voice";
-	else if (tab.id == "logout")
-			window.location.href = "/logout";
+  else if (tab.id == "logout") window.location.href = "/logout";
   else if (window.location.pathname != "/chat") window.location.href = "/chat";
 };
 
 const createNotification = ([m, u, r]) => {
-	if (!rns[r]) rns[r] = r;
-	const notifications = document.querySelector("#notifications");
-	const n = document.createElement("div");
-	n.id = "notification";
-	const p = getProfile(u, false);
-	const cont = document.createElement("div");
-	cont.id = "cont";
-	const name = document.createElement("div");
-	name.id = "n";
-	const room = Number(rns[r].split("-")[0]) ? "" : " in <b>" + rns[r] + "</b>";
-	name.innerHTML = "<b>" + u.name.split(" ")[0] + "</b> sent you a message" + room;
-	const message = document.createElement("div");
-	message.id = "m";
-	message.innerText = m;
-	const x = document.createElement("div");
-	x.id = "x";
-	const xSvg = document.createElementNS(
-		"http://www.w3.org/2000/svg",
-		"svg",
-	);
-	xSvg.setAttribute("width", "24");
-	xSvg.setAttribute("height", "24");
-	xSvg.setAttribute("viewBox", "0 0 24 24");
-	xSvg.setAttribute("fill", "currentColor");
-	xSvg.setAttribute("stroke", "currentColor");
-	xSvg.setAttribute("stroke-width", "2");
-	xSvg.setAttribute("stroke-linecap", "round");
-	xSvg.setAttribute("stroke-linejoin", "round");
-	xSvg.innerHTML = `<path d="M18 6L6 18M6 6l12 12"/>`;
-	x.appendChild(xSvg);
-	cont.appendChild(name);
-	cont.appendChild(message);
-	n.appendChild(p);
-	n.appendChild(cont);
-	n.appendChild(x);
-	n.onclick = e => {
-		clearNotification(n);
-		if (e.target.id == "x") return;
-		const lr =
-			document.querySelector(".c-" + r) ||
-			document.querySelector(".c-" + r.split("-").reverse().join("-")) ||
-			document.querySelector("." + r);
-		switchChat(lr);
-	};
-	setTimeout(() => clearNotification(n), 10000);
-	notifications.insertBefore(n, notifications.firstChild);
+  if (!rns[r]) rns[r] = r;
+  const notifications = document.querySelector("#notifications");
+  const n = document.createElement("div");
+  n.id = "notification";
+  const p = getProfile(u, false);
+  const cont = document.createElement("div");
+  cont.id = "cont";
+  const name = document.createElement("div");
+  name.id = "n";
+  const room = Number(rns[r].split("-")[0]) ? "" : " in <b>" + rns[r] + "</b>";
+  name.innerHTML =
+    "<b>" + u.name.split(" ")[0] + "</b> sent you a message" + room;
+  const message = document.createElement("div");
+  message.id = "m";
+  message.innerText = m;
+  const x = document.createElement("div");
+  x.id = "x";
+  const xSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  xSvg.setAttribute("width", "24");
+  xSvg.setAttribute("height", "24");
+  xSvg.setAttribute("viewBox", "0 0 24 24");
+  xSvg.setAttribute("fill", "currentColor");
+  xSvg.setAttribute("stroke", "currentColor");
+  xSvg.setAttribute("stroke-width", "2");
+  xSvg.setAttribute("stroke-linecap", "round");
+  xSvg.setAttribute("stroke-linejoin", "round");
+  xSvg.innerHTML = `<path d="M18 6L6 18M6 6l12 12"/>`;
+  x.appendChild(xSvg);
+  cont.appendChild(name);
+  cont.appendChild(message);
+  n.appendChild(p);
+  n.appendChild(cont);
+  n.appendChild(x);
+  n.onclick = (e) => {
+    clearNotification(n);
+    if (e.target.id == "x") return;
+    const lr =
+      document.querySelector(".c-" + r) ||
+      document.querySelector(".c-" + r.split("-").reverse().join("-")) ||
+      document.querySelector("." + r);
+    switchChat(lr);
+  };
+  setTimeout(() => clearNotification(n), 10000);
+  notifications.insertBefore(n, notifications.firstChild);
 };
 
 const clearNotification = (n) => {
-	n.style.opacity = 0;
-	n.style.transform = "translateX(100%)";
-	n.style.marginBottom = "-60px";
-	setTimeout(() => n.remove(), 3000);
+  n.style.opacity = 0;
+  n.style.transform = "translateX(100%)";
+  n.style.marginBottom = "-60px";
+  setTimeout(() => n.remove(), 3000);
 };
 
 const checkDev = () => {
-	if (!devMode) return;
-	const u = document.cookie.split(";").find(e => e.includes("user=")).split("user=")[1];
-	if (u != "Joshua%20Keesee") return;
-	const dev = document.createElement("script");
-	dev.src = "https://cdn.jsdelivr.net/npm/eruda";
-	dev.onload = () => eruda.init();
-	document.body.appendChild(dev);
+  if (!devMode) return;
+  const u = document.cookie
+    .split(";")
+    .find((e) => e.includes("user="))
+    .split("user=")[1];
+  if (u != "Joshua%20Keesee") return;
+  const dev = document.createElement("script");
+  dev.src = "https://cdn.jsdelivr.net/npm/eruda";
+  dev.onload = () => eruda.init();
+  document.body.appendChild(dev);
 };
 
 window.onload = checkDev;

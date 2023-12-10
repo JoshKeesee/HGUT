@@ -39,6 +39,7 @@ socket.on("chat message", addMessage);
 socket.on("profiles", (p) => (p ? (profiles = p) : ""));
 socket.on("user", async (u) => {
   user = u;
+	user.visible = document.visibilityState == "visible";
   await us();
   const pec = document.querySelector("#people-container");
   pec.innerHTML = "";

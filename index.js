@@ -26,6 +26,7 @@ const auth = (req, res, next) => {
 		"images",
 		"manifest.json",
 		"favicon.png",
+		"big_icon.png",
 		"sw.js",
 	];
 	if (req.user || cancel.includes(req.url.split("/")[1])) return next();

@@ -17,13 +17,13 @@
 		{
 			"src": "/favicon.png",
 			"type": "image/png",
-			"sizes": "1024x1024",
+			"sizes": "300x300",
 			"purpose": "any"
 		},
 		{
-			"src": "/favicon.png",
+			"src": "/big_icon.png",
 			"type": "image/png",
-			"sizes": "1024x1024",
+			"sizes": "512x512",
 			"purpose": "maskable"
 		}
 	],
