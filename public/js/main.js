@@ -1,7 +1,7 @@
 const SERVER = "https://db.hgut.repl.co/";
 const icon = document.querySelector("#icon");
 
-const devMode = true;
+const devMode = false;
 
 let missed = 0,
   loadingMessages = false,
@@ -103,6 +103,7 @@ const updateMessageProfiles = () => {
   const cms = document.querySelector("#chat-messages");
   let last;
   [].slice.call(cms.children).forEach((e, i) => {
+		last = null;
     [].slice.call(e.children).forEach((ee, ii) => {
       const p = ee.querySelector("#profile");
       if (!p) return;
@@ -112,13 +113,89 @@ const updateMessageProfiles = () => {
   });
 };
 
-const replyMessage = (el, message, u, date) => {
-  if (u.id != user.id) return;
-  console.log("yep");
+const updateEditOnclick = () => {
+	const edit = document.querySelectorAll("#edit");
+	edit.forEach((e) => {
+		e.onclick = () => {
+			const cm = e.parentElement.parentElement;
+			const m = cm.querySelector("#message");
+			const u = profiles[cm.querySelector("#profile").className.replace("-", " ")].name;
+			const id = m.className.split(" ")[0].replace("m-", "");
+			if (u != user.name) return;
+			const val = m.innerText;
+			m.contentEditable = true;
+			m.focus();
+			m.onblur = () => {
+				m.contentEditable = false;
+				if (m.innerText == val || m.innerText.length == 0) return m.innerText = val;
+				m.innerHTML = linkify(m.innerText);
+				socket.emit("edit", {
+					id,
+					message: m.innerText,
+					profile: u,
+					room: user.room,
+				});
+			};
+			m.onkeydown = (e) => {
+				if (e.key == "Enter") m.blur();
+			};
+		};
+	});
+};
+
+const updateReplyOnclick = () => {
+	const reply = document.querySelectorAll("#reply");
+	reply.forEach((e) => {
+		e.onclick = () => {
+			const cm = e.parentElement.parentElement;
+			const m = cm.querySelector("#message");
+			const myUser = cm.querySelector("#profile").className.replace("-", " ") == user.name;
+			const r = cm.cloneNode(true);
+			r.querySelector("#profile").remove();
+			const pc = getProfile(user, false);
+			pc.id = "profile";
+			if (!myUser) r.querySelector("#message").before(pc);
+			cm.parentElement.insertBefore(r, cm.nextSibling);
+			const rm = r.querySelector("#message");
+			rm.style.background = toRgba(user.color, 0.4);
+			rm.contentEditable = true;
+			rm.innerText = "";
+			rm.focus();
+			rm.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
+			rm.onblur = () => {
+				if (rm.innerText.length == 0) return r.remove();
+				rm.contentEditable = false;
+				rm.innerHTML = linkify(rm.innerText);
+				updateEditOnclick();
+				updateReplyOnclick();
+				updateDeleteOnclick();
+				updateMessageProfiles();
+			};
+			updateMessageProfiles();
+		};
+	});
+};
+
+const updateDeleteOnclick = () => {
+	const del = document.querySelectorAll("#delete");
+	del.forEach((e) => {
+		e.onclick = () => {
+			const cm = e.parentElement.parentElement;
+			const m = cm.querySelector("#message");
+			const u = profiles[cm.querySelector("#profile").className.replace("-", " ")].name;
+			const id = m.className.split(" ")[0].replace("m-", "");
+			if (u != user.name) return;
+			socket.emit("delete", {
+				id,
+				profile: u,
+				room: user.room,
+			});
+		};
+	});
 };
 
 const addMessage = (
-  [message, u, d, lm = null],
+  [message, u, d, lm = null, mId = 0],
   smooth = true,
   scroll = true,
   start = false
@@ -139,6 +216,7 @@ const addMessage = (
   const pc = getProfile(u, false);
   const m = document.createElement("div");
   m.id = "message";
+	m.classList.add(typeof currMessages != "undefined" ? "m-" + mId : "");
   m.style.background = toRgba(u.color, 0.4);
   m.innerHTML = message;
   m.innerHTML = linkify(m.innerText, smooth, scroll, start);
@@ -147,26 +225,14 @@ const addMessage = (
 	if (myUser) {
 	  const edit = document.createElement("div");
 	  edit.id = "edit";
-		edit.onclick = () => {
-			const text = document.createElement("textarea");
-			text.id = "edit-message";
-			text.value = message;
-			text.style.width = m.clientWidth + "px";
-			text.style.height = getComputedStyle(m).height;
-			text.onblur = () => text.value.length > 0 ? m.innerHTML = linkify(text.value) : "";
-			text.onkeydown = (e) => {
-				if (e.key == "Enter") {
-					text.value.length > 0 ? m.innerHTML = linkify(text.value) : "";
-				}
-			};
-			text.oninput = () => text.style.width = (text.value.length * (getComputedStyle(text).fontSize.replace("px", "") / 2)) + "px";
-			m.innerHTML = "";
-			m.appendChild(text);
-			text.focus();
-		};
 		const editSvg = getSvg("edit-svg", "M441 58.9L453.1 71c9.4 9.4 9.4 24.6 0 33.9L424 134.1 377.9 88 407 58.9c9.4-9.4 24.6-9.4 33.9 0zM209.8 256.2L344 121.9 390.1 168 255.8 302.2c-2.9 2.9-6.5 5-10.4 6.1l-58.5 16.7 16.7-58.5c1.1-3.9 3.2-7.5 6.1-10.4zM373.1 25L175.8 222.2c-8.7 8.7-15 19.4-18.3 31.1l-28.6 100c-2.4 8.4-.1 17.4 6.1 23.6s15.2 8.5 23.6 6.1l100-28.6c11.8-3.4 22.5-9.7 31.1-18.3L487 138.9c28.1-28.1 28.1-73.7 0-101.8L474.9 25C446.8-3.1 401.2-3.1 373.1 25zM88 64C39.4 64 0 103.4 0 152V424c0 48.6 39.4 88 88 88H360c48.6 0 88-39.4 88-88V312c0-13.3-10.7-24-24-24s-24 10.7-24 24V424c0 22.1-17.9 40-40 40H88c-22.1 0-40-17.9-40-40V152c0-22.1 17.9-40 40-40H200c13.3 0 24-10.7 24-24s-10.7-24-24-24H88z");
 		edit.appendChild(editSvg);
-		opts.appendChild(edit);
+		if (m.querySelectorAll("img").length == 0) opts.appendChild(edit);
+		const del = document.createElement("div");
+		del.id = "delete";
+		const delSvg = getSvg("delete-svg", "M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z");
+		del.appendChild(delSvg);
+		opts.appendChild(del);
 	}
 	const reply = document.createElement("div");
 	reply.id = "reply";
@@ -176,7 +242,7 @@ const addMessage = (
   cm.appendChild(opts);
   if (!myUser) {
     cm.className = "right";
-    m.className = "right";
+    m.classList.add("right");
     opts.className = "left";
 		cm.appendChild(pc);
   }
@@ -184,7 +250,7 @@ const addMessage = (
   if (myUser) {
     pc.style.display = "none";
     cm.className = "left";
-    m.className = "left";
+		m.classList.add("left");
     opts.className = "right";
 		cm.appendChild(pc);
   }
@@ -222,6 +288,9 @@ const addMessage = (
     else cms.appendChild(cont);
   }
   updateMessageProfiles();
+	updateEditOnclick();
+	updateReplyOnclick();
+	updateDeleteOnclick();
   if (!start && atBottom)
     cms.scrollTo({
       top: cms.scrollHeight,
@@ -241,7 +310,8 @@ document.onvisibilitychange = () => {
       ? " - Chat"
       : window.location.pathname == "/voice"
       ? " - Voice Chat"
-      : "";
+      : window.location.pathname == "/login"
+			? " - Login" : "";
   missed = 0;
   document.title = "HGUT" + p;
   socket.emit("visible", user.visible);
@@ -253,15 +323,26 @@ tabs
   .querySelectorAll("div.tab")
   .forEach((e) => (e.onclick = () => switchTab(e)));
 
-const switchTab = (tab) => {
+document.querySelectorAll("#expand").forEach((e) => e.onclick = () => {
+	const h = document.querySelector("#header");
+	h.classList.toggle("toggled");
+	e.classList.toggle("toggled");
+});
+
+const switchTab = (tab, redirect = true) => {
+	if (tab.id == "theme") return;
+	const url = new URL(window.location.href);
+	url.searchParams.set("tab", tab.id);
+	window.history.pushState({}, "", url);
   tabs
     .querySelectorAll("div.tab")
     .forEach((e) => e.classList.remove("selected"));
   tab.classList.add("selected");
+	if (!redirect) return;
   if (tab.id == "voice" && window.location.pathname != "/voice")
-    window.location.href = "/voice";
+    window.location.href = "/voice?tab=" + tab.id;
   else if (tab.id == "logout") window.location.href = "/logout";
-  else if (window.location.pathname != "/chat") window.location.href = "/chat";
+  else if (window.location.pathname != "/chat") window.location.href = "/chat?tab=" + tab.id;
 };
 
 const createNotification = ([m, u, r]) => {
@@ -282,16 +363,7 @@ const createNotification = ([m, u, r]) => {
   message.innerText = m;
   const x = document.createElement("div");
   x.id = "x";
-  const xSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  xSvg.setAttribute("width", "24");
-  xSvg.setAttribute("height", "24");
-  xSvg.setAttribute("viewBox", "0 0 24 24");
-  xSvg.setAttribute("fill", "currentColor");
-  xSvg.setAttribute("stroke", "currentColor");
-  xSvg.setAttribute("stroke-width", "2");
-  xSvg.setAttribute("stroke-linecap", "round");
-  xSvg.setAttribute("stroke-linejoin", "round");
-  xSvg.innerHTML = `<path d="M18 6L6 18M6 6l12 12"/>`;
+	const xSvg = getSvg("x-svg", "M18 6L6 18M6 6l12 12");
   x.appendChild(xSvg);
   cont.appendChild(name);
   cont.appendChild(message);
@@ -331,4 +403,12 @@ const checkDev = () => {
   document.body.appendChild(dev);
 };
 
-window.onload = checkDev;
+const init = () => {
+	checkDev();
+	const url = new URL(window.location.href);
+	const tab = url.searchParams.get("tab");
+	if (tab) switchTab(document.querySelector(`#${tab}`), false);
+};
+
+window.onload = init;
+window.onpopstate = init;

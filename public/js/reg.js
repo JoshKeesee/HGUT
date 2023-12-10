@@ -9,6 +9,8 @@ const registerSw = async (p) => {
     scope: "/chat",
   });
 
+	await navigator.serviceWorker.ready;
+
   if (p != "granted") return;
 
   const subscription = await register.pushManager.subscribe({

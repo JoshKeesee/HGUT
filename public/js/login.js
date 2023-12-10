@@ -5,7 +5,8 @@ const switchTheme = (dark = !theme) => {
 	const d = dark ? "dark" : "light";
 	document.body.className = d;
 	document.querySelector("form").className = d + "-box";
-	document.querySelector("meta[name=theme-color]").setAttribute("content", user.theme ? "#000014" : user.accent ? rgbToHex(toRgba(user.color)) : rgbToHex("rgb(0, 0, 255)"));
+	document.querySelector("#light-icon").style.opacity = theme ? 0 : 1;
+	document.querySelector("#dark-icon").style.opacity = theme ? 1 : 0;
 };
 
 if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) switchTheme(true);

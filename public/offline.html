@@ -4,7 +4,6 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>HGUT - Offline</title>
 		<link rel="icon" href="favicon.png" />
-		<meta name="theme-color" content="#ffffff" />
 		<style>
 			* {
 				margin: 0;
@@ -69,7 +68,6 @@
 				user.theme = dark;
 				const d = user.theme ? "dark" : "light";
 				document.body.className = d;
-				document.querySelector("meta[name=theme-color]").setAttribute("content", user.theme ? "#000014" : "#f8f8f8");
 			};
 			if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) switchTheme(true);
 			window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", ({ matches }) => switchTheme(matches));

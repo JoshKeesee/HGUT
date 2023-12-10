@@ -261,16 +261,6 @@ const switchTheme = (dark = !user.theme, color) => {
   document
     .querySelectorAll("#bg")
     .forEach((b) => (b.style.background = user.theme ? "black" : "white"));
-  document
-    .querySelector("meta[name=theme-color]")
-    .setAttribute(
-      "content",
-      user.theme
-        ? "#000014"
-        : user.accent
-          ? rgbToHex(toRgba(user.color))
-          : rgbToHex("rgb(0, 0, 255)"),
-    );
 	document
 	.querySelectorAll(".loading div")
 	.forEach((b) => (b.style.background = user.theme ? "radial-gradient(#fff, transparent)" : "radial-gradient(#000, transparent)"));
@@ -431,7 +421,6 @@ window
 document.querySelector("#theme").onclick = () => switchTheme();
 
 const updateTime = () => {
-  setTimeout(updateTime, 1000);
   const t = document.querySelector("#time");
   t.innerHTML = new Date().toLocaleTimeString("en-US", {
     hour: "numeric",
@@ -440,4 +429,4 @@ const updateTime = () => {
   });
 };
 
-updateTime();
+setInterval(updateTime, 1000);

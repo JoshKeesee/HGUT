@@ -8,7 +8,7 @@
 	"scope": "/",
 	"short_name": "HGUT",
 	"start_url": "/chat",
-	"theme_color": "#ffffff",
+	"theme_color": "#000000",
 	"categories": [
 		"books"
 	],
