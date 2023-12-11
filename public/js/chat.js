@@ -1,5 +1,5 @@
-const socket = io(SERVER + "chat", {
-  path: "/socket.io",
+const chat = io(SERVER + "chat", {
+  autoConnect: false,
   transports: ["websocket"],
   query: {
     user: document.cookie,
@@ -13,12 +13,9 @@ loading.id = "loading";
 loading.className = "loading";
 for (let i = 0; i < 4; i++) loading.appendChild(document.createElement("div"));
 const maxMessages = 50;
-let user = {},
-  profiles = {},
-  maxMessagesReached = false,
+let maxMessagesReached = false,
   currMessages = maxMessages,
   mobile = window.innerWidth < 700,
-  online = {},
   rn = [],
   prev = "";
 
@@ -56,10 +53,10 @@ const roomButton = (text, cn, u = true, d) => {
   return crc;
 };
 
-socket.on("connect", () => {
-  socket.emit("visible", document.visibilityState == "visible");
+chat.on("connect", () => {
+  chat.emit("visible", document.visibilityState == "visible");
 });
-socket.on("typing", (t) => {
+chat.on("typing", (t) => {
   const typing = document.querySelector("#typing");
   if (t.length == 0) return (typing.style = "");
   else typing.style.opacity = 1;
@@ -79,7 +76,7 @@ socket.on("typing", (t) => {
   typing.innerText =
     t.length == 1 ? text + " is typing..." : text + " are typing...";
 });
-socket.on("unread", (u) => {
+chat.on("unread", (u) => {
   user.unread = u;
   user.unread.forEach((c) => {
     const d =
@@ -91,7 +88,7 @@ socket.on("unread", (u) => {
     if (d) d.style.display = "block";
   });
 });
-socket.on("load messages", ([messages, numMessages]) => {
+chat.on("load messages", ([messages, numMessages]) => {
   maxMessagesReached = messages.length < maxMessages;
   const cms = document.querySelector("#chat-messages");
   const h = cms.scrollHeight;
@@ -112,30 +109,31 @@ socket.on("load messages", ([messages, numMessages]) => {
   });
   loadingMessages = false;
 });
-socket.on("chat message", ([m, u, d, lm, a, mId]) => {
+chat.on("chat message", ([m, u, d, lm, a, mId]) => {
   if (!(a.includes(user.id) || a == "all")) return;
   if (u.room == user.room) addMessage([m, u, d, lm, mId]);
   else createNotification([m, u, u.room]);
 });
-socket.on("edit", ({ id, message, user }) => {
-	const m = document.querySelector(".m-" + id);
-	if (!m) return;
-	m.innerHTML = linkify(message);
-	updateMessageProfiles();
+chat.on("edit", ({ id, message, user }) => {
+  const m = document.querySelector(".m-" + id);
+  if (!m) return;
+  m.innerHTML = linkify(message);
+  updateMessageProfiles();
 });
-socket.on("delete", ({ id, user}) => {
-	const m = document.querySelector(".m-" + id);
-	if (!m) return;
-	if ([].slice.call(m.parentElement.parentElement.children).length <= 2) m.parentElement.parentElement.remove();
-	else m.parentElement.remove();
-	updateMessageProfiles();
-	updateEditOnclick();
-	updateReplyOnclick();
-	updateDeleteOnclick();
-	const cm = document.querySelector("#chat-messages");
-	if (cm.children.length == 0) cm.innerText = "Sorry, no messages here...";
+chat.on("delete", ({ id, user }) => {
+  const m = document.querySelector(".m-" + id);
+  if (!m) return;
+  if ([].slice.call(m.parentElement.parentElement.children).length <= 2)
+    m.parentElement.parentElement.remove();
+  else m.parentElement.remove();
+  updateMessageProfiles();
+  updateEditOnclick();
+  updateReplyOnclick();
+  updateDeleteOnclick();
+  const cm = document.querySelector("#chat-messages");
+  if (cm.children.length == 0) cm.innerText = "Sorry, no messages here...";
 });
-socket.on("rooms", ([rooms, p, numMessages]) => {
+chat.on("rooms", ([rooms, p, numMessages]) => {
   loadingMessages = true;
   rn = Object.keys(rooms);
   const vs = Object.values(rooms);
@@ -174,7 +172,13 @@ socket.on("rooms", ([rooms, p, numMessages]) => {
       else
         Object.values(r.messages).forEach((m, i) =>
           addMessage(
-            [m.message, profiles[m.name], m.date, r.messages[i - 1], numMessages - r.messages.length + i],
+            [
+              m.message,
+              profiles[m.name],
+              m.date,
+              r.messages[i - 1],
+              numMessages - r.messages.length + i,
+            ],
             false,
           ),
         );
@@ -198,11 +202,11 @@ socket.on("rooms", ([rooms, p, numMessages]) => {
   if (!maxMessagesReached) cms.insertBefore(loading, cms.firstChild);
   loadingMessages = false;
 });
-socket.on("profiles", (p) => {
+chat.on("profiles", (p) => {
   profiles = p;
   updateProfiles();
 });
-socket.on("user", (u) => {
+chat.on("user", (u) => {
   user = u;
   user.visible = document.visibilityState == "visible";
   setTimeout(
@@ -211,11 +215,11 @@ socket.on("user", (u) => {
   );
   updateProfiles();
 });
-socket.on("online", (u) => {
+chat.on("online", (u) => {
   online = u;
   updateOnline();
 });
-socket.on("join room", ([messages, r, u, numMessages]) => {
+chat.on("join room", ([messages, r, u, numMessages]) => {
   loadingMessages = false;
   currMessages = 0;
   user.unread = u;
@@ -225,14 +229,17 @@ socket.on("join room", ([messages, r, u, numMessages]) => {
   if (messages.length == 0) cms.innerText = "Sorry, no messages here...";
   else
     messages.forEach((m, i) =>
-      addMessage([m.message, profiles[m.name], m.date, messages[i - 1], numMessages - i], false),
+      addMessage(
+        [m.message, profiles[m.name], m.date, messages[i - 1], numMessages - i],
+        false,
+      ),
     );
   user.room = r;
   maxMessagesReached = currMessages < maxMessages;
   cms.style = "";
   if (!maxMessagesReached) cms.insertBefore(loading, cms.firstChild);
 });
-socket.on("redirect", (d) => (window.location.href = d));
+chat.on("redirect", (d) => (window.location.href = d));
 
 const switchChat = (el) => {
   const r = user.room.split("-");
@@ -269,7 +276,7 @@ const switchChat = (el) => {
   }
   setTimeout(() => {
     cn.innerHTML = n;
-    socket.emit("join room", el.className.replace("c-", ""));
+    chat.emit("join room", el.className.replace("c-", ""));
   }, 200);
 };
 
@@ -389,7 +396,12 @@ const switchTheme = (dark = !user.theme, color) => {
   if (lr) lr.style.background = th;
   document
     .querySelectorAll(".loading div")
-    .forEach((b) => (b.style.background = user.theme ? "radial-gradient(#fff, transparent)" : "radial-gradient(#000, transparent)"));
+    .forEach(
+      (b) =>
+        (b.style.background = user.theme
+          ? "radial-gradient(#fff, transparent)"
+          : "radial-gradient(#000, transparent)"),
+    );
   document
     .querySelectorAll("#unread")
     .forEach((b) => (b.style.background = user.theme ? "black" : "white"));
@@ -400,7 +412,7 @@ const switchTheme = (dark = !user.theme, color) => {
       root.style.setProperty("--theme-" + k, rgb[k]),
     );
   }
-  socket.emit("theme", user.theme);
+  chat.emit("theme", user.theme);
 };
 
 input.onkeydown = (e) => {
@@ -411,32 +423,32 @@ input.onkeydown = (e) => {
     i.length == 0 ||
     i.length > 250 ||
     loadingMessages ||
-    !socket.connected
+    !chat.connected
   )
     return;
-  socket.emit("chat message", i);
+  chat.emit("chat message", i);
   input.value = "";
 };
 
 input.onkeyup = (e) => {
   const i = input.value;
-  if (i.length > 0) socket.emit("typing", true);
-  else socket.emit("typing", false);
+  if (i.length > 0) chat.emit("typing", true);
+  else chat.emit("typing", false);
 };
 
 send.onclick = (e) => {
   const i = input.value;
   if (!i.replace(/\s/g, "").length) return;
-  if (i.length == 0 || i.length > 250 || loadingMessages || !socket.connected)
+  if (i.length == 0 || i.length > 250 || loadingMessages || !chat.connected)
     return;
-  socket.emit("chat message", i);
+  chat.emit("chat message", i);
   input.value = "";
 };
 
 addFile.onchange = (e) => {
   const img = e.target.files[0];
   const fr = new FileReader();
-  fr.onload = () => socket.emit("chat message", fr.result);
+  fr.onload = () => chat.emit("chat message", fr.result);
   fr.readAsDataURL(img);
 };
 
@@ -446,5 +458,5 @@ document.querySelector("#chat-messages").onscroll = (e) => {
   const t = e.target.scrollTop;
   if (t > 100 || maxMessagesReached || loadingMessages) return;
   loadingMessages = true;
-  socket.emit("load messages", currMessages);
+  chat.emit("load messages", currMessages);
 };

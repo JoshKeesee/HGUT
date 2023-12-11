@@ -1,5 +1,6 @@
 const peer = new Peer();
-const socket = io(SERVER + "voice", {
+const voice = io(SERVER + "voice", {
+  autoConnect: false,
   transports: ["websocket"],
   query: {
     user: document.cookie,
@@ -8,16 +9,13 @@ const socket = io(SERVER + "voice", {
 const cam = document.querySelector("#toggle-cam");
 const mic = document.querySelector("#toggle-mic");
 const leave = document.querySelector("#leave-voice");
-const input = document.querySelector("#chat-input");
-const send = document.querySelector("#chat-send");
-const chat = document.querySelector("#toggle-chat");
+const chatInput = document.querySelector("#voice-chat-input");
+const voiceSend = document.querySelector("#voice-chat-send");
+const toggleChat = document.querySelector("#toggle-chat");
 const present = document.querySelector("#toggle-presentation");
 let stream = null,
   pres = null;
-let user = {},
-  profiles = {},
-  switched = {},
-  online = {},
+let switched = {},
   callList = [],
   gridA = [];
 const vidConstraints = {
@@ -35,30 +33,30 @@ const us = async () => {
   stream.getAudioTracks().forEach((v) => (v.enabled = false));
 };
 
-socket.on("chat message", addMessage);
-socket.on("profiles", (p) => (p ? (profiles = p) : ""));
-socket.on("user", async (u) => {
+voice.on("chat message", addMessage);
+voice.on("profiles", (p) => (p ? (profiles = p) : ""));
+voice.on("user", async (u) => {
   user = u;
-	user.visible = document.visibilityState == "visible";
+  user.visible = document.visibilityState == "visible";
   await us();
   const pec = document.querySelector("#people-container");
   pec.innerHTML = "";
-  switchTheme(user.theme, user.accent ? user.color : null);
+  switchVoiceTheme(user.theme, user.accent ? user.color : null);
   addVideo(user, stream, true);
-  updateOnline();
+  updateVoiceOnline();
 });
-socket.on("online", (u) => {
+voice.on("online", (u) => {
   online = u;
-  updateOnline();
+  updateVoiceOnline();
 });
-socket.on("camera", ([camera, id]) => {
+voice.on("camera", ([camera, id]) => {
   switched[id].camera = camera;
   const c = document.querySelector(".person-" + id);
   c.querySelectorAll("#video").forEach(
     (v) => (v.style.display = camera ? "block" : "none"),
   );
 });
-socket.on("audio", ([audio, id]) => {
+voice.on("audio", ([audio, id]) => {
   switched[id].audio = audio;
   const c = document.querySelector(".person-" + id);
   c.querySelectorAll("div.a").forEach(
@@ -68,9 +66,9 @@ socket.on("audio", ([audio, id]) => {
     (e) => (e.style.display = audio ? "none" : "block"),
   );
 });
-socket.on("switched", (s) => (switched = s));
-socket.on("redirect", (d) => (window.location.href = d));
-socket.on("call list", async (c) => {
+voice.on("switched", (s) => (switched = s));
+voice.on("redirect", (d) => (window.location.href = d));
+voice.on("call list", async (c) => {
   await us();
   c.forEach(addPerson);
 });
@@ -176,7 +174,7 @@ const addVideo = async (p, s, self = false, big = false, pre = false) => {
 };
 
 const addPerson = (p) => {
-  if (p.peerId == user.peerId) return;
+  if (p.peerId == user.peerId || callList.includes(p.peerId)) return;
   const call = peer.call(p.peerId, stream, {
     metadata: { pres: false, id: user.peerId },
   });
@@ -202,17 +200,9 @@ const removePerson = (p, pre = false) => {
   animateGridItems(prevPositions, p.peerId);
 };
 
-socket.on("remove person", ([u, pres = false]) => removePerson(u, pres));
-peer.on("open", (id) => {
-  user.peerId = id;
-  socket.emit("id", id);
-});
-socket.on("disconnect", () => {
-  const reload = confirm("You have been disconnected. Reload?");
-  if (reload) window.location.reload();
-});
+voice.on("remove person", ([u, pres = false]) => removePerson(u, pres));
 peer.on("call", (call) => {
-  socket.emit("get switched", async (sw) => {
+  voice.emit("get switched", async (sw) => {
     switched = sw;
     const p = Object.values(profiles).find(
       (e) => e.id == sw[Object.keys(sw).find((k) => k == call.peer)].id,
@@ -230,7 +220,7 @@ peer.on("call", (call) => {
   });
 });
 
-const updateOnline = () => {
+const updateVoiceOnline = () => {
   const o = document.querySelector("#online");
   o.innerHTML = "";
   Object.values(profiles)
@@ -251,7 +241,7 @@ const updateOnline = () => {
     });
 };
 
-const switchTheme = (dark = !user.theme, color) => {
+const switchVoiceTheme = (dark = !user.theme, color) => {
   user.theme = dark;
   const d = dark ? "dark" : "light";
   document.body.className = d;
@@ -261,9 +251,14 @@ const switchTheme = (dark = !user.theme, color) => {
   document
     .querySelectorAll("#bg")
     .forEach((b) => (b.style.background = user.theme ? "black" : "white"));
-	document
-	.querySelectorAll(".loading div")
-	.forEach((b) => (b.style.background = user.theme ? "radial-gradient(#fff, transparent)" : "radial-gradient(#000, transparent)"));
+  document
+    .querySelectorAll(".loading div")
+    .forEach(
+      (b) =>
+        (b.style.background = user.theme
+          ? "radial-gradient(#fff, transparent)"
+          : "radial-gradient(#000, transparent)"),
+    );
   document
     .querySelectorAll("#ring")
     .forEach((b) => (b.style.borderColor = user.theme ? "#999" : "#fff"));
@@ -280,7 +275,7 @@ const switchTheme = (dark = !user.theme, color) => {
       root.style.setProperty("--theme-" + k, rgb[k]),
     );
   }
-  socket.emit("theme", user.theme);
+  voice.emit("theme", user.theme);
 };
 
 const toggleCamera = async (set = !user.camera) => {
@@ -302,7 +297,7 @@ const toggleCamera = async (set = !user.camera) => {
     v.onmetadataloaded = () => v.play();
     v.style.display = user.camera ? "block" : "none";
   });
-  socket.emit("camera", user.camera);
+  voice.emit("camera", user.camera);
 };
 
 const toggleAudio = async (set = !user.audio) => {
@@ -316,8 +311,8 @@ const toggleAudio = async (set = !user.audio) => {
     mic.querySelector("svg.on").style.display = "none";
     mic.querySelector("svg.off").style.display = "block";
   }
-	if (user.audio) stream.getAudioTracks().forEach((v) => (v.enabled = true));
-	else stream.getAudioTracks().forEach((v) => (v.enabled = false));
+  if (user.audio) stream.getAudioTracks().forEach((v) => (v.enabled = true));
+  else stream.getAudioTracks().forEach((v) => (v.enabled = false));
   const c = document.querySelector(".person-" + user.peerId);
   if (!c) return;
   c.querySelectorAll("div.a").forEach(
@@ -326,7 +321,7 @@ const toggleAudio = async (set = !user.audio) => {
   c.querySelectorAll("#muted").forEach(
     (e) => (e.style.display = user.audio ? "none" : "block"),
   );
-  socket.emit("audio", user.audio);
+  voice.emit("audio", user.audio);
 };
 
 const togglePresent = async () => {
@@ -342,7 +337,7 @@ const togglePresent = async () => {
     } catch (e) {
       return togglePresent();
     }
-    socket.emit("present", user.peerId);
+    voice.emit("present", user.peerId);
     pres.getVideoTracks()[0].onended = togglePresent;
     for (const e of callList) {
       if (e == peer.id || e.includes("pres")) return;
@@ -367,7 +362,7 @@ const togglePresent = async () => {
     }
     removePerson(user, true);
     pres = null;
-    socket.emit("present", null);
+    voice.emit("present", null);
   }
 };
 
@@ -378,32 +373,32 @@ leave.onclick = () => {
   else window.location.href = "/chat";
 };
 
-input.onkeydown = (e) => {
-  const i = input.value;
+chatInput.onkeydown = (e) => {
+  const i = chatInput.value;
   if (!i.replace(/\s/g, "").length) return;
-  if (e.key != "Enter" || i.length == 0 || i.length > 250 || !socket.connected)
+  if (e.key != "Enter" || i.length == 0 || i.length > 250 || !voice.connected)
     return;
-  socket.emit("chat message", i);
-  input.value = "";
+  voice.emit("chat message", i);
+  chatInput.value = "";
 };
 
-send.onclick = (e) => {
-  const i = input.value;
+voiceSend.onclick = (e) => {
+  const i = chatInput.value;
   if (!i.replace(/\s/g, "").length) return;
-  if (i.length == 0 || i.length > 250 || !socket.connected) return;
-  socket.emit("chat message", i);
-  input.value = "";
+  if (i.length == 0 || i.length > 250 || !voice.connected) return;
+  voice.emit("chat message", i);
+  chatInput.value = "";
 };
 
-chat.onclick = () => {
+toggleChat.onclick = () => {
   user.chat = !user.chat;
   if (user.chat)
-    chat.style.background =
+    toggleChat.style.background =
       "rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.9)";
-  else chat.style = "";
+  else toggleChat.style = "";
   const c = document.querySelector("#main-cont");
   c.classList.toggle("toggled");
-  const ci = document.querySelector("#chat-input");
+  const ci = document.querySelector("#voice-chat-input");
   if (user.chat) ci.focus();
   else ci.blur();
 };
@@ -414,11 +409,11 @@ if (
   window.matchMedia &&
   window.matchMedia("(prefers-color-scheme: dark)").matches
 )
-  switchTheme(true);
+  switchVoiceTheme(true);
 window
   .matchMedia("(prefers-color-scheme: dark)")
-  .addEventListener("change", ({ matches }) => switchTheme(matches));
-document.querySelector("#theme").onclick = () => switchTheme();
+  .addEventListener("change", ({ matches }) => switchVoiceTheme(matches));
+document.querySelector("#theme").onclick = () => switchVoiceTheme();
 
 const updateTime = () => {
   const t = document.querySelector("#time");

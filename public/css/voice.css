@@ -5,12 +5,16 @@
 
 #voice-container {
   overflow: hidden;
-  display: flex;
+  display: none;
   flex-direction: column;
   gap: 5px;
-	margin-left: 5px;
-	width: 100%;
-	height: 100%;
+  height: 100%;
+  padding: 5px;
+}
+
+#container:has(#header #tabs #voice.selected) #voice-container {
+  animation: zoom 0.2s ease;
+  display: flex;
 }
 
 #main-cont {
@@ -297,7 +301,7 @@ svg {
   border-bottom-left-radius: 10px;
 }
 
-#chat-messages {
+#voice-chat-messages {
   height: 90%;
   max-height: 90%;
   width: calc(100% - 0);
