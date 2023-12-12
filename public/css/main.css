@@ -57,6 +57,7 @@ html {
 }
 
 #header {
+	width: fit-content;
   user-select: none;
   display: flex;
   gap: 5px;
@@ -153,6 +154,14 @@ html {
   transition:
     background 0.2s ease,
     width 0.2s ease;
+}
+
+#online.dark-box {
+	background: #000;
+}
+
+#online.light-box {
+	background: #fff;
 }
 
 #online:empty {
@@ -492,7 +501,7 @@ input[type="file"] {
   display: flex;
   gap: 5px;
   flex-direction: column;
-  width: 100%;
+	overflow: hidden;
 }
 
 #tabs .tab,
@@ -503,14 +512,11 @@ input[type="file"] {
   padding: 5px;
   border-radius: 10px;
   cursor: pointer;
-  transition:
-    background 0.2s ease,
-    width 0.2s ease;
+  transition: background 0.2s ease, width 0.2s ease, border-radius 0.2s ease;
   overflow: hidden;
   width: 25px;
   height: 25px;
   display: flex;
-  align-items: center;
   justify-content: center;
 }
 
@@ -523,7 +529,7 @@ input[type="file"] {
   width: 25px;
   height: 25px;
   color: inherit;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.2s ease, color 0.2s ease;
 }
 
 #tabs .tab:not(.selected) svg.solid,
@@ -553,7 +559,8 @@ body:has(#header.toggled) #tabs .tab div {
 }
 
 body:has(#header.toggled) #tabs .tab {
-  width: 100%;
+	width: 200px;
+	border-radius: 30px;
 }
 
 #tabs .tab:hover,

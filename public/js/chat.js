@@ -111,8 +111,16 @@ chat.on("load messages", ([messages, numMessages]) => {
 });
 chat.on("chat message", ([m, u, d, lm, a, mId]) => {
   if (!(a.includes(user.id) || a == "all")) return;
-	let messageText = m;
-	if (u.room == "eth") messageText = messageText.split(" ").map(w => (w.charAt(w.length - 1).replace(/[.,\/#!?$%\^&\*;:{}=\-_`~()]/g, "") ? w + "eth" : w)).join(" ");
+  let messageText = m;
+  if (u.room == "eth")
+    messageText = messageText
+      .split(" ")
+      .map((w) =>
+        w.charAt(w.length - 1).replace(/[.,\/#!?$%\^&\*;:{}=\-_`~()]/g, "")
+          ? w + "eth"
+          : w,
+      )
+      .join(" ");
   if (u.room == user.room) addMessage([m, u, d, lm, mId]);
   else createNotification([messageText, u, u.room]);
 });
@@ -135,74 +143,92 @@ chat.on("delete", ({ id, user }) => {
   const cm = document.querySelector("#chat-messages");
   if (cm.children.length == 0) cm.innerText = "Sorry, no messages here...";
 });
-chat.on("rooms", ([rooms, p, numMessages]) => {
-  loadingMessages = true;
-  rn = Object.keys(rooms);
-  const vs = Object.values(rooms);
-  rn.forEach((r, i) => {
-    rns[r] = vs[i].name;
-  });
-  if (p) {
-    profiles = p;
-    updateProfiles();
-  }
-  const cms = document.querySelector("#chat-messages");
-  cms.innerHTML = "";
-  const crs = document.querySelector("#chat-rooms");
-  crs.innerHTML = "";
-  crs.appendChild(
-    roomButton("Book Link", "", false, () =>
-      window.open(
-        "https://docs.google.com/document/d/1xsxMONOYieKK_a87PTJwvmgwRZVNxOE4OhxtWc2oz7I/edit",
-      ),
-    ),
-  );
-  Object.keys(rooms).forEach((k) => {
-    if (!rooms[k].allowed.includes(user.id) && rooms[k].allowed != "all")
-      return;
-    const r = rooms[k];
-    const u = k.split("-");
-    const cr = roomButton(r.name, k.replaceAll(" ", "-"));
-    if (
-      !Object.values(profiles).find((e) => e.id == u[0]) &&
-      !Object.values(profiles).find((e) => e.id == u[1])
-    )
-      crs.appendChild(cr);
-    if (user.room == k) {
-      if (Object.keys(r.messages).length == 0)
-        cms.innerText = "Sorry, no messages here...";
-      else
-        Object.values(r.messages).forEach((m, i) =>
-          addMessage(
-            [
-              m.message,
-              profiles[m.name],
-              m.date,
-              r.messages[i - 1],
-              numMessages - r.messages.length + i,
-            ],
-            false,
-          ),
-        );
-      const el = cr.querySelector("#chat-room");
-      el.style.background = user.theme ? "black" : "white";
-      el.querySelector("#chat-room-bg").style.opacity = 1;
-      currMessages = r.messages.length;
-      maxMessagesReached = currMessages < maxMessages;
-      let n = r.name;
-      if (Number(n.split("-")[0])) {
-        const p = Object.values(profiles).find(
-          (e) =>
-            (e.id == n.split("-")[0] || e.id == n.split("-")[1]) &&
-            e.id != user.id,
-        );
-        if (p) n = p.name;
-      }
-      document.querySelector("#chat-name").innerHTML = n;
+chat.on("rooms", async ([rooms, p, numMessages]) => {
+	const start = Date.now();
+	console.log(`Loading ${Object.keys(rooms).length} rooms (started at ${new Date(start).toLocaleString("en-US", {
+		hour: "numeric",
+		minute: "numeric",
+		second: "numeric",
+		hour12: true,
+	})})`);
+  const load = async () => {
+    loadingMessages = true;
+    rn = Object.keys(rooms);
+    const vs = Object.values(rooms);
+    rn.forEach((r, i) => {
+      rns[r] = vs[i].name;
+    });
+    if (p) {
+      profiles = p;
+      updateProfiles();
     }
-  });
-  if (!maxMessagesReached) cms.insertBefore(loading, cms.firstChild);
-  loadingMessages = false;
+    const cms = document.querySelector("#chat-messages");
+    cms.innerHTML = "";
+    const crs = document.querySelector("#chat-rooms");
+    crs.innerHTML = "";
+    crs.appendChild(
+      roomButton("Book Link", "", false, () =>
+        window.open(
+          "https://docs.google.com/document/d/1xsxMONOYieKK_a87PTJwvmgwRZVNxOE4OhxtWc2oz7I/edit",
+        ),
+      ),
+    );
+    Object.keys(rooms).forEach((k) => {
+      if (!rooms[k].allowed.includes(user.id) && rooms[k].allowed != "all")
+        return;
+      const r = rooms[k];
+      const u = k.split("-");
+      const cr = roomButton(r.name, k.replaceAll(" ", "-"));
+      if (
+        !Object.values(profiles).find((e) => e.id == u[0]) &&
+        !Object.values(profiles).find((e) => e.id == u[1])
+      )
+        crs.appendChild(cr);
+			if (user.room == k) {
+				const el = cr.querySelector("#chat-room");
+				el.style.background = user.theme ? "black" : "white";
+				el.querySelector("#chat-room-bg").style.opacity = 1;
+			}
+    });
+    const r = rooms[user.room];
+    if (Object.keys(r.messages).length == 0)
+      cms.innerText = "Sorry, no messages here...";
+    else
+      Object.values(r.messages).forEach((m, i) =>
+        addMessage(
+          [
+            m.message,
+            profiles[m.name],
+            m.date,
+            r.messages[i - 1],
+            numMessages - r.messages.length + i,
+          ],
+          false,
+        ),
+      );
+    currMessages = r.messages.length;
+    maxMessagesReached = currMessages < maxMessages;
+    let n = r.name;
+    if (Number(n.split("-")[0])) {
+      const p = Object.values(profiles).find(
+        (e) =>
+          (e.id == n.split("-")[0] || e.id == n.split("-")[1]) &&
+          e.id != user.id,
+      );
+      if (p) n = p.name;
+    }
+    document.querySelector("#chat-name").innerHTML = n;
+    if (!maxMessagesReached) cms.insertBefore(loading, cms.firstChild);
+    loadingMessages = false;
+  };
+  await load();
+  const end = Date.now();
+	console.log(`Loaded ${Object.keys(rooms).length} rooms (ended at ${new Date(end).toLocaleString("en-US", {
+		hour: "numeric",
+		minute: "numeric",
+		second: "numeric",
+		hour12: true,
+	})})`);
 });
 chat.on("profiles", (p) => {
   profiles = p;
@@ -226,7 +252,7 @@ chat.on("join room", ([messages, r, u, numMessages]) => {
   currMessages = 0;
   user.unread = u;
   input.value = "";
-	user.room = r;
+  user.room = r;
   const cms = document.querySelector("#chat-messages");
   cms.innerHTML = "";
   if (messages.length == 0) cms.innerText = "Sorry, no messages here...";
@@ -407,6 +433,15 @@ const switchTheme = (dark = !user.theme, color) => {
   document
     .querySelectorAll("#unread")
     .forEach((b) => (b.style.background = user.theme ? "black" : "white"));
+  document
+    .querySelectorAll("#ring")
+    .forEach((b) => (b.style.borderColor = user.theme ? "#999" : "#fff"));
+  document
+    .querySelectorAll("#vol")
+    .forEach((b) => (b.style.background = user.theme ? "#999" : "#fff"));
+  document
+    .querySelectorAll("#meeting-cont #divider")
+    .forEach((b) => (b.style.background = user.theme ? "#fff" : "#000"));
   if (color) {
     const rgb = toRgba(color, 1, true);
     const root = document.querySelector(":root");

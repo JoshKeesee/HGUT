@@ -455,21 +455,7 @@ const clearNotification = (n) => {
   setTimeout(() => n.remove(), 3000);
 };
 
-const checkDev = () => {
-  if (!devMode) return;
-  const u = document.cookie
-    .split(";")
-    .find((e) => e.includes("user="))
-    .split("user=")[1];
-  if (u != "Joshua%20Keesee") return;
-  const dev = document.createElement("script");
-  dev.src = "https://cdn.jsdelivr.net/npm/eruda";
-  dev.onload = () => eruda.init();
-  document.body.appendChild(dev);
-};
-
 const init = () => {
-  checkDev();
   const url = new URL(window.location.href);
   const tab = url.searchParams.get("tab") || "messages";
   switchTab(document.querySelector(`#${tab}`));

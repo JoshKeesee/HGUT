@@ -51,7 +51,7 @@ voice.on("user", async (u) => {
   await us();
   const pec = document.querySelector("#people-container");
   pec.innerHTML = "";
-  switchVoiceTheme(user.theme, user.accent ? user.color : null);
+  switchTheme(user.theme, user.accent ? user.color : null);
   addVideo(user, stream, true);
   updateVoiceOnline();
 });
@@ -79,7 +79,6 @@ voice.on("audio", ([audio, id]) => {
 voice.on("switched", (s) => (switched = s));
 voice.on("redirect", (d) => (window.location.href = d));
 voice.on("call list", async (c) => {
-	console.log(c)
   await us();
   c.forEach(addPerson);
 });
@@ -123,6 +122,7 @@ const addVideo = async (p, s, self = false, big = false, pre = false) => {
   const bg = document.createElement("div");
   bg.id = "bg";
   bg.classList.add("bg-" + id);
+	bg.style.background = user.theme ? "#000" : "#fff";
   if (big) bg.classList.add("big");
   const person = document.createElement("div");
   person.id = "person";
@@ -270,15 +270,7 @@ const switchVoiceTheme = (dark = !user.theme, color) => {
           ? "radial-gradient(#fff, transparent)"
           : "radial-gradient(#000, transparent)"),
     );
-  document
-    .querySelectorAll("#ring")
-    .forEach((b) => (b.style.borderColor = user.theme ? "#999" : "#fff"));
-  document
-    .querySelectorAll("#vol")
-    .forEach((b) => (b.style.background = user.theme ? "#999" : "#fff"));
-  document
-    .querySelectorAll("#meeting-cont #divider")
-    .forEach((b) => (b.style.background = user.theme ? "#fff" : "#000"));
+  
   if (color) {
     const rgb = toRgba(color, 1, true);
     const root = document.querySelector(":root");
@@ -415,16 +407,6 @@ toggleChat.onclick = () => {
 };
 
 present.onclick = togglePresent;
-
-if (
-  window.matchMedia &&
-  window.matchMedia("(prefers-color-scheme: dark)").matches
-)
-  switchVoiceTheme(true);
-window
-  .matchMedia("(prefers-color-scheme: dark)")
-  .addEventListener("change", ({ matches }) => switchVoiceTheme(matches));
-document.querySelector("#theme").onclick = () => switchVoiceTheme();
 
 const updateTime = () => {
 	requestAnimationFrame(updateTime);
