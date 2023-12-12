@@ -112,7 +112,7 @@ chat.on("load messages", ([messages, numMessages]) => {
 chat.on("chat message", ([m, u, d, lm, a, mId]) => {
   if (!(a.includes(user.id) || a == "all")) return;
 	let messageText = m;
-	if (user.room == "eth") messageText = messageText.split(" ").map(w => (w.charAt(w.length - 1).replace(/[.,\/#!?$%\^&\*;:{}=\-_`~()]/g, "") ? w + "eth" : w)).join(" ");
+	if (u.room == "eth") messageText = messageText.split(" ").map(w => (w.charAt(w.length - 1).replace(/[.,\/#!?$%\^&\*;:{}=\-_`~()]/g, "") ? w + "eth" : w)).join(" ");
   if (u.room == user.room) addMessage([m, u, d, lm, mId]);
   else createNotification([messageText, u, u.room]);
 });
