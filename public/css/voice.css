@@ -270,7 +270,7 @@
   width: 45px;
 }
 
-svg {
+#controls svg {
   color: white;
   width: 20px;
   height: 20px;
@@ -323,10 +323,6 @@ svg {
   height: 100%;
   width: 100%;
   overflow: hidden;
-}
-
-#loading {
-  margin-top: 5px;
 }
 
 #chat-message {

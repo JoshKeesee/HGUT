@@ -15,12 +15,22 @@ const toggleChat = document.querySelector("#toggle-chat");
 const present = document.querySelector("#toggle-presentation");
 let stream = null,
   pres = null;
+let peerId = null;
 let switched = {},
   callList = [],
   gridA = [];
 const vidConstraints = {
   width: { min: 1280 },
   height: { min: 720 },
+};
+
+peer.on("open", (id) => peerId = id);
+
+const waitForPeerId = () => {
+	return new Promise(resolve => {
+		if (peerId) return resolve();
+		peer.on("open", () => resolve());
+	});
 };
 
 const us = async () => {
@@ -69,6 +79,7 @@ voice.on("audio", ([audio, id]) => {
 voice.on("switched", (s) => (switched = s));
 voice.on("redirect", (d) => (window.location.href = d));
 voice.on("call list", async (c) => {
+	console.log(c)
   await us();
   c.forEach(addPerson);
 });
@@ -174,7 +185,7 @@ const addVideo = async (p, s, self = false, big = false, pre = false) => {
 };
 
 const addPerson = (p) => {
-  if (p.peerId == user.peerId || callList.includes(p.peerId)) return;
+  if (p.peerId == user.peerId) return;
   const call = peer.call(p.peerId, stream, {
     metadata: { pres: false, id: user.peerId },
   });
@@ -416,6 +427,7 @@ window
 document.querySelector("#theme").onclick = () => switchVoiceTheme();
 
 const updateTime = () => {
+	requestAnimationFrame(updateTime);
   const t = document.querySelector("#time");
   t.innerHTML = new Date().toLocaleTimeString("en-US", {
     hour: "numeric",
@@ -424,4 +436,4 @@ const updateTime = () => {
   });
 };
 
-setInterval(updateTime, 1000);
+updateTime();

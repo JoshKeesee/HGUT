@@ -195,6 +195,7 @@ html {
   gap: 5px;
   padding: 10px;
   padding-top: 0;
+	color: inherit;
 }
 
 #chat-input,
@@ -685,4 +686,13 @@ body:has(#header.toggled) #tabs .tab {
     transform: translateX(0);
     margin-bottom: 5px;
   }
+}
+
+@keyframes message {
+	0% {
+		transform: translateY(100%);
+	}
+	100% {
+		transform: translateY(0);
+	}
 }

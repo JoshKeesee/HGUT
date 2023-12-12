@@ -1,5 +1,6 @@
 const SERVER = "https://db.hgut.repl.co/";
 const icon = document.querySelector("#icon");
+const cb = document.querySelector("#chat-box");
 
 const devMode = true;
 
@@ -41,11 +42,7 @@ const linkify = (s, scroll = false, smooth = false, start = false) => {
   const emailAddressPattern = /[\w.]+@[a-zA-Z_-]+?(?:\.[a-zA-Z]{2,6})+/gim;
   const emojiPattern = /\p{Extended_Pictographic}/gu;
   if (s.startsWith("/images/"))
-    return `<img src="${
-      SERVER + s
-    }" onload="const cms = document.getElementById('#chat-messages'); if (${
-      scroll && smooth
-    }) cms.scrollTo({ top: cms.scrollHeight, behavior: 'smooth' })">`;
+    return `<img src="${SERVER + s}">`;
   if (s.replace(emojiPattern, "").length == 0) return `<p id="emoji">${s}</p>`;
   return s
     .replace(urlPattern, "<a target='_blank' href='$&'>$&</a>")
@@ -234,7 +231,9 @@ const addMessage = (
   m.id = "message";
   m.classList.add(typeof currMessages != "undefined" ? "m-" + mId : "");
   m.style.background = toRgba(u.color, 0.4);
-  m.innerHTML = message;
+	let messageText = message;
+	if (user.room == "eth") messageText = messageText.split(" ").map(w => (w.charAt(w.length - 1).replace(/[.,\/#!?$%\^&\*;:{}=\-_`~()]/g, "") ? w + "eth" : w)).join(" ");
+  m.innerHTML = messageText;
   m.innerHTML = linkify(m.innerText, smooth, scroll, start);
   const opts = document.createElement("div");
   opts.id = "options";
@@ -399,14 +398,13 @@ const switchTab = async (tab) => {
   if (tab.id == "voice") {
     if (chat.connected) chat.disconnect();
     await us();
-    peer.connect();
     if (!voice.connected) voice.connect();
-    user.peerId = peer.id;
+		await waitForPeerId();
+    user.peerId = peerId;
     voice.emit("id", user.peerId);
   } else {
     if (!chat.connected) chat.connect();
     if (voice.connected) voice.disconnect();
-    peer.disconnect();
     for (const m in peer.connections)
       peer.connections[m].forEach((c) => c.close());
   }
@@ -479,3 +477,7 @@ const init = () => {
 
 window.onload = init;
 window.onpopstate = init;
+cb.onanimationend = e => {
+	const cms = document.querySelector("#chat-messages");
+	cms.scrollTo(0, cms.scrollHeight);
+};
