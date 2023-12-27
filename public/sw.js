@@ -6,7 +6,7 @@ const VERSION = "v1";
 const CACHE = "hgut" + VERSION;
 const offlineFallbackPage = "offline.html";
 const icon = "favicon.png";
-const SERVER = "https://hgut-db.onrender.com/";
+const SERVER = "https://3sx4nn-3000.csb.app/";
 
 self.addEventListener("message", (e) => {
   if (e.data && e.data.type == "SKIP_WAITING") self.skipWaiting();
