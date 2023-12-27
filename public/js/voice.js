@@ -1,6 +1,8 @@
 const peer = new Peer();
 const voice = io(SERVER + "voice", {
   autoConnect: false,
+	reconnection: false,
+	forceNew: true,
   transports: ["websocket"],
   query: {
     user: document.cookie,

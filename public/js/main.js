@@ -402,7 +402,9 @@ const switchTab = async (tab) => {
 		await waitForPeerId();
     user.peerId = peerId;
     voice.emit("id", user.peerId);
-  } else {
+  } else if (tab.id == "logout") {
+		window.location.href = "logout";
+	} else {
     if (!chat.connected) chat.connect();
     if (voice.connected) voice.disconnect();
     for (const m in peer.connections)

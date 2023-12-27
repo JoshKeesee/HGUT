@@ -36,11 +36,10 @@ const getUser = (req) => {
   const user = req.cookies["user"];
   return profiles[user] ? profiles[user] : null;
 };
-app.use((req, _next, next) => {
+app.use((req, res, next) => {
   req.user = getUser(req);
-  next();
+	auth(req, res, next);
 });
-app.use(auth);
 app.use(express.static(__dirname + "/public"));
 app.get("/", (req, res) => res.redirect("/chat"));
 app.get("/chat", (req, res) => res.sendFile(__dirname + "/public/chat.html"));

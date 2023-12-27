@@ -1,5 +1,7 @@
 const chat = io(SERVER + "chat", {
   autoConnect: false,
+	reconnection: false,
+	forceNew: true,
   transports: ["websocket"],
   query: {
     user: document.cookie,
