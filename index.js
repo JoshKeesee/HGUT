@@ -6,7 +6,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 const bcrypt = require("bcrypt");
 
-const SERVER = "https://db.hgut.repl.co/";
+const SERVER = "https://3sx4nn-3000.csb.app/";
 const accessCode = bcrypt.hashSync(process.env.ACCESS_CODE, 10);
 let profiles = {};
 

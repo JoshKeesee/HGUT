@@ -1,4 +1,4 @@
-const SERVER = "https://db.hgut.repl.co/";
+const SERVER = "https://3sx4nn-3000.csb.app/";
 const icon = document.querySelector("#icon");
 const cb = document.querySelector("#chat-box");
 
