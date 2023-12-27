@@ -42,7 +42,7 @@ const linkify = (s, scroll = false, smooth = false, start = false) => {
   const emailAddressPattern = /[\w.]+@[a-zA-Z_-]+?(?:\.[a-zA-Z]{2,6})+/gim;
   const emojiPattern = /\p{Extended_Pictographic}/gu;
   if (s.startsWith("/images/"))
-    return `<img src="${SERVER + s}">`;
+    return `<img src="${(SERVER + s).replace("//images", "/images")}">`;
   if (s.replace(emojiPattern, "").length == 0) return `<p id="emoji">${s}</p>`;
   return s
     .replace(urlPattern, "<a target='_blank' href='$&'>$&</a>")
