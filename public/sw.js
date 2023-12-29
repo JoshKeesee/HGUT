@@ -51,17 +51,22 @@ self.addEventListener("push", (e) => {
   });
 });
 
-self.addEventListener("notificationclick", (e) => {
+self.addEventListener("notificationclick", async (e) => {
   e.notification.close();
   const path = self.location.origin + "/chat";
   if (e.action == "reply") {
     const message = e.reply;
     const room = e.notification.tag;
+		const u = await cookieStore.get("user");
+		if (!u.value) return;
+		const profiles = await (await fetch(SERVER + "p")).json();
+		const user = profiles[decodeURI(u.value)];
     fetch(SERVER + "message", {
       method: "POST",
       body: JSON.stringify({
         message,
         room,
+				user,
       }),
       headers: {
         "Content-Type": "application/json",
