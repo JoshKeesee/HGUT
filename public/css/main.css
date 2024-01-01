@@ -57,12 +57,15 @@ html {
 }
 
 #header {
+	opacity: 1;
+	max-width: 100%;
 	width: fit-content;
   user-select: none;
   display: flex;
   gap: 5px;
   position: relative;
   flex-direction: column;
+	transition: all 0.2s ease;
 }
 
 #icon {

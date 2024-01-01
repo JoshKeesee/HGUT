@@ -17,6 +17,11 @@
   display: flex;
 }
 
+#container:has(#header #tabs #voice.selected) #header {
+	opacity: 0;
+	max-width: 0;
+}
+
 #main-cont {
   overflow: hidden;
   display: grid;

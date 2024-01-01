@@ -373,10 +373,7 @@ const togglePresent = async () => {
 
 cam.onclick = () => toggleCamera();
 mic.onclick = () => toggleAudio();
-leave.onclick = () => {
-  if (window.opener) window.close();
-  else window.location.href = "/chat";
-};
+leave.onclick = () => switchTab(document.querySelector("#messages"));
 
 chatInput.onkeydown = (e) => {
   const i = chatInput.value;

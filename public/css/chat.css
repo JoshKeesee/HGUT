@@ -219,6 +219,7 @@ a {
   #chat-room {
 		width: 100%;
     height: fit-content;
+		font-size: 15px;
   }
 
 	#unread, #unread #ping {
