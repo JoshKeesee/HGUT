@@ -14,6 +14,15 @@ fetch(SERVER + "p")
   .then((r) => r.json())
   .then((r) => (profiles = r));
 
+const waitForProfiles = new Promise((resolve) => {
+	const int = setInterval(() => {
+		if (Object.keys(profiles).length > 0) {
+			clearInterval(int)
+			resolve();
+		}
+	});
+});
+
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -36,7 +45,8 @@ const getUser = (req) => {
   const user = req.cookies["user"];
   return profiles[user] ? profiles[user] : null;
 };
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
+	await waitForProfiles;
   req.user = getUser(req);
 	auth(req, res, next);
 });

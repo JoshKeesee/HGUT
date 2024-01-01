@@ -35,19 +35,42 @@ const rgbToHex = (rgb) =>
 
 icon.onclick = () => (window.location.href = "/");
 
-const linkify = (s, scroll = false, smooth = false, start = false) => {
+const imageToDataURL = (img) => {
+  const c = document.createElement("canvas");
+  c.width = img.width;
+  c.height = img.height;
+  const ctx = c.getContext("2d");
+  ctx.drawImage(img, 0, 0);
+  return c.toDataURL();
+};
+
+const linkify = (s, sc = false) => {
   const urlPattern =
     /\b(?:https?|ftp):\/\/[a-z0-9-+&@#\/%?=~_|!:,.;]*[a-z0-9-+&@#\/%=~_|]/gim;
   const pseudoUrlPattern = /(^|[^\/])(www\.[\S]+(\b|$))/gim;
   const emailAddressPattern = /[\w.]+@[a-zA-Z_-]+?(?:\.[a-zA-Z]{2,6})+/gim;
   const emojiPattern = /\p{Extended_Pictographic}/gu;
-  if (s.startsWith("/images/"))
-    return `<img src="${(SERVER + s).replace("//images", "/images")}">`;
-  if (s.replace(emojiPattern, "").length == 0) return `<p id="emoji">${s}</p>`;
-  return s
-    .replace(urlPattern, "<a target='_blank' href='$&'>$&</a>")
-    .replace(pseudoUrlPattern, "$1<a target='_blank' href='http://$2'>$2</a>")
-    .replace(emailAddressPattern, "<a target='_blank' href='mailto:$&'>$&</a>");
+  if (s.startsWith("/images/")) {
+    const src = (SERVER + s).replace("//images", "/images");
+    const img = new Image();
+    img.src = src;
+    img.onload = () => {
+      if (!sc) return;
+      const cms = document.querySelector("#chat-messages");
+      cms.scrollTo(0, cms.scrollHeight);
+    };
+    return `<img src="${src}">`;
+  } else {
+    if (s.replace(emojiPattern, "").length == 0)
+      return `<p id="emoji">${s}</p>`;
+    return s
+      .replace(urlPattern, "<a target='_blank' href='$&'>$&</a>")
+      .replace(pseudoUrlPattern, "$1<a target='_blank' href='http://$2'>$2</a>")
+      .replace(
+        emailAddressPattern,
+        "<a target='_blank' href='mailto:$&'>$&</a>",
+      );
+  }
 };
 
 const getSvg = (id, path) => {
@@ -209,7 +232,7 @@ const addMessage = (
   start = false,
 ) => {
   if (!user.visible && !loadingMessages) {
-    let t = document.title.replace(/\(\d+\)/, "");
+    const t = document.title.replace(/\(\d+\)/, "");
     missed++;
     document.title = "(" + missed + ") " + t;
   }
@@ -231,10 +254,18 @@ const addMessage = (
   m.id = "message";
   m.classList.add(typeof currMessages != "undefined" ? "m-" + mId : "");
   m.style.background = toRgba(u.color, 0.4);
-	let messageText = message;
-	if (user.room == "eth") messageText = messageText.split(" ").map(w => (w.charAt(w.length - 1).replace(/[.,\/#!?$%\^&\*;:{}=\-_`~()]/g, "") ? w + "eth" : w)).join(" ");
+  let messageText = message;
+  if (user.room == "eth")
+    messageText = messageText
+      .split(" ")
+      .map((w) =>
+        w.charAt(w.length - 1).replace(/[.,\/#!?$%\^&\*;:{}=\-_`~()]/g, "")
+          ? w + "eth"
+          : w,
+      )
+      .join(" ");
   m.innerHTML = messageText;
-  m.innerHTML = linkify(m.innerText, smooth, scroll, start);
+  m.innerHTML = linkify(m.innerText, !start);
   const opts = document.createElement("div");
   opts.id = "options";
   if (myUser) {
@@ -329,18 +360,10 @@ const addMessage = (
 
 document.onvisibilitychange = () => {
   user.visible = document.visibilityState == "visible";
-  const p =
-    window.location.pathname == "/chat"
-      ? " - Chat"
-      : window.location.pathname == "/voice"
-        ? " - Voice Chat"
-        : window.location.pathname == "/login"
-          ? " - Login"
-          : "";
   missed = 0;
-  document.title = "HGUT" + p;
-  chat.emit("visible", user.visible);
-  voice.emit("visible", user.visible);
+  document.title = document.title.replace(/\(\d+\)/, "");
+  if (chat.connected) chat.emit("visible", user.visible);
+  if (voice.connected) voice.emit("visible", user.visible);
 };
 
 const tabs = document.querySelector("#tabs");
@@ -357,6 +380,8 @@ document.querySelectorAll("#expand").forEach(
       e.classList.toggle("toggled");
     }),
 );
+
+let reconnect = null;
 
 const switchTab = async (tab) => {
   if (!tab) return;
@@ -395,20 +420,36 @@ const switchTab = async (tab) => {
   const pc = document.querySelector("#people-container");
   pc.innerHTML = "";
   pc.appendChild(loading);
+  if (parseInt(reconnect)) clearInterval(reconnect);
+  reconnect = null;
   if (tab.id == "voice") {
     if (chat.connected) chat.disconnect();
     await us();
     if (!voice.connected) voice.connect();
-		await waitForPeerId();
+    await waitForPeerId();
     user.peerId = peerId;
     voice.emit("id", user.peerId);
+    reconnect = setInterval(async () => {
+      if (voice.connected) return;
+      console.log("%cReconnecting...", "color: #0000ff");
+      await us();
+      if (!voice.connected) voice.connect();
+      await waitForPeerId();
+      user.peerId = peerId;
+      voice.emit("id", user.peerId);
+    }, 10000);
   } else if (tab.id == "logout") {
-		window.location.href = "logout";
-	} else {
+    window.location.href = "logout";
+  } else {
     if (!chat.connected) chat.connect();
     if (voice.connected) voice.disconnect();
     for (const m in peer.connections)
       peer.connections[m].forEach((c) => c.close());
+    reconnect = setInterval(() => {
+      if (chat.connected) return;
+      console.log("%cReconnecting...", "color: #0000ff");
+      chat.connect();
+    }, 10000);
   }
 };
 
@@ -465,7 +506,7 @@ const init = () => {
 
 window.onload = init;
 window.onpopstate = init;
-cb.onanimationend = e => {
-	const cms = document.querySelector("#chat-messages");
-	cms.scrollTo(0, cms.scrollHeight);
+cb.onanimationend = (e) => {
+  const cms = document.querySelector("#chat-messages");
+  cms.scrollTo(0, cms.scrollHeight);
 };
