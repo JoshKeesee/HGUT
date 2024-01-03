@@ -72,7 +72,6 @@ app.post("/login", (req, res) => {
   const username = req.body["name"];
   const password = req.body["password"];
   const ac = req.body["access-code"];
-	console.log(username, password, ac);
   if (!bcrypt.compareSync(ac, accessCode)) return res.redirect("/login");
   if (!username) return res.redirect("/login");
   if (!profiles[username]) return res.redirect("/login");
