@@ -7,17 +7,28 @@ dotenv.config();
 const bcrypt = require("bcrypt");
 
 const SERVER = "https://3sx4nn-3000.csb.app/";
-const accessCode = bcrypt.hashSync(process.env.ACCESS_CODE, 10);
-let profiles = {};
+let profiles = {}, accessCode = null;
 
-fetch(SERVER + "p")
+fetch(SERVER + "p", {
+	method: "POST",
+	headers: {
+		"Content-Type": "application/json"
+	},
+	body: JSON.stringify({
+		passwords: true,
+		accessCode: true,
+	}),
+})
   .then((r) => r.json())
-  .then((r) => (profiles = r));
+  .then((r) => {
+		profiles = r.profiles;
+		accessCode = r.accessCode;
+	});
 
 const waitForProfiles = new Promise((resolve) => {
 	const int = setInterval(() => {
 		if (Object.keys(profiles).length > 0) {
-			clearInterval(int)
+			clearInterval(int);
 			resolve();
 		}
 	});
@@ -61,6 +72,7 @@ app.post("/login", (req, res) => {
   const username = req.body["name"];
   const password = req.body["password"];
   const ac = req.body["access-code"];
+	console.log(username, password, ac);
   if (!bcrypt.compareSync(ac, accessCode)) return res.redirect("/login");
   if (!username) return res.redirect("/login");
   if (!profiles[username]) return res.redirect("/login");
