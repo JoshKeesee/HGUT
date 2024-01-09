@@ -26,7 +26,17 @@ const vidConstraints = {
   height: { min: 720 },
 };
 
-peer.on("open", (id) => (user.peerId = peerId = id));
+peer.on("open", (id) => (peerId = id));
+
+const peerConnect = () => {
+  return new Promise((res) => {
+    if (peerId) return res();
+    peer.on("open", (id) => {
+      peerId = id;
+      res();
+    });
+  });
+};
 
 const us = async () => {
   if (stream) return;
@@ -39,6 +49,7 @@ const us = async () => {
 };
 
 voice.on("connect", async () => {
+  await peerConnect();
   await us();
   user.peerId = peerId;
   voice.emit("id", user.peerId);
@@ -298,17 +309,20 @@ const toggleCamera = async (set = !user.camera) => {
     cam.classList.remove("toggled");
     cam.querySelector("svg.on").style.display = "block";
     cam.querySelector("svg.off").style.display = "none";
+    stream.getVideoTracks().forEach((v) => (v.enabled = true));
   } else {
     cam.classList.add("toggled");
     cam.querySelector("svg.on").style.display = "none";
     cam.querySelector("svg.off").style.display = "block";
+    stream.getVideoTracks().forEach((v) => (v.enabled = false));
   }
   const c = document.querySelector(".person-" + user.peerId);
-  if (user.camera) stream.getVideoTracks().forEach((v) => (v.enabled = true));
-  else stream.getVideoTracks().forEach((v) => (v.enabled = false));
   c.querySelectorAll("#video").forEach((v) => {
-    v.srcObject = stream;
-    v.onmetadataloaded = () => v.play();
+    if (!user.camera) v.srcObject = null;
+    else {
+      v.srcObject = stream;
+      v.onmetadataloaded = () => v.play();
+    }
     v.style.display = user.camera ? "block" : "none";
   });
   voice.emit("camera", user.camera);

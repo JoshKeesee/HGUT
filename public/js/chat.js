@@ -393,11 +393,14 @@ const switchTheme = (dark = !user.theme, color) => {
   document.querySelectorAll("#bg").forEach((b) => (b.style.background = th));
   document.querySelector("#light-icon").style.opacity = user.theme ? 0 : 1;
   document.querySelector("#dark-icon").style.opacity = user.theme ? 1 : 0;
-  const lr =
-    document.querySelector(".c-" + user.room) ||
-    document.querySelector(".c-" + user.room?.split("-").reverse().join("-")) ||
-    document.querySelector("." + user.room) ||
-    null;
+  const lr = !user.room
+    ? null
+    : document.querySelector(".c-" + user.room) ||
+      document.querySelector(
+        ".c-" + user.room?.split("-").reverse().join("-"),
+      ) ||
+      document.querySelector("." + user.room) ||
+      null;
   if (lr) lr.style.background = th;
   document
     .querySelectorAll(".loading div")
