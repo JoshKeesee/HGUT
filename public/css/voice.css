@@ -18,8 +18,8 @@
 }
 
 #container:has(#header #tabs #voice.selected) #header {
-	opacity: 0;
-	max-width: 0;
+  opacity: 0;
+  max-width: 0;
 }
 
 #main-cont {
@@ -175,6 +175,7 @@
   font-size: 30px;
   width: 20%;
   height: fit-content;
+  aspect-ratio: 1 / 1;
   max-width: var(--max-circle);
   padding: 4px;
   overflow: hidden;
