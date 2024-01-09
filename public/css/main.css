@@ -152,8 +152,9 @@ html {
   display: flex;
   border-radius: 32px;
   padding: 2px;
-  padding-top: 18px;
+  padding-top: 20px;
   flex-direction: column;
+  width: fit-content;
   transition:
     background 0.2s ease,
     width 0.2s ease;
