@@ -669,6 +669,12 @@ body:has(#header.toggled) #tabs .tab {
   background: #333;
 }
 
+#notification #x svg {
+  color: #fff;
+  fill: #fff;
+  stroke: #fff;
+}
+
 #notification:nth-child(n + 5) {
   opacity: 0;
 }

@@ -9,7 +9,7 @@ const registerSw = async (p) => {
     scope: "/chat",
   });
 
-	await navigator.serviceWorker.ready;
+  await navigator.serviceWorker.ready;
 
   if (p != "granted") return;
 
@@ -22,14 +22,24 @@ const registerSw = async (p) => {
   await fetch(SERVER + "subscribe", {
     method: "POST",
     body: JSON.stringify({
-			subscription,
-			user: decodeURI(document.cookie.split(";").find(c => c.startsWith("user=")).split("=")[1]),
-			mobile: navigator.userAgent.includes("Mobile"),
-		}),
+      subscription,
+      user: decodeURI(
+        document.cookie
+          .split(";")
+          .find((c) => c.startsWith("user="))
+          .split("=")[1],
+      ),
+      mobile: navigator.userAgent.includes("Mobile"),
+    }),
     headers: {
       "Content-Type": "application/json",
     },
   });
 };
 
-Notification.requestPermission().then(registerSw);
+try {
+  Notification.requestPermission().then(registerSw);
+} catch (e) {
+  if (e instanceof TypeError) Notification.requestPermission(registerSw);
+  else throw e;
+}
