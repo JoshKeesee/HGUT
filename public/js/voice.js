@@ -1,8 +1,8 @@
 const peer = new Peer();
 const voice = io(SERVER + "voice", {
   autoConnect: false,
-	reconnection: false,
-	forceNew: true,
+  reconnection: false,
+  forceNew: true,
   transports: ["websocket"],
   query: {
     user: document.cookie,
@@ -26,14 +26,7 @@ const vidConstraints = {
   height: { min: 720 },
 };
 
-peer.on("open", (id) => peerId = id);
-
-const waitForPeerId = () => {
-	return new Promise(resolve => {
-		if (peerId) return resolve();
-		peer.on("open", () => resolve());
-	});
-};
+peer.on("open", (id) => (user.peerId = peerId = id));
 
 const us = async () => {
   if (stream) return;
@@ -45,6 +38,22 @@ const us = async () => {
   stream.getAudioTracks().forEach((v) => (v.enabled = false));
 };
 
+voice.on("connect", async () => {
+  await us();
+  user.peerId = peerId;
+  voice.emit("id", user.peerId);
+});
+voice.on("disconnect", () => {
+  const t = getCurrentTab();
+  if (t != "voice") return;
+  const i = () => {
+    if (voice.connected) return;
+    console.log("%cReconnecting to Voice Chat...", "color: #0000ff");
+    voice.connect();
+    setTimeout(i, 10000);
+  };
+  i();
+});
 voice.on("chat message", addMessage);
 voice.on("profiles", (p) => (p ? (profiles = p) : ""));
 voice.on("user", async (u) => {
@@ -124,7 +133,7 @@ const addVideo = async (p, s, self = false, big = false, pre = false) => {
   const bg = document.createElement("div");
   bg.id = "bg";
   bg.classList.add("bg-" + id);
-	bg.style.background = user.theme ? "#000" : "#fff";
+  bg.style.background = user.theme ? "#000" : "#fff";
   if (big) bg.classList.add("big");
   const person = document.createElement("div");
   person.id = "person";
@@ -272,7 +281,7 @@ const switchVoiceTheme = (dark = !user.theme, color) => {
           ? "radial-gradient(#fff, transparent)"
           : "radial-gradient(#000, transparent)"),
     );
-  
+
   if (color) {
     const rgb = toRgba(color, 1, true);
     const root = document.querySelector(":root");
@@ -408,7 +417,7 @@ toggleChat.onclick = () => {
 present.onclick = togglePresent;
 
 const updateTime = () => {
-	requestAnimationFrame(updateTime);
+  requestAnimationFrame(updateTime);
   const t = document.querySelector("#time");
   t.innerHTML = new Date().toLocaleTimeString("en-US", {
     hour: "numeric",

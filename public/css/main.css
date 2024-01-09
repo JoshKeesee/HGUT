@@ -57,15 +57,15 @@ html {
 }
 
 #header {
-	opacity: 1;
-	max-width: 100%;
-	width: fit-content;
+  opacity: 1;
+  max-width: 100%;
+  width: fit-content;
   user-select: none;
   display: flex;
   gap: 5px;
   position: relative;
   flex-direction: column;
-	transition: all 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 #icon {
@@ -152,7 +152,6 @@ html {
   display: flex;
   border-radius: 32px;
   padding: 2px;
-  padding-top: 27px;
   flex-direction: column;
   transition:
     background 0.2s ease,
@@ -160,11 +159,11 @@ html {
 }
 
 #online.dark-box {
-	background: #000;
+  background: #000;
 }
 
 #online.light-box {
-	background: #fff;
+  background: #fff;
 }
 
 #online:empty {
@@ -207,7 +206,7 @@ html {
   gap: 5px;
   padding: 10px;
   padding-top: 0;
-	color: inherit;
+  color: inherit;
 }
 
 #chat-input,
@@ -504,7 +503,7 @@ input[type="file"] {
   display: flex;
   gap: 5px;
   flex-direction: column;
-	overflow: hidden;
+  overflow: hidden;
 }
 
 #tabs .tab,
@@ -515,7 +514,10 @@ input[type="file"] {
   padding: 5px;
   border-radius: 10px;
   cursor: pointer;
-  transition: background 0.2s ease, width 0.2s ease, border-radius 0.2s ease;
+  transition:
+    background 0.2s ease,
+    width 0.2s ease,
+    border-radius 0.2s ease;
   overflow: hidden;
   width: 25px;
   height: 25px;
@@ -532,7 +534,9 @@ input[type="file"] {
   width: 25px;
   height: 25px;
   color: inherit;
-  transition: opacity 0.2s ease, color 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    color 0.2s ease;
 }
 
 #tabs .tab:not(.selected) svg.solid,
@@ -562,8 +566,8 @@ body:has(#header.toggled) #tabs .tab div {
 }
 
 body:has(#header.toggled) #tabs .tab {
-	width: 200px;
-	border-radius: 30px;
+  width: 200px;
+  border-radius: 30px;
 }
 
 #tabs .tab:hover,
@@ -699,10 +703,10 @@ body:has(#header.toggled) #tabs .tab {
 }
 
 @keyframes message {
-	0% {
-		transform: translateY(100%);
-	}
-	100% {
-		transform: translateY(0);
-	}
+  0% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(0);
+  }
 }

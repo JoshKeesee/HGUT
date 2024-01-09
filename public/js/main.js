@@ -381,7 +381,10 @@ document.querySelectorAll("#expand").forEach(
     }),
 );
 
-let reconnect = null;
+const getCurrentTab = () => {
+  const url = new URL(window.location.href);
+  return url.searchParams.get("tab") || "messages";
+};
 
 const switchTab = async (tab) => {
   if (!tab) return;
@@ -420,36 +423,16 @@ const switchTab = async (tab) => {
   const pc = document.querySelector("#people-container");
   pc.innerHTML = "";
   pc.appendChild(loading);
-  if (parseInt(reconnect)) clearInterval(reconnect);
-  reconnect = null;
   if (tab.id == "voice") {
-    if (chat.connected) chat.disconnect();
-    await us();
-    if (!voice.connected) voice.connect();
-    await waitForPeerId();
-    user.peerId = peerId;
-    voice.emit("id", user.peerId);
-    reconnect = setInterval(async () => {
-      if (voice.connected) return;
-      console.log("%cReconnecting...", "color: #0000ff");
-      await us();
-      if (!voice.connected) voice.connect();
-      await waitForPeerId();
-      user.peerId = peerId;
-      voice.emit("id", user.peerId);
-    }, 10000);
+    chat.disconnect();
+    voice.connect();
   } else if (tab.id == "logout") {
     window.location.href = "logout";
   } else {
-    if (!chat.connected) chat.connect();
-    if (voice.connected) voice.disconnect();
+    chat.connect();
+    voice.disconnect();
     for (const m in peer.connections)
       peer.connections[m].forEach((c) => c.close());
-    reconnect = setInterval(() => {
-      if (chat.connected) return;
-      console.log("%cReconnecting...", "color: #0000ff");
-      chat.connect();
-    }, 10000);
   }
 };
 

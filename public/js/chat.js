@@ -1,7 +1,7 @@
 const chat = io(SERVER + "chat", {
   autoConnect: false,
-	reconnection: false,
-	forceNew: true,
+  reconnection: false,
+  forceNew: true,
   transports: ["websocket"],
   query: {
     user: document.cookie,
@@ -58,6 +58,17 @@ const roomButton = (text, cn, u = true, d) => {
 chat.on("connect", () => {
   chat.emit("visible", document.visibilityState == "visible");
 });
+chat.on("disconnect", () => {
+  const t = getCurrentTab();
+  if (t != "chat") return;
+  const i = () => {
+    if (chat.connected) return;
+    console.log("%cReconnecting to Chat...", "color: #0000ff");
+    chat.connect();
+    setTimeout(i, 10000);
+  };
+  i();
+});
 chat.on("typing", (t) => {
   const typing = document.querySelector("#typing");
   if (t.length == 0) return (typing.style = "");
@@ -91,7 +102,7 @@ chat.on("unread", (u) => {
   });
 });
 chat.on("load messages", ([messages, numMessages, start = true]) => {
-	if (!start) currMessages = messages.length;
+  if (!start) currMessages = messages.length;
   maxMessagesReached = messages.length < maxMessages;
   const cms = document.querySelector("#chat-messages");
   const h = cms.scrollHeight;
@@ -100,7 +111,7 @@ chat.on("load messages", ([messages, numMessages, start = true]) => {
   rev.forEach((m, i) => {
     addMessage(
       [m.message, profiles[m.name], m.date, rev[i - 1], numMessages - i],
-			false,
+      false,
       false,
       start,
     );
@@ -147,54 +158,54 @@ chat.on("delete", ({ id, user }) => {
   if (cm.children.length == 0) cm.innerText = "Sorry, no messages here...";
 });
 chat.on("rooms", async ([rooms, p]) => {
-	loadingMessages = true;
-	rn = Object.keys(rooms);
-	const vs = Object.values(rooms);
-	rn.forEach((r, i) => {
-		rns[r] = vs[i].name;
-	});
-	if (p) {
-		profiles = p;
-		updateProfiles();
-	}
-	const cms = document.querySelector("#chat-messages");
-	cms.innerHTML = "";
-	const crs = document.querySelector("#chat-rooms");
-	crs.innerHTML = "";
-	crs.appendChild(
-		roomButton("Book Link", "", false, () =>
-			window.open(
-				"https://docs.google.com/document/d/1xsxMONOYieKK_a87PTJwvmgwRZVNxOE4OhxtWc2oz7I/edit",
-			),
-		),
-	);
-	Object.keys(rooms).forEach((k) => {
-		if (!rooms[k].allowed.includes(user.id) && rooms[k].allowed != "all")
-			return;
-		const r = rooms[k];
-		const u = k.split("-");
-		const cr = roomButton(r.name, k.replaceAll(" ", "-"));
-		if (
-			!Object.values(profiles).find((e) => e.id == u[0]) &&
-			!Object.values(profiles).find((e) => e.id == u[1])
-		)
-			crs.appendChild(cr);
-		if (user.room == k) {
-			const el = cr.querySelector("#chat-room");
-			el.style.background = user.theme ? "black" : "white";
-			el.querySelector("#chat-room-bg").style.opacity = 1;
-			let n = r.name;
-			if (Number(n.split("-")[0])) {
-				const p = Object.values(profiles).find(
-					(e) =>
-						(e.id == n.split("-")[0] || e.id == n.split("-")[1]) &&
-						e.id != user.id,
-				);
-				if (p) n = p.name;
-			}
-			document.querySelector("#chat-name").innerHTML = n;
-		}
-	});
+  loadingMessages = true;
+  rn = Object.keys(rooms);
+  const vs = Object.values(rooms);
+  rn.forEach((r, i) => {
+    rns[r] = vs[i].name;
+  });
+  if (p) {
+    profiles = p;
+    updateProfiles();
+  }
+  const cms = document.querySelector("#chat-messages");
+  cms.innerHTML = "";
+  const crs = document.querySelector("#chat-rooms");
+  crs.innerHTML = "";
+  crs.appendChild(
+    roomButton("Book Link", "", false, () =>
+      window.open(
+        "https://docs.google.com/document/d/1xsxMONOYieKK_a87PTJwvmgwRZVNxOE4OhxtWc2oz7I/edit",
+      ),
+    ),
+  );
+  Object.keys(rooms).forEach((k) => {
+    if (!rooms[k].allowed.includes(user.id) && rooms[k].allowed != "all")
+      return;
+    const r = rooms[k];
+    const u = k.split("-");
+    const cr = roomButton(r.name, k.replaceAll(" ", "-"));
+    if (
+      !Object.values(profiles).find((e) => e.id == u[0]) &&
+      !Object.values(profiles).find((e) => e.id == u[1])
+    )
+      crs.appendChild(cr);
+    if (user.room == k) {
+      const el = cr.querySelector("#chat-room");
+      el.style.background = user.theme ? "black" : "white";
+      el.querySelector("#chat-room-bg").style.opacity = 1;
+      let n = r.name;
+      if (Number(n.split("-")[0])) {
+        const p = Object.values(profiles).find(
+          (e) =>
+            (e.id == n.split("-")[0] || e.id == n.split("-")[1]) &&
+            e.id != user.id,
+        );
+        if (p) n = p.name;
+      }
+      document.querySelector("#chat-name").innerHTML = n;
+    }
+  });
 });
 chat.on("profiles", (p) => {
   profiles = p;
