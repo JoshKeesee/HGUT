@@ -432,7 +432,7 @@ present.onclick = togglePresent;
 
 const updateTime = () => {
   setTimeout(updateTime, 1000);
-  const t = document.querySelectorAll("#time");
+  const t = document.querySelectorAll("#voice-time");
   t.forEach(
     (t) =>
       (t.innerHTML = new Date().toLocaleTimeString("en-US", {
