@@ -431,13 +431,16 @@ toggleChat.onclick = () => {
 present.onclick = togglePresent;
 
 const updateTime = () => {
-  requestAnimationFrame(updateTime);
-  const t = document.querySelector("#time");
-  t.innerHTML = new Date().toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "numeric",
-    hour12: true,
-  });
+  setTimeout(updateTime, 1000);
+  const t = document.querySelectorAll("#time");
+  t.forEach(
+    (t) =>
+      (t.innerHTML = new Date().toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "numeric",
+        hour12: true,
+      })),
+  );
 };
 
 updateTime();

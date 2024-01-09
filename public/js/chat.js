@@ -477,3 +477,8 @@ document.querySelector("#chat-messages").onscroll = (e) => {
   loadingMessages = true;
   chat.emit("load messages", currMessages);
 };
+
+window.onbeforeunload = () => {
+  stream.getTracks().forEach((t) => t.stop());
+  peer.destroy();
+};
