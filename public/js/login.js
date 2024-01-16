@@ -4,7 +4,6 @@ const form = document.querySelector("form");
 form.onsubmit = async (e) => {
   e.preventDefault();
   const data = new FormData(form);
-  console.log(data);
   const r = await fetch("login", {
     method: "POST",
     body: JSON.stringify(Object.fromEntries(data)),
