@@ -321,14 +321,14 @@ input[type="file"] {
 }
 
 #cont #chat-message:nth-child(2) #message,
-#cont #chat-message:has(#emoji) + #chat-message #message {
+#cont #chat-message:has(#emoji:not(.disabled)) + #chat-message #message {
   border-top-right-radius: 20px;
   border-top-left-radius: 20px;
   transition: border-radius 0.5s ease;
 }
 
 #cont #chat-message:last-child #message,
-#cont #chat-message:has(+ #chat-message #emoji) #message {
+#cont #chat-message:has(+ #chat-message #emoji:not(.disabled)) #message {
   border-bottom-right-radius: 20px;
   border-bottom-left-radius: 20px;
   transition: border-radius 0.5s ease;
@@ -350,12 +350,12 @@ input[type="file"] {
   transition: border-radius 0.5s ease;
 }
 
-#message:has(#emoji) {
+#message:has(#emoji:not(.disabled)) {
   background: none !important;
   padding: 5px;
 }
 
-#emoji {
+#emoji:not(.disabled) {
   font-size: 70px;
 }
 
@@ -538,8 +538,7 @@ input[type="file"] {
   height: 25px;
   color: inherit;
   transition:
-    opacity 0.2s ease,
-    color 0.2s ease;
+    opacity 0.2s ease;
 }
 
 #tabs .tab:not(.selected) svg.solid,

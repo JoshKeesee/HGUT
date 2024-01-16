@@ -62,7 +62,7 @@ const linkify = (s, sc = false) => {
     return `<img src="${src}">`;
   } else {
     if (s.replace(emojiPattern, "").length == 0)
-      return `<p id="emoji">${s}</p>`;
+      return `<p id="emoji" class="${user.settings.emoji ? "" : "disabled"}">${s}</p>`;
     return s
       .replace(urlPattern, "<a target='_blank' href='$&'>$&</a>")
       .replace(pseudoUrlPattern, "$1<a target='_blank' href='http://$2'>$2</a>")

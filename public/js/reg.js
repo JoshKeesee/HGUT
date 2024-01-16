@@ -26,7 +26,7 @@ const registerSw = async (p) => {
       user: decodeURI(
         document.cookie
           .split(";")
-          .find((c) => c.startsWith("user="))
+          .find((c) => c.includes("user="))
           .split("=")[1],
       ),
       mobile: navigator.userAgent.includes("Mobile"),
@@ -37,9 +37,12 @@ const registerSw = async (p) => {
   });
 };
 
-try {
-  Notification.requestPermission().then(registerSw);
-} catch (e) {
-  if (e instanceof TypeError) Notification.requestPermission(registerSw);
-  else throw e;
-}
+const askNotification = async () => {
+  const f = registerSw.bind(null, Notification.permission);
+  return new Promise(res => {
+    Notification.requestPermission().then(() => {
+      f();
+      res(Notification.permission == "granted");
+    });
+  });
+};

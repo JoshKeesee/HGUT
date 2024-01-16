@@ -192,7 +192,7 @@ chat.on("rooms", async ([rooms, p]) => {
       crs.appendChild(cr);
     if (user.room == k) {
       const el = cr.querySelector("#chat-room");
-      el.style.background = user.theme ? "black" : "white";
+      el.style.background = user.settings.theme ? "black" : "white";
       el.querySelector("#chat-room-bg").style.opacity = 1;
       let n = r.name;
       if (Number(n.split("-")[0])) {
@@ -211,14 +211,16 @@ chat.on("profiles", (p) => {
   profiles = p;
   updateProfiles();
 });
-chat.on("user", (u) => {
+chat.on("user", async (u) => {
   user = u;
   user.visible = document.visibilityState == "visible";
   setTimeout(
-    () => switchTheme(user.theme, user.accent ? user.color : null),
+    () => switchTheme(user.settings.theme, user.settings.accent ? user.color : null),
     100,
   );
   updateProfiles();
+  updateSettings();
+  if (user.settings.notifications) user.settings.notifications = await askNotification();
 });
 chat.on("online", (u) => {
   online = u;
@@ -260,7 +262,7 @@ const switchChat = (el) => {
     document.querySelector("." + user.room);
   lr.style = "";
   lr.querySelector("#chat-room-bg").style = "";
-  el.style.background = user.theme ? "black" : "white";
+  el.style.background = user.settings.theme ? "black" : "white";
   el.querySelector("#chat-room-bg").style.opacity = 1;
   el.querySelector("#unread").style.display = "none";
   const cms = document.querySelector("#chat-messages");
@@ -310,7 +312,7 @@ const updateProfiles = () => {
         user.room == user.id + "-" + r.id
       ) {
         const el = cr.querySelector("#chat-room");
-        el.style.background = user.theme ? "black" : "white";
+        el.style.background = user.settings.theme ? "black" : "white";
         el.querySelector("#chat-room-bg").style.opacity = 1;
       }
     });
@@ -329,7 +331,7 @@ const updateOnline = () => {
       if (!Object.keys(online).includes(r.id.toString())) return;
       const bg = document.createElement("div");
       bg.id = "bg";
-      bg.style.background = user.theme ? "black" : "white";
+      bg.style.background = user.settings.theme ? "black" : "white";
       const pc = getProfile(r, true);
       pc.onclick = () =>
         switchChat(
@@ -378,8 +380,8 @@ const updateOnline = () => {
   });
 };
 
-const switchTheme = (dark = !user.theme, color) => {
-  user.theme = dark;
+const switchTheme = (dark = !user.settings.theme, color) => {
+  user.settings.theme = dark;
   const d = dark ? "dark" : "light";
   const th = dark ? "black" : "white";
   document.body.className = d;
@@ -391,8 +393,8 @@ const switchTheme = (dark = !user.theme, color) => {
     .querySelectorAll("#profile #info")
     .forEach((b) => (b.style.background = th));
   document.querySelectorAll("#bg").forEach((b) => (b.style.background = th));
-  document.querySelector("#light-icon").style.opacity = user.theme ? 0 : 1;
-  document.querySelector("#dark-icon").style.opacity = user.theme ? 1 : 0;
+  document.querySelector("#light-icon").style.opacity = user.settings.theme ? 0 : 1;
+  document.querySelector("#dark-icon").style.opacity = user.settings.theme ? 1 : 0;
   const lr = !user.room
     ? null
     : document.querySelector(".c-" + user.room) ||
@@ -406,22 +408,22 @@ const switchTheme = (dark = !user.theme, color) => {
     .querySelectorAll(".loading div")
     .forEach(
       (b) =>
-        (b.style.background = user.theme
+        (b.style.background = user.settings.theme
           ? "radial-gradient(#fff, transparent)"
           : "radial-gradient(#000, transparent)"),
     );
   document
     .querySelectorAll("#unread")
-    .forEach((b) => (b.style.background = user.theme ? "black" : "white"));
+    .forEach((b) => (b.style.background = user.settings.theme ? "black" : "white"));
   document
     .querySelectorAll("#ring")
-    .forEach((b) => (b.style.borderColor = user.theme ? "#999" : "#fff"));
+    .forEach((b) => (b.style.borderColor = user.settings.theme ? "#999" : "#fff"));
   document
     .querySelectorAll("#vol")
-    .forEach((b) => (b.style.background = user.theme ? "#999" : "#fff"));
+    .forEach((b) => (b.style.background = user.settings.theme ? "#999" : "#fff"));
   document
     .querySelectorAll("#meeting-cont #divider")
-    .forEach((b) => (b.style.background = user.theme ? "#fff" : "#000"));
+    .forEach((b) => (b.style.background = user.settings.theme ? "#fff" : "#000"));
   if (color) {
     const rgb = toRgba(color, 1, true);
     const root = document.querySelector(":root");
@@ -429,7 +431,8 @@ const switchTheme = (dark = !user.theme, color) => {
       root.style.setProperty("--theme-" + k, rgb[k]),
     );
   }
-  chat.emit("theme", user.theme);
+  updateSettings();
+  chat.emit("settings", user.settings);
 };
 
 input.onkeydown = (e) => {
@@ -476,9 +479,4 @@ document.querySelector("#chat-messages").onscroll = (e) => {
   if (t > 10 || maxMessagesReached || loadingMessages) return;
   loadingMessages = true;
   chat.emit("load messages", currMessages);
-};
-
-window.onbeforeunload = () => {
-  stream.getTracks().forEach((t) => t.stop());
-  peer.destroy();
 };

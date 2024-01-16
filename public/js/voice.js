@@ -73,7 +73,7 @@ voice.on("user", async (u) => {
   await us();
   const pec = document.querySelector("#people-container");
   pec.innerHTML = "";
-  switchTheme(user.theme, user.accent ? user.color : null);
+  switchTheme(user.theme, user.settings.accent ? user.color : null);
   addVideo(user, stream, true);
   updateVoiceOnline();
 });
