@@ -346,16 +346,17 @@ const addMessage = (
   updateEditOnclick();
   updateReplyOnclick();
   updateDeleteOnclick();
-  if (!start && atBottom)
-    cms.scrollTo({
-      top: cms.scrollHeight,
-      behavior: smooth ? "smooth" : "auto",
+
+  if (scroll) {
+    // cms.scrollTo(0, cms.scrollHeight);
+    cm.animate({
+      opacity: [0, 1],
+      transform: ["scale(0)", "scale(1)"],
+    }, {
+      duration: 300,
+      easing: "ease-out",
     });
-  if (smooth && scroll)
-    cm.animate(
-      [{ transform: "translateY(100%)" }, { transform: "translateY(0)" }],
-      { duration: 500, easing: "ease" },
-    );
+  }
 };
 
 document.onvisibilitychange = () => {

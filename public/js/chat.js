@@ -117,6 +117,7 @@ chat.on("load messages", ([messages, numMessages, start = true]) => {
     );
   });
   if (!maxMessagesReached) cms.insertBefore(loading, cms.firstChild);
+  if (!start && messages.length == 0) cms.innerHTML = "Sorry, no messages here...";
   cms.scrollTo({
     top: cms.scrollHeight - h,
     behavior: "auto",
