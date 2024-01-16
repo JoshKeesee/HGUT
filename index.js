@@ -7,31 +7,32 @@ dotenv.config();
 const bcrypt = require("bcrypt");
 
 const SERVER = "https://3sx4nn-3000.csb.app/";
-let profiles = {}, accessCode = null;
+let profiles = {},
+  accessCode = null;
 
 fetch(SERVER + "p", {
-	method: "POST",
-	headers: {
-		"Content-Type": "application/json"
-	},
-	body: JSON.stringify({
-		passwords: true,
-		accessCode: true,
-	}),
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    passwords: true,
+    accessCode: true,
+  }),
 })
   .then((r) => r.json())
   .then((r) => {
-		profiles = r.profiles;
-		accessCode = r.accessCode;
-	});
+    profiles = r.profiles;
+    accessCode = r.accessCode;
+  });
 
 const waitForProfiles = new Promise((resolve) => {
-	const int = setInterval(() => {
-		if (Object.keys(profiles).length > 0) {
-			clearInterval(int);
-			resolve();
-		}
-	});
+  const int = setInterval(() => {
+    if (Object.keys(profiles).length > 0) {
+      clearInterval(int);
+      resolve();
+    }
+  });
 });
 
 app.use(cookieParser());
@@ -57,9 +58,9 @@ const getUser = (req) => {
   return profiles[user] ? profiles[user] : null;
 };
 app.use(async (req, res, next) => {
-	await waitForProfiles;
+  await waitForProfiles;
   req.user = getUser(req);
-	auth(req, res, next);
+  auth(req, res, next);
 });
 app.use(express.static(__dirname + "/public"));
 app.get("/", (req, res) => res.redirect("/chat"));
@@ -72,16 +73,20 @@ app.post("/login", (req, res) => {
   const username = req.body["name"];
   const password = req.body["password"];
   const ac = req.body["access-code"];
-  if (!bcrypt.compareSync(ac, accessCode)) return res.redirect("/login");
-  if (!username) return res.redirect("/login");
-  if (!profiles[username]) return res.redirect("/login");
+  if (!username) return res.json({ error: "Please enter a username" });
+  if (!password) return res.json({ error: "Please enter a password" });
+  if (!ac) return res.json({ error: "Please enter an access code" });
+  if (!bcrypt.compareSync(ac, accessCode))
+    return res.json({ error: "Invalid access code" });
+  if (!profiles[username]) return res.json({ error: "Invalid username" });
   const p = profiles[username].password;
-  if (!bcrypt.compareSync(password, p)) return res.redirect("/login");
+  if (!bcrypt.compareSync(password, p))
+    return res.json({ error: "Invalid password" });
   res.cookie("user", username, {
     maxAge: 9999999999999,
     expires: new Date(Date.now() + 9999999999999),
   });
-  res.redirect("back");
+  res.json({ success: true, redirect: "/chat" });
 });
 app.get("/logout", (req, res) => {
   res.clearCookie("user");

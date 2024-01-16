@@ -389,6 +389,7 @@ const getCurrentTab = () => {
 const switchTab = async (tab) => {
   if (!tab) return;
   if (tab.id == "theme") return;
+  if (tab.id == "logout") return (window.location.href = "logout");
   const url = new URL(window.location.href);
   url.searchParams.set("tab", tab.id);
   window.history.pushState({}, "", url);
@@ -426,8 +427,6 @@ const switchTab = async (tab) => {
   if (tab.id == "voice") {
     chat.disconnect();
     voice.connect();
-  } else if (tab.id == "logout") {
-    window.location.href = "logout";
   } else {
     chat.connect();
     voice.disconnect();
@@ -489,7 +488,8 @@ const init = () => {
 
 window.onload = init;
 window.onpopstate = init;
-cb.onanimationend = (e) => {
-  const cms = document.querySelector("#chat-messages");
-  cms.scrollTo(0, cms.scrollHeight);
-};
+if (cb)
+  cb.onanimationend = (e) => {
+    const cms = document.querySelector("#chat-messages");
+    cms.scrollTo(0, cms.scrollHeight);
+  };

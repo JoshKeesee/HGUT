@@ -30,14 +30,19 @@
 			</div>
 		</div>
 		<div id="login-container">
-			<form action="/login" method="post" class="light-box">
+			<form method="post" class="light-box">
 				<input name="name" class="top" placeholder="Enter your name (John Doe)..." autofocus>
 				<input name="password" type="password" class="middle" placeholder='Enter your password (default password is "password")...'>
 				<input name="access-code" type="password" class="bottom" placeholder="Enter the HGUT access code..." autocomplete="one-time-code">
-				<button>Login</button>
+				<div>
+					<div class="error"></div>
+					<button>Login</button>
+				</div>
 			</form>
 		</div>
 	</div>
+	<script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+	<script>eruda.init();</script>
 	<script src="js/main.js"></script>
 	<script src="js/login.js"></script>
 </body>
