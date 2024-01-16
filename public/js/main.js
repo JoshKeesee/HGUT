@@ -348,7 +348,7 @@ const addMessage = (
   updateDeleteOnclick();
 
   if (scroll) {
-    // cms.scrollTo(0, cms.scrollHeight);
+    cms.scrollTo(0, cms.scrollHeight);
     cm.animate({
       opacity: [0, 1],
       transform: ["scale(0)", "scale(1)"],
