@@ -301,6 +301,7 @@ input[type="file"] {
   gap: 5px;
   max-width: 70%;
   width: fit-content;
+  scroll-snap-align: end;
 }
 
 #cont #name #time {
