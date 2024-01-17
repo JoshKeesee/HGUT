@@ -261,7 +261,7 @@ const createReply = (e, prev) => {
   rmm.classList.add(myUser ? "left" : "right");
   rmm.style.background = toRgba(p.color, 0.4);
   rmm.innerText = linkify(e.message);
-  if (prev?.name != e.name) rm.appendChild(rmn);
+  if (!prev || prev.name != e.name) rm.appendChild(rmn);
   if (!myUser) reply.appendChild(rp);
   rm.appendChild(rmm);
   reply.appendChild(rm);

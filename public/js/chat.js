@@ -148,10 +148,10 @@ chat.on("edit", ({ id, message, user }) => {
   m.innerHTML = linkify(message);
   updateMessageProfiles();
 });
-chat.on("reply", ({ id, message, user, prev }) => {
+chat.on("reply", ({ id, message, user: u, prev }) => {
   const r = document.querySelector(".r-" + id);
   if (!r) return;
-  const rm = createReply({ message, name: user.name }, prev);
+  const rm = createReply({ message, name: u.name }, prev);
   r.appendChild(rm);
   updateMessageProfiles();
   rm.animate(
