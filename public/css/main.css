@@ -309,35 +309,115 @@ input[type="file"] {
   color: #888888;
 }
 
-#cont #name.left {
+#cont #name.left, #reply-m #name.left {
   margin-left: 50px;
   text-align: left;
   justify-content: flex-start;
 }
 
-#cont #name.right {
+#cont #name.right, #reply-m #name.right {
   text-align: right;
   justify-content: flex-end;
 }
 
 #cont #chat-message:nth-child(2) #message,
-#cont #chat-message:has(#emoji:not(.disabled)) + #chat-message #message {
+#cont #chat-message:has(#emoji:not(.disabled)) + #chat-message #message,
+#replies #reply-m:nth-child(1) #message {
   border-top-right-radius: 20px;
   border-top-left-radius: 20px;
   transition: border-radius 0.5s ease;
 }
 
 #cont #chat-message:last-child #message,
-#cont #chat-message:has(+ #chat-message #emoji:not(.disabled)) #message {
+#cont #chat-message:has(+ #chat-message #emoji:not(.disabled)) #message,
+#replies #reply-m:last-child #message {
   border-bottom-right-radius: 20px;
   border-bottom-left-radius: 20px;
   transition: border-radius 0.5s ease;
+}
+
+#replies {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  max-width: 50%;
+  min-width: 30%;
+  scroll-snap-align: end;
+  padding: 20px;
+  border-radius: 20px;
+  border: dashed 4px rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.5);
+  background: rgba(150, 150, 150, 0.1);
+}
+
+#replies:empty {
+  display: none;
+}
+
+#replies.left {
+  margin-right: auto;
+}
+
+#replies.right {
+  margin-left: auto;
+}
+
+#replies #reply-m {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  gap: 5px;
+}
+
+#replies #reply-m.left {
+  margin-right: auto;
+  text-align: left;
+  justify-content: flex-start;
+}
+
+#replies #reply-m.right {
+  margin-left: auto;
+  text-align: right;
+  justify-content: flex-end;
+}
+
+#replies #reply-m #name {
+  font-size: 13px;
+  color: #999999;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+#replies #reply-m #name #time {
+  font-size: 11px;
+  color: #888888;
+}
+
+#replies #reply-m #message.left {
+  margin-left: auto;
+}
+
+#replies #reply-m #message.right {
+  margin-right: auto;
+}
+
+#replies #reply-m #chat-message {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  max-width: 70%;
+  width: fit-content;
 }
 
 #message {
   position: relative;
   z-index: 1;
   min-width: 10px;
+  width: fit-content;
+  height: max-content;
   letter-spacing: 0px;
   text-align: left;
   background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.4);

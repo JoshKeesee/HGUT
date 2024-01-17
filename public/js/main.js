@@ -176,12 +176,13 @@ const updateReplyOnclick = () => {
       const m = cm.querySelector("#message");
       const myUser =
         cm.querySelector("#profile").className.replace("-", " ") == user.name;
+      const id = m.className.split(" ")[0].replace("m-", "");
       const r = cm.cloneNode(true);
       r.querySelector("#profile").remove();
       const pc = getProfile(user, false);
       pc.id = "profile";
       if (!myUser) r.querySelector("#message").before(pc);
-      cm.parentElement.insertBefore(r, cm.nextSibling);
+      document.querySelector(".r-" + id).appendChild(r);
       const rm = r.querySelector("#message");
       rm.style.background = toRgba(user.color, 0.4);
       rm.contentEditable = true;
@@ -195,11 +196,16 @@ const updateReplyOnclick = () => {
       rm.onblur = () => {
         if (rm.innerText.length == 0) return r.remove();
         rm.contentEditable = false;
-        rm.innerHTML = linkify(rm.innerText);
-        updateEditOnclick();
-        updateReplyOnclick();
-        updateDeleteOnclick();
-        updateMessageProfiles();
+        chat.emit("reply", {
+          id,
+          message: rm.innerText,
+          profile: user.name,
+          room: user.room,
+        });
+        r.remove();
+      };
+      rm.onkeydown = (e) => {
+        if (e.key == "Enter") rm.blur();
       };
       updateMessageProfiles();
     };
@@ -225,8 +231,46 @@ const updateDeleteOnclick = () => {
   });
 };
 
+const createReply = (e, prev) => {
+  const myUser = e.name == user.name;
+  const reply = document.createElement("div");
+  reply.id = "reply-m";
+  reply.classList.add(myUser ? "right" : "left");
+  const p = profiles[e.name];
+  const rm = document.createElement("div");
+  rm.id = "chat-message";
+  rm.class = p.name.replaceAll(" ", "-");
+  const rp = getProfile(p, false);
+  const rmn = document.createElement("div");
+  rmn.id = "name";
+  rmn.innerText = myUser ? "" : e.name;
+  const rmtime = document.createElement("div");
+  rmtime.id = "time";
+  rmtime.innerHTML = e.date
+    ? new Date(e.date).toLocaleString("en-us", {
+        weekday: "long",
+        hour: "numeric",
+        minute: "numeric",
+        hour12: true,
+      })
+    : "";
+  rmn.appendChild(rmtime);
+  const rmm = document.createElement("div");
+  rmm.id = "message";
+  rmm.classList.add(myUser ? "left" : "right");
+  rmm.style.background = toRgba(p.color, 0.4);
+  rmm.innerText = linkify(e.message);
+  if (prev?.name != e.name) {
+    if (!myUser) reply.appendChild(rp);
+    rm.appendChild(rmn);
+  }
+  rm.appendChild(rmm);
+  reply.appendChild(rm);
+  return reply;
+}
+
 const addMessage = (
-  [message, u, d, lm = null, mId = 0],
+  [message, u, d, lm = null, mId = 0, replies = []],
   smooth = true,
   scroll = true,
   start = false,
@@ -342,6 +386,14 @@ const addMessage = (
     if (start) cms.insertBefore(cont, cms.firstChild);
     else cms.appendChild(cont);
   }
+
+  const r = document.createElement("div");
+  r.id = "replies";
+  r.classList.add("r-" + mId);
+  r.classList.add(myUser ? "right" : "left");
+  replies.forEach((e, i) => r.appendChild(createReply(e, replies[i - 1])));
+  cms.appendChild(r);
+
   updateMessageProfiles();
   updateEditOnclick();
   updateReplyOnclick();

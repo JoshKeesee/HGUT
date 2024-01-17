@@ -110,7 +110,7 @@ chat.on("load messages", ([messages, numMessages, start = true]) => {
   const rev = start ? messages.reverse() : messages;
   rev.forEach((m, i) => {
     addMessage(
-      [m.message, profiles[m.name], m.date, rev[i - 1], numMessages - i],
+      [m.message, profiles[m.name], m.date, rev[i - 1], numMessages - i, m.replies],
       false,
       false,
       start,
@@ -144,6 +144,20 @@ chat.on("edit", ({ id, message, user }) => {
   if (!m) return;
   m.innerHTML = linkify(message);
   updateMessageProfiles();
+});
+chat.on("reply", ({ id, message, user, prev }) => {
+  const r = document.querySelector(".r-" + id);
+  if (!r) return;
+  const rm = createReply({ message, name: user.name }, prev);
+  r.appendChild(rm);
+  updateMessageProfiles();
+  rm.animate({
+    opacity: [0, 1],
+    transform: ["scale(0)", "scale(1)"],
+  }, {
+    duration: 300,
+    easing: "ease-out",
+  });
 });
 chat.on("delete", ({ id, user }) => {
   const m = document.querySelector(".m-" + id);
@@ -239,7 +253,7 @@ chat.on("join room", ([messages, r, u, numMessages]) => {
   else
     messages.forEach((m, i) =>
       addMessage(
-        [m.message, profiles[m.name], m.date, messages[i - 1], numMessages - i],
+        [m.message, profiles[m.name], m.date, messages[i - 1], numMessages - i, m.replies],
         false,
       ),
     );
