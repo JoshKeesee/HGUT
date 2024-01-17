@@ -140,6 +140,7 @@ chat.on("chat message", ([m, u, d, lm, a, mId]) => {
       .join(" ");
   if (u.room == user.room) addMessage([m, u, d, lm, mId]);
   else createNotification([messageText, u, u.room]);
+  addReplies(m, mId);
 });
 chat.on("edit", ({ id, message, user }) => {
   const m = document.querySelector(".m-" + id);
