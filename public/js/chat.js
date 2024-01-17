@@ -248,10 +248,6 @@ chat.on("user", async (u) => {
   updateSettings();
   if (user.settings.notifications)
     user.settings.notifications = await askNotification();
-  for (let i = 0; i < 10; i++)
-    setTimeout(() => {
-      createNotification(["test", user, user.room]);
-    }, 1000 * i);
 });
 chat.on("online", (u) => {
   online = u;
