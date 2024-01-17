@@ -260,17 +260,28 @@ const createReply = (e, prev) => {
   rmm.classList.add(myUser ? "left" : "right");
   rmm.style.background = toRgba(p.color, 0.4);
   rmm.innerText = linkify(e.message);
-  if (prev?.name != e.name) {
-    if (!myUser) reply.appendChild(rp);
-    rm.appendChild(rmn);
-  }
+  if (prev?.name != e.name) rm.appendChild(rmn);
+  if (!myUser) reply.appendChild(rp);
   rm.appendChild(rmm);
   reply.appendChild(rm);
   return reply;
-}
+};
+
+const addReplies = (m, mId) => {
+  const replies = m.replies || [];
+  const myUser = user.name == m.name;
+  const cms = document.querySelector("#chat-messages");
+  const r = document.createElement("div");
+  r.id = "replies";
+  r.classList.add("r-" + mId);
+  r.classList.add(myUser ? "right" : "left");
+  replies.forEach((e, i) => r.appendChild(createReply(e, replies[i - 1])));
+  cms.appendChild(r);
+  updateMessageProfiles();
+};
 
 const addMessage = (
-  [message, u, d, lm = null, mId = 0, replies = []],
+  [message, u, d, lm = null, mId = 0],
   smooth = true,
   scroll = true,
   start = false,
@@ -353,7 +364,7 @@ const addMessage = (
     opts.className = "right";
     cm.appendChild(pc);
   }
-  const prev = start ? cms.firstChild : cms.lastChild;
+  const prev = start ? cms.firstChild : cms.lastChild?.previousSibling;
   const ld = lm ? lm.date : null;
   if (
     prev?.className == "u" + u.id &&
@@ -387,27 +398,23 @@ const addMessage = (
     else cms.appendChild(cont);
   }
 
-  const r = document.createElement("div");
-  r.id = "replies";
-  r.classList.add("r-" + mId);
-  r.classList.add(myUser ? "right" : "left");
-  replies.forEach((e, i) => r.appendChild(createReply(e, replies[i - 1])));
-  cms.appendChild(r);
-
   updateMessageProfiles();
   updateEditOnclick();
   updateReplyOnclick();
   updateDeleteOnclick();
 
-  if (scroll) {
+  if (scroll && !start) {
     cms.scrollTo(0, cms.scrollHeight);
-    cm.animate({
-      opacity: [0, 1],
-      transform: ["scale(0)", "scale(1)"],
-    }, {
-      duration: 300,
-      easing: "ease-out",
-    });
+    cm.animate(
+      {
+        opacity: [0, 1],
+        transform: ["scale(0)", "scale(1)"],
+      },
+      {
+        duration: 300,
+        easing: "ease-out",
+      },
+    );
   }
 };
 

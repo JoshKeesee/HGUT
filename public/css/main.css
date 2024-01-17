@@ -309,13 +309,15 @@ input[type="file"] {
   color: #888888;
 }
 
-#cont #name.left, #reply-m #name.left {
+#cont #name.left,
+#reply-m #name.left {
   margin-left: 50px;
   text-align: left;
   justify-content: flex-start;
 }
 
-#cont #name.right, #reply-m #name.right {
+#cont #name.right,
+#reply-m #name.right {
   text-align: right;
   justify-content: flex-end;
 }
@@ -343,7 +345,7 @@ input[type="file"] {
   margin-top: 5px;
   margin-bottom: 5px;
   max-width: 50%;
-  min-width: 30%;
+  min-width: 40%;
   scroll-snap-align: end;
   padding: 20px;
   border-radius: 20px;
@@ -368,6 +370,7 @@ input[type="file"] {
   flex-direction: row;
   width: 100%;
   gap: 5px;
+  scroll-snap-align: end;
 }
 
 #replies #reply-m.left {
@@ -380,6 +383,10 @@ input[type="file"] {
   margin-left: auto;
   text-align: right;
   justify-content: flex-end;
+}
+
+#replies #reply-m #profile {
+  margin-top: 20px;
 }
 
 #replies #reply-m #name {
@@ -401,6 +408,16 @@ input[type="file"] {
 
 #replies #reply-m #message.right {
   margin-right: auto;
+}
+
+#replies #reply-m:has(#message.left) #name {
+  text-align: right;
+  justify-content: flex-end;
+}
+
+#replies #reply-m:has(#message.right) #name {
+  text-align: left;
+  justify-content: flex-start;
 }
 
 #replies #reply-m #chat-message {
@@ -617,8 +634,7 @@ input[type="file"] {
   width: 25px;
   height: 25px;
   color: inherit;
-  transition:
-    opacity 0.2s ease;
+  transition: opacity 0.2s ease;
 }
 
 #tabs .tab:not(.selected) svg.solid,
