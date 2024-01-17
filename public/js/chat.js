@@ -60,7 +60,7 @@ chat.on("connect", () => {
 });
 chat.on("disconnect", () => {
   const t = getCurrentTab();
-  if (t != "chat") return;
+  if (t == "voice") return;
   const i = () => {
     if (chat.connected) return;
     console.log("%cReconnecting to Chat...", "color: #0000ff");
