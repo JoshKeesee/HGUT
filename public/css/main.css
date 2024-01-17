@@ -65,7 +65,10 @@ html {
   gap: 5px;
   position: relative;
   flex-direction: column;
-  transition: all 0.2s ease;
+  transition:
+    width 0.2s ease,
+    max-width 0.2s ease,
+    opacity 0.2s ease;
 }
 
 #icon {
@@ -604,6 +607,7 @@ input[type="file"] {
   gap: 5px;
   flex-direction: column;
   overflow: hidden;
+  color: inherit;
 }
 
 #tabs .tab,
@@ -623,6 +627,7 @@ input[type="file"] {
   height: 25px;
   display: flex;
   justify-content: center;
+  color: inherit;
 }
 
 #tabs .tab svg,
@@ -633,7 +638,6 @@ input[type="file"] {
   left: 5px;
   width: 25px;
   height: 25px;
-  color: inherit;
   transition: opacity 0.2s ease;
 }
 
@@ -657,7 +661,9 @@ input[type="file"] {
   width: 100%;
   min-width: max-content;
   opacity: 0;
-  transition: all 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
 }
 
 body:has(#header.toggled) #tabs .tab div {
@@ -764,12 +770,6 @@ body:has(#header.toggled) #tabs .tab {
 
 #notification #x:hover {
   background: #333;
-}
-
-#notification #x svg {
-  color: #fff;
-  fill: #fff;
-  stroke: #fff;
 }
 
 #notification:nth-child(n + 5) {

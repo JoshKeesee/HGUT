@@ -73,11 +73,12 @@ const linkify = (s, sc = false) => {
   }
 };
 
-const getSvg = (id, path) => {
+const getSvg = (id, path, opts = {}) => {
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   svg.setAttribute("id", id);
   svg.setAttribute("viewBox", "0 0 512 512");
   svg.setAttribute("fill", "currentColor");
+  Object.keys(opts).forEach((k) => svg.setAttribute(k, opts[k]));
   svg.innerHTML = `<path d="${path}"/>`;
   return svg;
 };
@@ -513,7 +514,13 @@ const createNotification = ([m, u, r]) => {
   message.innerText = m;
   const x = document.createElement("div");
   x.id = "x";
-  const xSvg = getSvg("x-svg", "M18 6L6 18M6 6l12 12");
+  const xSvg = getSvg("x-svg", "M18 6L6 18M6 6l12 12", {
+    fill: "#fff",
+    stroke: "#fff",
+    viewBox: "0 0 24 24",
+    "stroke-width": 2,
+    "stroke-linecap": "round",
+  });
   x.appendChild(xSvg);
   cont.appendChild(name);
   cont.appendChild(message);

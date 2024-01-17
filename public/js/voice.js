@@ -73,7 +73,7 @@ voice.on("user", async (u) => {
   await us();
   const pec = document.querySelector("#people-container");
   pec.innerHTML = "";
-  switchTheme(user.theme, user.settings.accent ? user.color : null);
+  switchTheme(user.settings.theme, user.settings.accent ? user.color : null);
   addVideo(user, stream, true);
   updateVoiceOnline();
 });
@@ -144,7 +144,7 @@ const addVideo = async (p, s, self = false, big = false, pre = false) => {
   const bg = document.createElement("div");
   bg.id = "bg";
   bg.classList.add("bg-" + id);
-  bg.style.background = user.theme ? "#000" : "#fff";
+  bg.style.background = user.settings.theme ? "#000" : "#fff";
   if (big) bg.classList.add("big");
   const person = document.createElement("div");
   person.id = "person";
@@ -265,7 +265,7 @@ const updateVoiceOnline = () => {
       if (k != user.id) {
         const bg = document.createElement("div");
         bg.id = "bg";
-        bg.style.background = user.theme ? "black" : "white";
+        bg.style.background = user.settings.theme ? "black" : "white";
         const pc = getProfile(r, true);
         pc.style.opacity = online[k].visible ? 1 : 0.5;
         bg.appendChild(pc);
@@ -274,21 +274,27 @@ const updateVoiceOnline = () => {
     });
 };
 
-const switchVoiceTheme = (dark = !user.theme, color) => {
-  user.theme = dark;
+const switchVoiceTheme = (dark = !user.settings.theme, color) => {
+  user.settings.theme = dark;
   const d = dark ? "dark" : "light";
   document.body.className = d;
   document.querySelector("#online").className = d + "-box";
-  document.querySelector("#light-icon").style.opacity = user.theme ? 0 : 1;
-  document.querySelector("#dark-icon").style.opacity = user.theme ? 1 : 0;
+  document.querySelector("#light-icon").style.opacity = user.settings.theme
+    ? 0
+    : 1;
+  document.querySelector("#dark-icon").style.opacity = user.settings.theme
+    ? 1
+    : 0;
   document
     .querySelectorAll("#bg")
-    .forEach((b) => (b.style.background = user.theme ? "black" : "white"));
+    .forEach(
+      (b) => (b.style.background = user.settings.theme ? "black" : "white"),
+    );
   document
     .querySelectorAll(".loading div")
     .forEach(
       (b) =>
-        (b.style.background = user.theme
+        (b.style.background = user.settings.theme
           ? "radial-gradient(#fff, transparent)"
           : "radial-gradient(#000, transparent)"),
     );
@@ -300,7 +306,7 @@ const switchVoiceTheme = (dark = !user.theme, color) => {
       root.style.setProperty("--theme-" + k, rgb[k]),
     );
   }
-  voice.emit("theme", user.theme);
+  voice.emit("theme", user.settings.theme);
 };
 
 const toggleCamera = async (set = !user.camera) => {
