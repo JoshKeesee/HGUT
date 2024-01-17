@@ -268,7 +268,7 @@ chat.on("join room", ([messages, r, u, numMessages]) => {
         [m.message, profiles[m.name], m.date, messages[i - 1], numMessages - i],
         false,
       );
-      addReplies(m.replies, numMessages - i);
+      addReplies(m, numMessages - i);
     });
   maxMessagesReached = currMessages < maxMessages;
   cms.style = "";
