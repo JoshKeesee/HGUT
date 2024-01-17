@@ -49,6 +49,7 @@ const auth = (req, res, next) => {
     "favicon.png",
     "big_icon.png",
     "sw.js",
+    "Product-Sans.woff2",
   ];
   if (req.user || cancel.includes(req.url.split("/")[1])) return next();
   res.redirect("/login");
