@@ -275,9 +275,11 @@ const addReplies = (m, mId) => {
   const r = document.createElement("div");
   r.id = "replies";
   r.classList.add("r-" + mId);
+  r.classList.add("u" + profiles[m.name].id);
   r.classList.add(myUser ? "right" : "left");
   replies.forEach((e, i) => r.appendChild(createReply(e, replies[i - 1])));
-  cms.appendChild(r);
+  const msg = cms.querySelector(".m-" + mId);
+  msg.parentElement.insertBefore(r, msg.nextSibling);
   updateMessageProfiles();
 };
 
@@ -293,7 +295,7 @@ const addMessage = (
     document.title = "(" + missed + ") " + t;
   }
   const myUser = u.name == user.name;
-  if (typeof currMessages != "undefined") currMessages++;
+  if (typeof currMessages != "undefined" && start) currMessages++;
   const cms = chat.connected
     ? document.querySelector("#chat-messages")
     : voice.connected
@@ -365,13 +367,13 @@ const addMessage = (
     opts.className = "right";
     cm.appendChild(pc);
   }
-  const prev = start ? cms.firstChild : cms.lastChild?.previousSibling;
+  const prev = start ? cms.firstChild : cms.lastChild;
   const ld = lm ? lm.date : null;
   if (
-    prev?.className == "u" + u.id &&
+    prev?.classList.contains("u" + u.id) &&
     new Date(d).getTime() - new Date(ld).getTime() < 60000
   ) {
-    if (start) prev.insertBefore(cm, prev.children[1]);
+    if (start) prev.insertBefore(cm, prev.firstChild.nextSibling);
     else prev.appendChild(cm);
   } else {
     const cont = document.createElement("div");
@@ -394,7 +396,6 @@ const addMessage = (
     n.appendChild(time);
     cont.appendChild(n);
     cont.appendChild(cm);
-    cms.appendChild(cont);
     if (start) cms.insertBefore(cont, cms.firstChild);
     else cms.appendChild(cont);
   }
@@ -404,7 +405,7 @@ const addMessage = (
   updateReplyOnclick();
   updateDeleteOnclick();
 
-  if (scroll && !start) {
+  if (scroll && !start && atBottom) {
     cms.scrollTo(0, cms.scrollHeight);
     cm.animate(
       {

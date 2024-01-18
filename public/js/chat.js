@@ -62,7 +62,7 @@ chat.on("disconnect", () => {
   const t = getCurrentTab();
   if (t == "voice") return;
   const i = () => {
-    if (chat.connected) return;
+    if (chat.connected) return currMessages = maxMessages;
     console.log("%cReconnecting to Chat...", "color: #0000ff");
     chat.connect();
     setTimeout(i, 10000);
