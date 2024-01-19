@@ -325,17 +325,19 @@ input[type="file"] {
   justify-content: flex-end;
 }
 
-#cont #chat-message:nth-child(2) #message,
+#cont #chat-message.msg:nth-child(2) #message,
 #cont #chat-message:has(#emoji:not(.disabled)) + #chat-message #message,
-#replies #reply-m:nth-child(1) #message {
+#cont #replies:not(:empty) + #chat-message.msg #message,
+#replies #cont #chat-message:nth-child(2) #message {
   border-top-right-radius: 20px;
   border-top-left-radius: 20px;
   transition: border-radius 0.5s ease;
 }
 
-#cont #chat-message:last-child #message,
+#cont #chat-message.msg:nth-last-child(2) #message,
 #cont #chat-message:has(+ #chat-message #emoji:not(.disabled)) #message,
-#replies #reply-m:last-child #message {
+#cont #chat-message.msg:has(+ #replies:not(:empty)) #message,
+#replies #cont #chat-message:last-child #message {
   border-bottom-right-radius: 20px;
   border-bottom-left-radius: 20px;
   transition: border-radius 0.5s ease;
@@ -366,70 +368,6 @@ input[type="file"] {
 
 #replies.right {
   margin-left: auto;
-}
-
-#replies #reply-m {
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  gap: 5px;
-  scroll-snap-align: end;
-}
-
-#replies #reply-m.left {
-  margin-right: auto;
-  text-align: left;
-  justify-content: flex-start;
-}
-
-#replies #reply-m.right {
-  margin-left: auto;
-  text-align: right;
-  justify-content: flex-end;
-}
-
-#replies #reply-m #profile {
-  margin-top: 20px;
-}
-
-#replies #reply-m #name {
-  font-size: 13px;
-  color: #999999;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-#replies #reply-m #name #time {
-  font-size: 11px;
-  color: #888888;
-}
-
-#replies #reply-m #message.left {
-  margin-left: auto;
-}
-
-#replies #reply-m #message.right {
-  margin-right: auto;
-}
-
-#replies #reply-m:has(#message.left) #name {
-  text-align: right;
-  justify-content: flex-end;
-}
-
-#replies #reply-m:has(#message.right) #name {
-  text-align: left;
-  justify-content: flex-start;
-}
-
-#replies #reply-m #chat-message {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  max-width: 70%;
-  width: fit-content;
 }
 
 #message {

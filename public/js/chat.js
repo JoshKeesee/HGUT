@@ -62,7 +62,7 @@ chat.on("disconnect", () => {
   const t = getCurrentTab();
   if (t == "voice") return;
   const i = () => {
-    if (chat.connected) return currMessages = maxMessages;
+    if (chat.connected) return (currMessages = maxMessages);
     console.log("%cReconnecting to Chat...", "color: #0000ff");
     chat.connect();
     setTimeout(i, 10000);
@@ -101,21 +101,20 @@ chat.on("unread", (u) => {
     if (d) d.style.display = "block";
   });
 });
-chat.on("load messages", ([messages, numMessages, start = true]) => {
+chat.on("load messages", ([messages, start = true]) => {
   if (!start) currMessages = messages.length;
   maxMessagesReached = messages.length < maxMessages;
   const cms = document.querySelector("#chat-messages");
   const h = cms.scrollHeight;
   if (document.querySelector("#" + loading.id)) loading.remove();
   const rev = start ? messages.reverse() : messages;
-  rev.forEach((m, i) => {
+  rev.forEach(async (m, i) => {
     addMessage(
-      [m.message, profiles[m.name], m.date, rev[i - 1], numMessages - i],
-      false,
+      [m.message, profiles[m.name], m.date, rev[i - 1], m.id],
       false,
       start,
     );
-    addReplies(m, numMessages - i);
+    addReplies(m);
   });
   if (!maxMessagesReached) cms.insertBefore(loading, cms.firstChild);
   if (!start && messages.length == 0)
@@ -126,7 +125,7 @@ chat.on("load messages", ([messages, numMessages, start = true]) => {
   });
   loadingMessages = false;
 });
-chat.on("chat message", ([m, u, d, lm, a, mId]) => {
+chat.on("chat message", async ([m, u, d, lm, a, mId]) => {
   if (!(a.includes(user.id) || a == "all")) return;
   let messageText = m;
   if (u.room == "eth")
@@ -138,23 +137,43 @@ chat.on("chat message", ([m, u, d, lm, a, mId]) => {
           : w,
       )
       .join(" ");
-  if (u.room == user.room) addMessage([m, u, d, lm, mId]);
-  else createNotification([messageText, u, u.room]);
-  addReplies(m, mId);
+  if (u.room == user.room) {
+    addMessage([m, u, d, lm, mId]);
+    addReplies({
+      m,
+      name: u.name,
+      date: d,
+      id: mId,
+    });
+  } else createNotification([messageText, u, u.room]);
 });
-chat.on("edit", ({ id, message, user }) => {
+chat.on("edit", ({ id, message }) => {
   const m = document.querySelector(".m-" + id);
   if (!m) return;
   m.innerHTML = linkify(message);
   updateMessageProfiles();
 });
-chat.on("reply", ({ id, message, user: u, prev }) => {
+chat.on("reply", ({ id, message, user: u, prev, date, i }) => {
   const r = document.querySelector(".r-" + id);
   if (!r) return;
-  const rm = createReply({ message, name: u.name }, prev);
-  r.appendChild(rm);
+  const [c, appendEl, appendBefore] = createMessage(
+    [message, u, date, prev, id],
+    false,
+    u.name == user.name,
+    i,
+    false,
+    true,
+    r,
+  );
+  if (c.id == "cont") r.appendChild(c);
+  else if (appendEl) appendEl.appendChild(c);
+  else if (appendBefore) appendEl.insertBefore(c, appendBefore);
   updateMessageProfiles();
-  rm.animate(
+  updateEditOnclick();
+  updateReplyOnclick();
+  updateDeleteOnclick();
+  const cm = c.id == "cont" ? c : c.querySelector("#chat-message");
+  cm.animate(
     {
       opacity: [0, 1],
       transform: ["scale(0)", "scale(1)"],
@@ -165,20 +184,29 @@ chat.on("reply", ({ id, message, user: u, prev }) => {
     },
   );
 });
-chat.on("delete", ({ id, user }) => {
+chat.on("delete", ({ id }) => {
   const m = document.querySelector(".m-" + id);
   if (!m) return;
-  if ([].slice.call(m.parentElement.parentElement.children).length <= 2)
+  if ([].slice.call(m.parentElement.parentElement.children).length <= 3)
     m.parentElement.parentElement.remove();
   else m.parentElement.remove();
   updateMessageProfiles();
-  updateEditOnclick();
-  updateReplyOnclick();
-  updateDeleteOnclick();
   const r = document.querySelector(".r-" + id);
   if (r) r.remove();
   const cm = document.querySelector("#chat-messages");
   if (cm.children.length == 0) cm.innerText = "Sorry, no messages here...";
+  for (let i = id; i < currMessages; i++) {
+    const m = document.querySelector(".m-" + i);
+    if (m) {
+      m.classList.remove("m-" + i);
+      m.classList.add("m-" + (i - 1));
+    } else break;
+    const r = document.querySelector(".r-" + i);
+    if (r) {
+      r.classList.remove("r-" + i);
+      r.classList.add("r-" + (i - 1));
+    }
+  }
 });
 chat.on("rooms", async ([rooms, p]) => {
   loadingMessages = true;
@@ -254,7 +282,7 @@ chat.on("online", (u) => {
   online = u;
   updateOnline();
 });
-chat.on("join room", ([messages, r, u, numMessages]) => {
+chat.on("join room", async ([messages, r, u]) => {
   loadingMessages = false;
   currMessages = 0;
   user.unread = u;
@@ -265,11 +293,14 @@ chat.on("join room", ([messages, r, u, numMessages]) => {
   if (messages.length == 0) cms.innerText = "Sorry, no messages here...";
   else
     messages.forEach((m, i) => {
-      addMessage(
-        [m.message, profiles[m.name], m.date, messages[i - 1], numMessages - i],
-        false,
-      );
-      addReplies(m, numMessages - i);
+      addMessage([
+        m.message,
+        profiles[m.name],
+        m.date,
+        messages[i - 1],
+        messages.length - i - 1,
+      ]);
+      addReplies(m);
     });
   maxMessagesReached = currMessages < maxMessages;
   cms.style = "";

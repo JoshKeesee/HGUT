@@ -1,5 +1,5 @@
 const worklet = (() => {
-	const codeString = `
+  const codeString = `
 		const QUANTUM_SIZE = 128;
 		class audioMonitor extends AudioWorkletProcessor {
 			constructor() {
@@ -50,7 +50,7 @@ const worklet = (() => {
 		registerProcessor("audio-monitor", audioMonitor);
 	`;
 
-	return URL.createObjectURL(
-		new Blob([codeString], { type: "text/javascript" })
-	);
+  return URL.createObjectURL(
+    new Blob([codeString], { type: "text/javascript" }),
+  );
 })();
