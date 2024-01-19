@@ -1,8 +1,8 @@
 const grid = document.querySelector("#files-content");
 animateCSSGrid.wrapGrid(grid, {
-  duration: 1000,
+  duration: 500,
   easing: "anticipate",
-  stagger: 100,
+  stagger: 10,
 });
 
 const loadFiles = () => {
