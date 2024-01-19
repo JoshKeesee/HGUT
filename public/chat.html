@@ -6,6 +6,7 @@
 	<link rel="stylesheet" href="css/chat.css" />
 	<link rel="stylesheet" href="css/voice.css" />
 	<link rel="stylesheet" href="css/settings.css" />
+	<link rel="stylesheet" href="css/files.css" />
 	<link rel="stylesheet" href="css/loading.css" />
 	<link rel="manifest" href="manifest.json" />
 	<link rel="icon" href="favicon.png" />
@@ -44,6 +45,15 @@
 						<path d="M4.5 4.5a3 3 0 00-3 3v9a3 3 0 003 3h8.25a3 3 0 003-3v-9a3 3 0 00-3-3H4.5zM19.94 18.75l-2.69-2.69V7.94l2.69-2.69c.944-.945 2.56-.276 2.56 1.06v11.38c0 1.336-1.616 2.005-2.56 1.06z" />
 					</svg>
 					<div>Voice Chat</div>
+				</div>
+				<div id="files" class="tab">
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z" />
+					</svg>
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="solid">
+						<path d="M19.906 9c.382 0 .749.057 1.094.162V9a3 3 0 0 0-3-3h-3.879a.75.75 0 0 1-.53-.22L11.47 3.66A2.25 2.25 0 0 0 9.879 3H6a3 3 0 0 0-3 3v3.162A3.756 3.756 0 0 1 4.094 9h15.812ZM4.094 10.5a2.25 2.25 0 0 0-2.227 2.568l.857 6A2.25 2.25 0 0 0 4.951 21H19.05a2.25 2.25 0 0 0 2.227-1.932l.857-6a2.25 2.25 0 0 0-2.227-2.568H4.094Z" />
+					</svg>
+					<div>Uploaded Files</div>
 				</div>
 				<div id="theme" class="tab">
 					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" id="light-icon">
@@ -287,9 +297,17 @@
 					</div>
 				</div>
 			</div>
+			<div id="files-container" class="light-box">
+				<div id="files-title" class="large">Uploaded Files</div>
+				<p>
+					Note: The files shown only appear in chats you are allowed in.
+				</p>
+				<div id="files-content"></div>
+			</div>
 		</div>
 	</div>
 	<script src="https://unpkg.com/peerjs@1.5.1/dist/peerjs.min.js"></script>
+	<script src="https://unpkg.com/animate-css-grid@1.4.3/dist/main.js"></script>
 	<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 	<script src="js/worklet.js"></script>
 	<script src="js/main.js"></script>
@@ -297,4 +315,5 @@
 	<script src="js/chat.js"></script>
 	<script src="js/voice.js"></script>
 	<script src="js/settings.js"></script>
+	<script src="js/files.js"></script>
 </body>

@@ -1,0 +1,88 @@
+#files-container {
+  position: relative;
+  display: none;
+  flex: auto 1 1;
+  flex-direction: column;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 20px;
+  overflow-y: scroll;
+  transition: background 0.2s ease;
+}
+
+#container:has(#header #tabs #files.selected) #files-container {
+  animation: zoom 0.2s ease;
+  display: flex;
+}
+
+#files-container p {
+  margin-left: 10px;
+}
+
+#files-title {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+#files-title.large {
+  font-size: 32px;
+  padding: 10px;
+}
+
+#files-title.small {
+  font-size: 24px;
+  padding: 10px;
+}
+
+#files-content {
+  padding: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-auto-rows: 200px;
+  grid-auto-flow: dense;
+  box-sizing: border-box;
+  height: fit-content;
+  gap: 10px;
+}
+
+#files-content #file-cont {
+  position: relative;
+  color: #fff;
+  box-sizing: border-box;
+  white-space: nowrap;
+  user-select: none;
+  padding: 10px;
+  width: 100%;
+  height: 100%;
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  font-size: 18px;
+  font-weight: bold;
+  text-align: left;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  border-radius: 10px;
+  background: rgba(150, 150, 150, 0.2);
+  background-size: cover;
+  background-origin: center;
+  background-repeat: no-repeat;
+  background-position: center;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  user-select: none;
+  overflow: hidden;
+  transition:
+    padding 0.2s ease,
+    background 0.2s ease;
+}
+
+#files-content #file-cont:hover {
+  padding-bottom: 20px;
+}
+
+#files-content #file-cont.active {
+  grid-column: span 2;
+  grid-row: span 2;
+}

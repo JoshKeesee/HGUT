@@ -19,6 +19,7 @@ let maxMessagesReached = false,
   currMessages = maxMessages,
   mobile = window.innerWidth < 700,
   rn = [],
+  roomNames = {},
   prev = "";
 
 const roomButton = (text, cn, u = true, d) => {
@@ -203,6 +204,7 @@ chat.on("delete", ({ id }) => {
 chat.on("rooms", async ([rooms, p]) => {
   loadingMessages = true;
   rn = Object.keys(rooms);
+  rn.forEach((r) => (roomNames[r] = rooms[r].name));
   const vs = Object.values(rooms);
   rn.forEach((r, i) => {
     rns[r] = vs[i].name;
