@@ -108,13 +108,12 @@ chat.on("load messages", ([messages, start = true]) => {
   const h = cms.scrollHeight;
   if (document.querySelector("#" + loading.id)) loading.remove();
   const rev = start ? messages.reverse() : messages;
-  rev.forEach(async (m, i) => {
+  rev.forEach((m, i) => {
     addMessage(
-      [m.message, profiles[m.name], m.date, rev[i - 1], m.id],
+      [m.message, profiles[m.name], m.date, rev[i - 1], m.id, m.replies],
       false,
       start,
     );
-    addReplies(m);
   });
   if (!maxMessagesReached) cms.insertBefore(loading, cms.firstChild);
   if (!start && messages.length == 0)
@@ -137,15 +136,8 @@ chat.on("chat message", async ([m, u, d, lm, a, mId]) => {
           : w,
       )
       .join(" ");
-  if (u.room == user.room) {
-    addMessage([m, u, d, lm, mId]);
-    addReplies({
-      m,
-      name: u.name,
-      date: d,
-      id: mId,
-    });
-  } else createNotification([messageText, u, u.room]);
+  if (u.room == user.room) addMessage([m, u, d, lm, mId]);
+  else createNotification([messageText, u, u.room]);
 });
 chat.on("edit", ({ id, message }) => {
   const m = document.querySelector(".m-" + id);
@@ -172,7 +164,7 @@ chat.on("reply", ({ id, message, user: u, prev, date, i }) => {
   updateEditOnclick();
   updateReplyOnclick();
   updateDeleteOnclick();
-  const cm = c.id == "cont" ? c : c.querySelector("#chat-message");
+  const cm = c.id == "cont" ? c.querySelector("#chat-message") : c;
   cm.animate(
     {
       opacity: [0, 1],
@@ -282,7 +274,7 @@ chat.on("online", (u) => {
   online = u;
   updateOnline();
 });
-chat.on("join room", async ([messages, r, u]) => {
+chat.on("join room", ([messages, r, u]) => {
   loadingMessages = false;
   currMessages = 0;
   user.unread = u;
@@ -299,8 +291,8 @@ chat.on("join room", async ([messages, r, u]) => {
         m.date,
         messages[i - 1],
         messages.length - i - 1,
+        m.replies,
       ]);
-      addReplies(m);
     });
   maxMessagesReached = currMessages < maxMessages;
   cms.style = "";

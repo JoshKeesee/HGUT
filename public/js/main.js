@@ -385,7 +385,7 @@ const createMessage = (
 };
 
 const addMessage = (
-  [message, u, d, lm = null, mId = 0],
+  [message, u, d, lm = null, mId = 0, replies = []],
   scroll = true,
   start = false,
 ) => {
@@ -416,6 +416,15 @@ const addMessage = (
   if (start) appendEl.insertBefore(c, appendBefore);
   else appendEl.appendChild(c);
 
+  const cm = c.id == "cont" ? c.firstChild.nextSibling : c;
+  addReplies({
+    m: message,
+    name: u.name,
+    date: d,
+    id: mId,
+    replies,
+  });
+
   updateMessageProfiles();
   updateEditOnclick();
   updateReplyOnclick();
@@ -423,7 +432,6 @@ const addMessage = (
 
   if (scroll && !start && atBottom) {
     cms.scrollTo(0, cms.scrollHeight);
-    const cm = c.id == "cont" ? c.firstChild.nextSibling : c;
     cm.animate(
       {
         opacity: [0, 1],
@@ -506,6 +514,7 @@ const switchTab = async (tab) => {
   if (tab.id == "voice") {
     chat.disconnect();
     voice.connect();
+    document.querySelector("#voice-chat-messages").innerHTML = "";
   } else {
     chat.connect();
     voice.disconnect();
