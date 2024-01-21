@@ -11,7 +11,7 @@ settingToggles.forEach((t) => {
         user.settings.accent ? user.color : "#0000ff",
       );
     if (s == "notifications" && user.settings.notifications)
-      user.settings.notifications = await askNotification();
+      user.settings.notifications[getDeviceId()] = await askNotification();
     if (s == "emoji")
       document.querySelectorAll("#emoji").forEach((e) => {
         e.classList.toggle("disabled", !user.settings.emoji);
@@ -64,7 +64,8 @@ const updateSettings = () => {
   p.appendChild(pr);
   Object.keys(user.settings || {}).forEach((k) => {
     const t = document.querySelector(`.settings-toggle[data-setting="${k}"]`);
-    if (t) t.classList.toggle("active", user.settings[k]);
+    if (k == "notifications") t.classList.toggle("active", user.settings[k][getDeviceId()]);
+    else if (t) t.classList.toggle("active", user.settings[k]);
   });
 };
 
