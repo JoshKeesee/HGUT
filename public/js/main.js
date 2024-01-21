@@ -291,8 +291,10 @@ const createMessage = (
           : w,
       )
       .join(" ");
-  m.innerHTML = messageText;
-  m.innerHTML = linkify(m.innerText, !start);
+  const t =
+    messageText.replace(/<\s*br[^>]?>/, "\n").replace(/(<([^>]+)>)/g, "") ||
+    " ";
+  m.innerHTML = linkify(t, !start);
   const opts = document.createElement("div");
   opts.id = "options";
   if (buttons) {
@@ -431,7 +433,11 @@ const addMessage = (
   updateDeleteOnclick();
 
   if (scroll && !start && atBottom) {
-    cms.scrollTo(0, cms.scrollHeight);
+    cm.scrollIntoView({
+      behavior: "smooth",
+      block: "end",
+      inline: "nearest",
+    });
     cm.animate(
       {
         opacity: [0, 1],

@@ -138,7 +138,8 @@ chat.on("chat message", async ([m, u, d, lm, a, mId]) => {
       )
       .join(" ");
   if (u.room == user.room) addMessage([m, u, d, lm, mId]);
-  else createNotification([messageText, u, u.room]);
+  if (u.room != user.room || getCurrentTab() != "chat")
+    createNotification([messageText, u, u.room]);
 });
 chat.on("edit", ({ id, message }) => {
   const m = document.querySelector(".m-" + id);
@@ -299,6 +300,7 @@ chat.on("join room", ([messages, r, u]) => {
   maxMessagesReached = currMessages < maxMessages;
   cms.style = "";
   if (!maxMessagesReached) cms.insertBefore(loading, cms.firstChild);
+  cms.scrollTop = cms.scrollHeight;
 });
 chat.on("redirect", (d) => (window.location.href = d));
 
@@ -525,6 +527,8 @@ input.onkeyup = (e) => {
 send.onclick = (e) => {
   const i = input.value;
   if (!i.replace(/\s/g, "").length) return;
+  if (!i.replace(/<\s*br[^>]?>/, "\n").replace(/(<([^>]+)>)/g, "").length)
+    return;
   if (i.length == 0 || i.length > 250 || loadingMessages || !chat.connected)
     return;
   chat.emit("chat message", i);
