@@ -568,6 +568,7 @@ const createNotification = ([m, u, r]) => {
       document.querySelector(".c-" + r) ||
       document.querySelector(".c-" + r.split("-").reverse().join("-")) ||
       document.querySelector("." + r);
+    switchTab(tabs.querySelector("#messages"));
     switchChat(lr);
   };
   setTimeout(() => clearNotification(n), 10000);
