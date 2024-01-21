@@ -1,6 +1,14 @@
 const publicKey =
   "BJVqvnCWx0flqmuHgSv0OQ6VRl-FRTgRKzByVlMf-4iyFStJlJMSn6G90e0LNICbHaGzx5gwRDLttMZ2xDVhRxk";
 
+const getDeviceId = () => {
+  const id = localStorage.getItem("deviceId");
+  if (id) return id;
+  const newId = crypto.randomUUID();
+  localStorage.setItem("deviceId", newId);
+  return newId;
+}
+
 const registerSw = async (p) => {
   const registrations = await navigator.serviceWorker.getRegistrations();
   for (const r of registrations) r.unregister();
@@ -29,7 +37,7 @@ const registerSw = async (p) => {
           .find((c) => c.includes("user="))
           .split("=")[1],
       ),
-      mobile: navigator.userAgent.includes("Mobile"),
+      deviceId: getDeviceId(),
     }),
     headers: {
       "Content-Type": "application/json",
