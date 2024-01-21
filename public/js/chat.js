@@ -138,7 +138,7 @@ chat.on("chat message", async ([m, u, d, lm, a, mId]) => {
       )
       .join(" ");
   if (u.room == user.room) addMessage([m, u, d, lm, mId]);
-  if (u.room != user.room || getCurrentTab() != "chat")
+  if (u.room != user.room || getCurrentTab() != "messages")
     createNotification([messageText, u, u.room]);
 });
 chat.on("edit", ({ id, message }) => {
