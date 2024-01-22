@@ -151,6 +151,7 @@ const initMusic = () => {
 
 Tone.loaded().then(() => {
   chat.on("note start", ([note, u]) => {
+    if (getCurrentTab() != "music") return;
     const k = document.querySelector(`div[data-note="${note}"]`);
     down({
       target: k,
@@ -159,6 +160,7 @@ Tone.loaded().then(() => {
     });
   });
   chat.on("note stop", ([note, u]) => {
+    if (getCurrentTab() != "music") return;
     const k = document.querySelector(`div[data-note="${note}"]`);
     up({
       target: k,
