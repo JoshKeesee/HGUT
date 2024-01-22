@@ -67,6 +67,7 @@ const keyColors = [
 ];
 
 const down = (e) => {
+  if (getCurrentTab() != "music") return;
   const k = e.target;
   const { key, octave, note, index: i } = k.dataset;
   if (octave == currOctave + 1 && km[nn + (i % nn)])
@@ -80,6 +81,7 @@ const down = (e) => {
   if (!e.dontSend) chat.emit("note start", note);
 };
 const up = (e) => {
+  if (getCurrentTab() != "music") return;
   const k = e.target;
   const { key, octave, note, now } = k.dataset;
   if (e.key && currOctave != octave && km.indexOf(key) < nn) return;
