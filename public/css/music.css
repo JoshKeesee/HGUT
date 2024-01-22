@@ -1,0 +1,76 @@
+:root {
+  --octaves: 1;
+  --octave-width: 0;
+  --key-width: calc(var(--octave-width) / var(--octaves));
+  --key-height: calc(var(--key-width) * 4);
+  --black-key-width: calc(var(--key-width) * 0.8);
+  --black-key-height: calc(var(--black-key-width) * 3);
+}
+
+#music-container {
+  position: relative;
+  display: none;
+  flex: auto 1 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 20px;
+  overflow-y: scroll;
+}
+
+#container:has(#header #tabs #music.selected) #music-container {
+  animation: zoom 0.2s ease;
+  display: flex;
+}
+
+.keys {
+  display: flex;
+  list-style-type: none;
+  position: relative;
+}
+
+.keys .key {
+  width: var(--key-width);
+  height: var(--key-height);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: calc(var(--key-height) / 20);
+  user-select: none;
+  text-transform: uppercase;
+  font-weight: 1000;
+  font-size: calc(var(--key-height) / 10);
+  transition: background 0.2s ease;
+}
+
+.keys .key:first-child {
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+
+.keys .key:last-child {
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+.keys .key.white {
+  background: #fff;
+  color: #000;
+  border-left: #ababab 1px solid;
+  border-right: #ababab 1px solid;
+}
+
+.keys .key.black {
+  content: "";
+  background: #000;
+  color: transparent;
+  width: var(--black-key-width);
+  height: var(--black-key-height);
+  margin: 0 calc(var(--black-key-width) / -2);
+  z-index: 1;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
