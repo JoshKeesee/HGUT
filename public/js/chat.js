@@ -111,7 +111,15 @@ chat.on("load messages", ([messages, start = true]) => {
   const rev = start ? messages.reverse() : messages;
   rev.forEach((m, i) => {
     addMessage(
-      [m.message, profiles[m.name], m.date, rev[i - 1], m.id, m.replies],
+      [
+        m.message,
+        profiles[m.name],
+        m.date,
+        rev[i - 1],
+        m.id,
+        m.replies,
+        m.reactions,
+      ],
       false,
       start,
     );
@@ -200,6 +208,16 @@ chat.on("delete", ({ id }) => {
       r.classList.remove("r-" + i);
       r.classList.add("r-" + (i - 1));
     }
+  }
+});
+chat.on("react", ({ id, reactions, user: u, type, message }) => {
+  const m = document.querySelector(".m-" + id)?.parentElement;
+  if (!m) return;
+  const r = m.querySelector("#reacts");
+  if (r) r.querySelector("#react-text").innerText = reactions.length;
+  else {
+    const r = createReacts(reactions);
+    m.appendChild(r);
   }
 });
 chat.on("rooms", async ([rooms, p]) => {
@@ -295,6 +313,7 @@ chat.on("join room", ([messages, r, u]) => {
         messages[i - 1],
         messages.length - i - 1,
         m.replies,
+        m.reactions,
       ]);
     });
   maxMessagesReached = currMessages < maxMessages;

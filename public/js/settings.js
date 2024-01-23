@@ -1,4 +1,5 @@
 const settingToggles = document.querySelectorAll(".settings-toggle");
+const settingDropdowns = document.querySelectorAll(".settings-dropdown");
 const settingUser = document.querySelector("#settings-user");
 
 settingToggles.forEach((t) => {
@@ -26,9 +27,30 @@ settingToggles.forEach((t) => {
   });
 });
 
+settingDropdowns.forEach((d) => {
+  d.addEventListener("click", (e) => {
+    if (
+      d.querySelector(".select").contains(e.target) &&
+      !e.target.classList.contains("options") &&
+      !e.target.classList.contains("option")
+    ) {
+      d.querySelector(".options").classList.toggle("active");
+      d.querySelector(".options .option.selected")?.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "nearest",
+      });
+    }
+  });
+  window.addEventListener("click", (e) => {
+    if (!d.contains(e.target))
+      d.querySelector(".options").classList.remove("active");
+  });
+});
+
 const updateSettings = () => {
   settingUser.querySelector("#settings-username").innerText = user.name;
-  settingUser.querySelector("#settings-born").innerText = user.dob;
+  settingUser.querySelector("#settings-born").innerText = "Born: " + user.dob;
   const p = settingUser.querySelector("#settings-profile");
   p.innerHTML = "";
   const pr = getProfile(user);
@@ -72,6 +94,40 @@ const updateSettings = () => {
     if (k == "notifications")
       t.classList.toggle("active", user.settings[k][getDeviceId()]);
     else if (t) t.classList.toggle("active", user.settings[k]);
+    else {
+      const d = document.querySelector(
+        `.settings-dropdown[data-setting="${k}"]`,
+      );
+      if (!d) return;
+      d.querySelector(".current").innerText = user.settings[k].replaceAll(
+        "-",
+        " ",
+      );
+      if (k == "notificationSound") {
+        chat.emit("get sounds", (sounds) => {
+          d.querySelector(".options").innerHTML = "";
+          sounds.forEach((s) => {
+            const opt = document.createElement("div");
+            opt.className = "option";
+            opt.innerText = s.replaceAll("-", " ");
+            opt.dataset.value = s;
+            if (s == user.settings[k]) opt.classList.add("selected");
+            opt.addEventListener("click", () => {
+              user.settings[k] = s;
+              d.querySelector(".current").innerText = s.replaceAll("-", " ");
+              d.querySelector(".options").classList.remove("active");
+              d.querySelectorAll(".option").forEach((o) =>
+                o.classList.remove("selected"),
+              );
+              opt.classList.add("selected");
+              playNotificationSound();
+              chat.emit("settings", user.settings);
+            });
+            d.querySelector(".options").appendChild(opt);
+          });
+        });
+      }
+    }
   });
 };
 

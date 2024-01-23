@@ -201,3 +201,81 @@
 .settings-toggle.active:hover .settings-toggle-circle {
   transform: translateX(20px) scale(1);
 }
+
+.settings-dropdown {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.settings-dropdown svg {
+  width: 20px;
+  height: 20px;
+}
+
+.settings-dropdown .select {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 10px;
+  border-radius: 10px;
+  background: rgba(150, 150, 150, 0.2);
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s ease;
+}
+
+.settings-dropdown .select:hover {
+  background: rgba(150, 150, 150, 0.4);
+}
+
+.settings-dropdown .select .arrow {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.settings-dropdown .select:has(.options.active) .arrow {
+  transform: rotate(180deg);
+}
+
+.settings-dropdown .options {
+  position: absolute;
+  z-index: 1;
+  top: 100%;
+  left: 0;
+  width: max-content;
+  min-width: 100%;
+  background: rgba(150, 150, 150, 0.2);
+  backdrop-filter: blur(20px);
+  border-radius: 10px;
+  overflow: hidden;
+  overflow-y: scroll;
+  max-height: 0;
+  transition: max-height 0.2s ease;
+}
+
+.settings-dropdown .options.active {
+  max-height: 200px;
+}
+
+.settings-dropdown .option {
+  padding: 10px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s ease;
+}
+
+.settings-dropdown .option:hover {
+  background: rgba(150, 150, 150, 0.1);
+}
+
+.settings-dropdown .option.selected {
+  background: rgba(150, 150, 150, 0.4);
+}

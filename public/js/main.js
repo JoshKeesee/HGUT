@@ -9,7 +9,8 @@ let profiles = {},
   missed = 0,
   loadingMessages = false,
   rns = {},
-  user = {};
+  user = {},
+  lastNotification = null;
 
 const toRgba = (hex, alpha, obj) => {
   const r = parseInt(hex.slice(1, 3), 16),
@@ -232,6 +233,25 @@ const updateDeleteOnclick = () => {
   });
 };
 
+const updateReactOnclick = () => {
+  const react = document.querySelectorAll("#react");
+  react.forEach((e) => {
+    e.onclick = () => {
+      const cm = e.parentElement.parentElement;
+      const m = cm.querySelector("#message");
+      const u =
+        profiles[cm.querySelector("#profile").className.replace("-", " ")].name;
+      const id = m.className.split(" ")[0].replace("m-", "");
+      chat.emit("react", {
+        id,
+        profile: u,
+        room: user.room,
+      });
+      e.remove();
+    };
+  });
+};
+
 const addReplies = (m) => {
   const replies = m.replies || [];
   const myUser = user.name == m.name;
@@ -263,8 +283,22 @@ const addReplies = (m) => {
   updateMessageProfiles();
 };
 
+const createReacts = (reacts) => {
+  const r = document.createElement("div");
+  r.id = "reacts";
+  const rt = document.createElement("div");
+  rt.id = "reacts-text";
+  rt.innerText = reacts.length;
+  const e = document.createElement("div");
+  e.id = "reacts-emoji";
+  e.innerText = "😀";
+  r.appendChild(e);
+  r.appendChild(rt);
+  return r;
+};
+
 const createMessage = (
-  [message, u, d, lm, mId],
+  [message, u, d, lm, mId, reacts = []],
   start,
   myUser,
   currMessages,
@@ -324,6 +358,21 @@ const createMessage = (
     );
     reply.appendChild(replySvg);
     opts.appendChild(reply);
+    if (!reacts.some((e) => e == user.id || e.id == user.id)) {
+      const react = document.createElement("div");
+      react.id = "react";
+      const reactSvg = getSvg(
+        "react-svg",
+        "M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-2.625 6c-.54 0-.828.419-.936.634a1.96 1.96 0 0 0-.189.866c0 .298.059.605.189.866.108.215.395.634.936.634.54 0 .828-.419.936-.634.13-.26.189-.568.189-.866 0-.298-.059-.605-.189-.866-.108-.215-.395-.634-.936-.634Zm4.314.634c.108-.215.395-.634.936-.634.54 0 .828.419.936.634.13.26.189.568.189.866 0 .298-.059.605-.189.866-.108.215-.395.634-.936.634-.54 0-.828-.419-.936-.634a1.96 1.96 0 0 1-.189-.866c0-.298.059-.605.189-.866Zm2.023 6.828a.75.75 0 1 0-1.06-1.06 3.75 3.75 0 0 1-5.304 0 .75.75 0 0 0-1.06 1.06 5.25 5.25 0 0 0 7.424 0Z",
+        {
+          viewBox: "0 0 24 24",
+          "clip-rule": "evenodd",
+          "fill-rule": "evenodd",
+        },
+      );
+      react.appendChild(reactSvg);
+      opts.appendChild(react);
+    }
     cm.appendChild(opts);
   }
   if (!myUser) {
@@ -339,6 +388,11 @@ const createMessage = (
     m.classList.add("left");
     opts.className = "right";
     cm.appendChild(pc);
+  }
+
+  if (reacts.length > 0) {
+    const r = createReacts(reacts);
+    cm.appendChild(r);
   }
 
   const cont = document.createElement("div");
@@ -387,7 +441,7 @@ const createMessage = (
 };
 
 const addMessage = (
-  [message, u, d, lm = null, mId = 0, replies = []],
+  [message, u, d, lm = null, mId = 0, replies = [], reacts = []],
   scroll = true,
   start = false,
 ) => {
@@ -408,7 +462,7 @@ const addMessage = (
     Math.abs(cms.scrollHeight - cms.clientHeight - cms.scrollTop) <= 200;
 
   const [c, appendEl, appendBefore] = createMessage(
-    [message, u, d, lm, mId],
+    [message, u, d, lm, mId, reacts],
     start,
     myUser,
     currMessages,
@@ -431,6 +485,7 @@ const addMessage = (
   updateEditOnclick();
   updateReplyOnclick();
   updateDeleteOnclick();
+  updateReactOnclick();
 
   if (scroll && !start && atBottom) {
     cm.scrollIntoView({
@@ -531,8 +586,11 @@ const switchTab = async (tab) => {
 };
 
 const createNotification = ([m, u, r]) => {
+  if (user.settings.dontDisturb) return;
   if (!rns[r]) rns[r] = r;
   const notifications = document.querySelector("#notifications");
+  if (new Date().getTime() - lastNotification < 5000) playNotificationSound();
+  lastNotification = new Date().getTime();
   const n = document.createElement("div");
   n.id = "notification";
   const p = getProfile(u, false);
@@ -563,7 +621,7 @@ const createNotification = ([m, u, r]) => {
   n.appendChild(x);
   n.onclick = (e) => {
     clearNotification(n);
-    if (e.target.id == "x") return;
+    if (e.target.id == "x" || e.target.id == "x-svg") return;
     const lr =
       document.querySelector(".c-" + r) ||
       document.querySelector(".c-" + r.split("-").reverse().join("-")) ||
@@ -580,6 +638,13 @@ const clearNotification = (n) => {
   n.style.transform = "translateX(100%)";
   n.style.marginBottom = "-60px";
   setTimeout(() => n.remove(), 3000);
+};
+
+const playNotificationSound = () => {
+  const s = new Audio(
+    SERVER + "sounds/" + user.settings.notificationSound + ".mp3",
+  );
+  s.play().catch(() => {});
 };
 
 const init = () => {

@@ -435,6 +435,37 @@ input[type="file"] {
   object-fit: contain;
 }
 
+#reacts {
+  position: absolute;
+  bottom: -10px;
+  right: 10px;
+  z-index: 999;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-radius: 20px;
+  background: rgba(150, 150, 150, 0.5);
+  border: #ccc solid 1.5px;
+  backdrop-filter: blur(5px);
+  transition: opacity 0.2s ease;
+  opacity: 0.8;
+}
+
+#reacts:hover {
+  opacity: 1;
+}
+
+#reacts #reacts-emoji {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
 #chat-message #options {
   position: absolute;
   top: 50%;
