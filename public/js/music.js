@@ -70,9 +70,6 @@ const down = (e) => {
   if (getCurrentTab() != "music") return;
   const k = e.target;
   const { key, octave, note, index: i } = k.dataset;
-  if (octave == currOctave + 1 && km[nn + (i % nn)])
-    k.dataset.key = km[nn + (i % nn)];
-  k.dataset.note = keyMap[k.dataset.key] + octave;
   if (e.key && currOctave != octave && km.indexOf(key) < nn) return;
   if (!(e.buttons == 1 || e.key)) return;
   k.style.background = keyColors[Object.keys(keyMap).indexOf(key) % nn];
@@ -174,6 +171,7 @@ Tone.loaded().then(() => {
   initMusic();
   new ResizeObserver(initMusic).observe(musCont);
   window.addEventListener("keydown", (e) => {
+    if (getCurrentTab() != "music") return;
     if (e.repeat) return;
     if (e.key == "z") currOctave--;
     if (e.key == "x") currOctave++;
