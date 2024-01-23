@@ -4,19 +4,24 @@ const settingUser = document.querySelector("#settings-user");
 settingToggles.forEach((t) => {
   t.addEventListener("click", async () => {
     const s = t.dataset.setting;
-    user.settings[s] = !t.classList.contains("active");
+    const n = s == "notifications";
+    if (!n) user.settings[s] = !t.classList.contains("active");
+    else user.settings[s][getDeviceId()] = !t.classList.contains("active");
     if (s == "theme" || s == "accent")
       switchTheme(
         user.settings.theme,
         user.settings.accent ? user.color : "#0000ff",
       );
-    if (s == "notifications" && user.settings.notifications)
+    if (n && user.settings.notifications[getDeviceId()])
       user.settings.notifications[getDeviceId()] = await askNotification();
     if (s == "emoji")
       document.querySelectorAll("#emoji").forEach((e) => {
         e.classList.toggle("disabled", !user.settings.emoji);
       });
-    t.classList.toggle("active", user.settings[s]);
+    t.classList.toggle(
+      "active",
+      n ? user.settings[s][getDeviceId()] : user.settings[s],
+    );
     chat.emit("settings", user.settings);
   });
 });
@@ -64,7 +69,8 @@ const updateSettings = () => {
   p.appendChild(pr);
   Object.keys(user.settings || {}).forEach((k) => {
     const t = document.querySelector(`.settings-toggle[data-setting="${k}"]`);
-    if (k == "notifications") t.classList.toggle("active", user.settings[k][getDeviceId()]);
+    if (k == "notifications")
+      t.classList.toggle("active", user.settings[k][getDeviceId()]);
     else if (t) t.classList.toggle("active", user.settings[k]);
   });
 };

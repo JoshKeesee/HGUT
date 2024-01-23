@@ -270,8 +270,8 @@ chat.on("user", async (u) => {
   );
   updateProfiles();
   updateSettings();
-  if (user.settings.notifications)
-    user.settings.notifications = await askNotification();
+  if (user.settings.notifications[getDeviceId()])
+    user.settings.notifications[getDeviceId()] = await askNotification();
 });
 chat.on("online", (u) => {
   online = u;
