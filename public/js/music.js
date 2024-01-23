@@ -71,7 +71,7 @@ const down = (e) => {
   const k = e.target;
   const { key, octave, note, index: i } = k.dataset;
   if (e.key && currOctave != octave && km.indexOf(key) < nn) return;
-  if (!(e.buttons == 1 || e.key)) return;
+  if (!(e.buttons == 1 || e.key || e.touches?.length > 0)) return;
   k.style.background = keyColors[Object.keys(keyMap).indexOf(key) % nn];
   k.dataset.now = Tone.now();
   inst.triggerAttack(note, k.dataset.now);
@@ -100,6 +100,12 @@ const createKey = (i, l, o = 4) => {
   k.addEventListener("mouseup", up);
   k.addEventListener("mouseover", down);
   k.addEventListener("mouseleave", up);
+  k.addEventListener("touchstart", down);
+  k.addEventListener("touchend", up);
+  k.addEventListener("touchcancel", up);
+  k.addEventListener("touchleave", up);
+  k.addEventListener("touchmove", up);
+  k.addEventListener("contextmenu", (e) => e.preventDefault());
   window.addEventListener(
     "keydown",
     (e) =>
