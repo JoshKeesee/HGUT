@@ -451,12 +451,15 @@ input[type="file"] {
   background: rgba(150, 150, 150, 0.5);
   border: #ccc solid 1.5px;
   backdrop-filter: blur(5px);
-  transition: opacity 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    background 0.2s ease;
   opacity: 0.8;
 }
 
 #reacts:hover {
   opacity: 1;
+  background: rgba(150, 150, 150, 0.8);
 }
 
 #reacts #reacts-emoji {
