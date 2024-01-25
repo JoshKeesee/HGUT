@@ -239,8 +239,7 @@ html {
 #chat-input:empty::before,
 #voice-chat-input:empty::before {
   content: attr(placeholder);
-  color: #999999;
-  opacity: 0.5;
+  color: #999;
 }
 
 #chat-input:hover,
