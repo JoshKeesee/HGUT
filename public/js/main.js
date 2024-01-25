@@ -619,7 +619,7 @@ const createNotification = ([m, u, r]) => {
   if (user.settings.dontDisturb) return;
   if (!rns[r]) rns[r] = r;
   const notifications = document.querySelector("#notifications");
-  if (new Date().getTime() - lastNotification > 5000) playNotificationSound();
+  if (new Date().getTime() - lastNotification > 10000) playNotificationSound();
   const n = document.createElement("div");
   n.id = "notification";
   const p = getProfile(u, false);

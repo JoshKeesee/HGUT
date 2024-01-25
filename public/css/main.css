@@ -21,6 +21,7 @@ html {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  overscroll-behavior-x: none;
 }
 
 ::-webkit-scrollbar {
@@ -707,7 +708,7 @@ body:has(#header.toggled) #tabs .tab {
   align-items: center;
   justify-content: center;
   width: 400px;
-  height: 40px;
+  min-height: 40px;
   gap: 10px;
   margin-bottom: 5px;
   margin-right: 15px;
