@@ -26,6 +26,26 @@ const vidConstraints = {
   height: { min: 720 },
 };
 
+const createEmptyAudioTrack = () => {
+  const ctx = new AudioContext();
+  const oscillator = ctx.createOscillator();
+  const dst = oscillator.connect(ctx.createMediaStreamDestination());
+  oscillator.start();
+  const track = dst.stream.getAudioTracks()[0];
+  return Object.assign(track, { enabled: false });
+};
+
+const createEmptyVideoTrack = ({ width, height }) => {
+  const c = Object.assign(document.createElement("canvas"), { width, height });
+  c.getContext("2d").fillRect(0, 0, width, height);
+  const stream = c.captureStream();
+  const track = stream.getVideoTracks()[0];
+  return Object.assign(track, { enabled: false });
+};
+
+const audioTrack = createEmptyAudioTrack();
+const videoTrack = createEmptyVideoTrack({ width: 640, height: 480 });
+
 peer.on("open", (id) => (peerId = id));
 
 const peerConnect = () => {
@@ -156,7 +176,10 @@ const addVideo = async (p, s, self = false, big = false, pre = false) => {
   video.style.display = switched[id]?.camera || pre ? "block" : "none";
   video.srcObject = s;
   if (p.peerId == user.peerId) video.muted = true;
-  video.onloadedmetadata = () => video.play();
+  video.onloadedmetadata = () => {
+    const i = () => video.play().catch(() => setTimeout(i, 1000));
+    i();
+  };
   const m = document.createElement("div");
   m.id = "muted";
   m.innerHTML = `
@@ -198,7 +221,7 @@ const addVideo = async (p, s, self = false, big = false, pre = false) => {
   person.appendChild(pr);
   const name = document.createElement("div");
   name.id = "name";
-  name.innerText = p.peerId == user.peerId ? "You" : p.name;
+  name.innerText = p.peerId == user.peerId ? p.name + " (You)" : p.name;
   person.appendChild(name);
   person.appendChild(m);
   bg.appendChild(person);
@@ -208,7 +231,7 @@ const addVideo = async (p, s, self = false, big = false, pre = false) => {
 
 const addPerson = (p) => {
   if (p.peerId == user.peerId) return;
-  const call = peer.call(p.peerId, stream, {
+  const call = peer.call(p.peerId, stream || new MediaStream([audioTrack, videoTrack]), {
     metadata: { pres: false, id: user.peerId },
   });
   call.on("stream", async (s) => {
@@ -243,7 +266,7 @@ peer.on("call", (call) => {
     p.peerId = call.peer;
     const pre = sw[p.peerId].present ? true : false;
     const id = pre ? "pres-" + p.peerId : p.peerId;
-    call.answer(stream);
+    call.answer(stream || new MediaStream([audioTrack, videoTrack]));
     call.on("stream", async (s) => {
       if (callList.includes(id)) return;
       callList.push(id);
