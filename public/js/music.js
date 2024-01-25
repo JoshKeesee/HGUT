@@ -181,4 +181,27 @@ Tone.loaded().then(() => {
     if (e.key == "x") currOctave++;
     currOctave = Math.min(octaves, Math.max(startOctave, currOctave));
   });
+
+  navigator.requestMIDIAccess().then((access) => {
+    const inputs = access.inputs.values();
+    for (let input = inputs.next(); input && !input.done; input = inputs.next()) {
+      input.value.onmidimessage = (e) => {
+        if (getCurrentTab() != "music") return;
+        const [cmd, note] = e.data;
+        if (cmd == 144) {
+          const k = document.querySelector(`div[data-note="${note}"]`);
+          down({
+            target: k,
+            buttons: 1,
+          });
+        } else if (cmd == 128) {
+          const k = document.querySelector(`div[data-note="${note}"]`);
+          up({
+            target: k,
+            buttons: 1,
+          });
+        }
+      };
+    }
+  });
 }).catch(() => {})
