@@ -1,5 +1,5 @@
 const settingToggles = document.querySelectorAll(".settings-toggle");
-const settingDropdowns = document.querySelectorAll(".settings-dropdown");
+const dropdowns = document.querySelectorAll(".dropdown");
 const settingUser = document.querySelector("#settings-user");
 
 settingToggles.forEach((t) => {
@@ -27,7 +27,28 @@ settingToggles.forEach((t) => {
   });
 });
 
-settingDropdowns.forEach((d) => {
+dropdowns.forEach((d) => {
+  const a = d.classList.contains("up");
+  const opts = d.querySelectorAll(".option");
+  opts.forEach((o) => {
+    if (o.parentElement.classList.contains("submenu")) return;
+    o.addEventListener("click", () => {
+      opts.forEach((o) => o.classList.remove("selected"));
+      if (!a) {
+        o.classList.add("selected");
+        const c = d.querySelector(".current");
+        c.innerText = o.innerText;
+        c.dataset.value = o.dataset.value;
+      }
+      if (o.classList.contains("has-submenu")) {
+        const sub = d.querySelector(`#submenu-${o.dataset.value}`);
+        sub.classList.toggle("active");
+        if (sub.classList.contains("active"))
+          opts.forEach((o) => o.classList.add("hidden"));
+        else opts.forEach((o) => o.classList.remove("hidden"));
+      } else d.querySelector(".options").classList.remove("active");
+    });
+  });
   d.addEventListener("click", (e) => {
     if (
       d.querySelector(".select").contains(e.target) &&
@@ -38,8 +59,12 @@ settingDropdowns.forEach((d) => {
       d.querySelector(".options .option.selected")?.scrollIntoView({
         behavior: "smooth",
         block: "nearest",
-        inline: "nearest",
+        inline: "center",
       });
+      d.querySelectorAll(".submenu").forEach((s) =>
+        s.classList.remove("active"),
+      );
+      opts.forEach((o) => o.classList.remove("hidden"));
     }
   });
   window.addEventListener("click", (e) => {
@@ -95,9 +120,7 @@ const updateSettings = () => {
       t.classList.toggle("active", user.settings[k][getDeviceId()] || false);
     else if (t) t.classList.toggle("active", user.settings[k]);
     else {
-      const d = document.querySelector(
-        `.settings-dropdown[data-setting="${k}"]`,
-      );
+      const d = document.querySelector(`.dropdown[data-setting="${k}"]`);
       if (!d) return;
       d.querySelector(".current").innerText = user.settings[k].replaceAll(
         "-",
@@ -114,7 +137,9 @@ const updateSettings = () => {
             if (s == user.settings[k]) opt.classList.add("selected");
             opt.addEventListener("click", () => {
               user.settings[k] = s;
-              d.querySelector(".current").innerText = s.replaceAll("-", " ");
+              const c = d.querySelector(".current");
+              c.innerText = s.replaceAll("-", " ");
+              c.dataset.value = s;
               d.querySelector(".options").classList.remove("active");
               d.querySelectorAll(".option").forEach((o) =>
                 o.classList.remove("selected"),

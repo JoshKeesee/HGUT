@@ -43,9 +43,9 @@ const us = async () => {
   stream = await navigator.mediaDevices.getUserMedia({
     video: vidConstraints,
     audio: true,
-  });
-  stream.getVideoTracks().forEach((v) => (v.enabled = false));
-  stream.getAudioTracks().forEach((v) => (v.enabled = false));
+  }).catch(() => {});
+  stream?.getVideoTracks().forEach((v) => (v.enabled = false));
+  stream?.getAudioTracks().forEach((v) => (v.enabled = false));
 };
 
 voice.on("connect", async () => {
@@ -59,7 +59,7 @@ voice.on("disconnect", () => {
   if (t != "voice") return;
   const i = () => {
     if (voice.connected) return;
-    console.log("%cReconnecting to Voice Chat...", "color: #0000ff");
+    console.log("Reconnecting to Voice Chat...");
     voice.connect();
     setTimeout(i, 10000);
   };
@@ -166,7 +166,7 @@ const addVideo = async (p, s, self = false, big = false, pre = false) => {
  `;
   m.style.display = switched[p.peerId]?.audio ? "none" : "block";
   const pr = getProfile(p, false);
-  const a = s.getAudioTracks().length > 0;
+  const a = s?.getAudioTracks().length > 0;
   if (a) {
     const ring = document.createElement("div");
     ring.id = "ring";
@@ -310,17 +310,17 @@ const switchVoiceTheme = (dark = !user.settings.theme, color) => {
 };
 
 const toggleCamera = async (set = !user.camera) => {
-  user.camera = set;
+  user.camera = stream ? set : false;
   if (user.camera) {
     cam.classList.remove("toggled");
     cam.querySelector("svg.on").style.display = "block";
     cam.querySelector("svg.off").style.display = "none";
-    stream.getVideoTracks().forEach((v) => (v.enabled = true));
+    stream?.getVideoTracks().forEach((v) => (v.enabled = true));
   } else {
     cam.classList.add("toggled");
     cam.querySelector("svg.on").style.display = "none";
     cam.querySelector("svg.off").style.display = "block";
-    stream.getVideoTracks().forEach((v) => (v.enabled = false));
+    stream?.getVideoTracks().forEach((v) => (v.enabled = false));
   }
   const c = document.querySelector(".person-" + user.peerId);
   c.querySelectorAll("#video").forEach((v) => {
@@ -335,7 +335,7 @@ const toggleCamera = async (set = !user.camera) => {
 };
 
 const toggleAudio = async (set = !user.audio) => {
-  user.audio = set;
+  user.audio = stream ? set : false;
   if (user.audio) {
     mic.classList.remove("toggled");
     mic.querySelector("svg.on").style.display = "block";
@@ -345,8 +345,8 @@ const toggleAudio = async (set = !user.audio) => {
     mic.querySelector("svg.on").style.display = "none";
     mic.querySelector("svg.off").style.display = "block";
   }
-  if (user.audio) stream.getAudioTracks().forEach((v) => (v.enabled = true));
-  else stream.getAudioTracks().forEach((v) => (v.enabled = false));
+  if (user.audio) stream?.getAudioTracks().forEach((v) => (v.enabled = true));
+  else stream?.getAudioTracks().forEach((v) => (v.enabled = false));
   const c = document.querySelector(".person-" + user.peerId);
   if (!c) return;
   c.querySelectorAll("div.a").forEach(

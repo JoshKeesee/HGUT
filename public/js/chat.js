@@ -64,7 +64,7 @@ chat.on("disconnect", () => {
   if (t == "voice") return;
   const i = () => {
     if (chat.connected) return (currMessages = maxMessages);
-    console.log("%cReconnecting to Chat...", "color: #0000ff");
+    console.log("Reconnecting to Chat...");
     chat.connect();
     setTimeout(i, 10000);
   };
@@ -391,6 +391,27 @@ const updateProfiles = () => {
         el.querySelector("#chat-room-bg").style.opacity = 1;
       }
     });
+  const sub = document.querySelector("#submenu-mention");
+  sub.innerHTML = "";
+  Object.values(profiles)
+    .map((e) => e.character)
+    .forEach((k) => {
+      const r =
+        profiles[Object.keys(profiles).find((e) => profiles[e].character == k)];
+      const cn = rn[r.id + "-" + user.id]
+        ? "c-" + r.id + "-" + user.id
+        : "c-" + user.id + "-" + r.id;
+      const o = document.createElement("div");
+      o.classList.add("option");
+      o.innerText = r.name;
+      o.dataset.value = r.name.replace(" ", "-");
+      o.onclick = () => {
+        input.innerHTML = "@" + o.dataset.value;
+        input.focus();
+        input.click();
+      };
+      sub.appendChild(o);
+    });
 };
 
 const updateOnline = () => {
@@ -474,7 +495,7 @@ const switchTheme = (dark = !user.settings.theme, color) => {
   document.querySelector("#dark-icon").style.opacity = user.settings.theme
     ? 1
     : 0;
-  const lr = !user.room
+  const lr = !user.room || getCurrentTab() == "voice"
     ? null
     : document.querySelector(".c-" + user.room) ||
       document.querySelector(
@@ -523,35 +544,48 @@ const switchTheme = (dark = !user.settings.theme, color) => {
 };
 
 input.onkeydown = (e) => {
-  const i = input.value;
+  const i = input.innerHTML, ml = 1000;
+  if (e.key == "Enter") e.preventDefault();
+  if (i.length > ml) {
+    e.preventDefault();
+    input.innerHTML = i.slice(0, ml);
+  }
   if (!i.replace(/\s/g, "").length) return;
   if (
     e.key != "Enter" ||
     i.length == 0 ||
     i.length > 250 ||
     loadingMessages ||
-    !chat.connected
+    !chat.connected ||
+    e.shiftKey
   )
     return;
   chat.emit("chat message", i);
-  input.value = "";
+  input.innerHTML = "";
 };
 
 input.onkeyup = (e) => {
-  const i = input.value;
+  const i = input.innerHTML;
   if (i.length > 0) chat.emit("typing", true);
   else chat.emit("typing", false);
 };
 
+input.onpaste = (e) => {
+  e.preventDefault();
+  const text = e.clipboardData.getData("text/plain");
+  input.innerHTML += text;
+  input.innerHTML = input.innerText.slice(0, 1000);
+};
+
 send.onclick = (e) => {
-  const i = input.value;
+  const i = input.innerHTML;
   if (!i.replace(/\s/g, "").length) return;
   if (!i.replace(/<\s*br[^>]?>/, "\n").replace(/(<([^>]+)>)/g, "").length)
     return;
   if (i.length == 0 || i.length > 250 || loadingMessages || !chat.connected)
     return;
   chat.emit("chat message", i);
-  input.value = "";
+  input.innerHTML = "";
 };
 
 addFile.onchange = (e) => {
@@ -560,6 +594,8 @@ addFile.onchange = (e) => {
   fr.onload = () => chat.emit("chat message", fr.result);
   fr.readAsDataURL(img);
 };
+
+document.querySelector("div[data-value='camera']").onclick = () => initCamera();
 
 document.querySelector("#theme").onclick = () => switchTheme();
 

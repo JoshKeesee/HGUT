@@ -7,11 +7,11 @@ const getDeviceId = () => {
   const newId = crypto.randomUUID();
   localStorage.setItem("deviceId", newId);
   return newId;
-}
+};
 
 const registerSw = async (p) => {
   const registrations = await navigator.serviceWorker.getRegistrations();
-  for (const r of registrations) r.unregister();
+  for (const r of registrations) await r.unregister();
 
   const register = await navigator.serviceWorker.register("../sw.js", {
     scope: "/chat",
@@ -21,11 +21,13 @@ const registerSw = async (p) => {
 
   if (p != "granted") return;
 
-  const subscription = await register.pushManager.subscribe({
-    userVisibleOnly: true,
-    applicationServerKey: publicKey,
-    endpoint: "/chat",
-  });
+  const subscription = await register.pushManager
+    .subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: publicKey,
+      endpoint: "/chat",
+    })
+    .catch(() => {});
 
   await fetch(SERVER + "subscribe", {
     method: "POST",
@@ -47,7 +49,7 @@ const registerSw = async (p) => {
 
 const askNotification = async () => {
   const f = registerSw.bind(null, Notification.permission);
-  return new Promise(res => {
+  return new Promise((res) => {
     Notification.requestPermission().then(() => {
       f();
       res(Notification.permission == "granted");

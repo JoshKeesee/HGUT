@@ -183,4 +183,4 @@ Tone.loaded().then(() => {
     if (e.key == "x") currOctave++;
     currOctave = Math.min(octaves, Math.max(startOctave, currOctave));
   });
-});
+}).catch(() => {})

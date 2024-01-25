@@ -30,7 +30,6 @@ const loadFiles = () => {
           block: "center",
           inline: "center",
         });
-        // window.open(SERVER + f.url);
       };
     });
   });

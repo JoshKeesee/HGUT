@@ -62,6 +62,23 @@ const linkify = (s, sc = false) => {
     };
     return `<img src="${src}">`;
   } else {
+    if (s.includes("@")) {
+      const words = s.split(" ");
+      words.forEach((w, i) => {
+        if (w.includes("@")) {
+          const u = w.replace("@", "").replace("-", " ");
+          const p = profiles[u];
+          if (!p) return;
+          words[i] = "<span class='mention' id='" + p.id + "' onclick='(" + 
+          ((el) => {
+            const r = document.querySelector(".c-" + el.id + "-" + user.id) || document.querySelector(".c-" + user.id + "-" + el.id);
+            if (r) return switchChat(r);
+          })
+          + ")(this)'>" + w + "</span>";
+        }
+      });
+      s = words.join(" ");
+    }
     if (s.replace(emojiPattern, "").length == 0)
       return `<p id="emoji" class="${user.settings.emoji ? "" : "disabled"}">${s}</p>`;
     return s
@@ -255,7 +272,9 @@ const updateReactOnclick = () => {
 const addReplies = (m) => {
   const replies = m.replies || [];
   const myUser = user.name == m.name;
-  const cms = document.querySelector("#chat-messages");
+  const cms = getCurrentTab() != "voice"
+    ? document.querySelector("#chat-messages")
+    : document.querySelector("#voice-chat-messages");
   const r = document.createElement("div");
   r.id = "replies";
   r.classList.add("r-" + m.id);
@@ -559,7 +578,7 @@ const switchTab = async (tab) => {
   const c = document.querySelector(".person-" + user.peerId);
   if (c)
     c.querySelectorAll("#video").forEach((e) => {
-      e.srcObject.getTracks().forEach((t) => {
+      e.srcObject?.getTracks().forEach((t) => {
         t.enabled = true;
         t.stop();
         e.srcObject.removeTrack(t);
@@ -600,8 +619,7 @@ const createNotification = ([m, u, r]) => {
   if (user.settings.dontDisturb) return;
   if (!rns[r]) rns[r] = r;
   const notifications = document.querySelector("#notifications");
-  if (new Date().getTime() - lastNotification < 5000) playNotificationSound();
-  lastNotification = new Date().getTime();
+  if (new Date().getTime() - lastNotification > 5000) playNotificationSound();
   const n = document.createElement("div");
   n.id = "notification";
   const p = getProfile(u, false);
@@ -652,6 +670,7 @@ const clearNotification = (n) => {
 };
 
 const playNotificationSound = () => {
+  lastNotification = new Date().getTime();
   const s = new Audio(
     SERVER + "sounds/" + user.settings.notificationSound + ".mp3",
   );

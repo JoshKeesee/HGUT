@@ -220,12 +220,27 @@ html {
   font-size: 15px;
   width: 100%;
   color: inherit;
+  text-align: left;
   border-top-left-radius: 20px;
   border-top-right-radius: 10px;
   border-bottom-left-radius: 20px;
   border-bottom-right-radius: 10px;
   background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.2);
+  max-height: 300px;
+  overflow: hidden;
+  overflow-y: scroll;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
+  cursor: text;
   transition: background 0.2s ease;
+}
+
+#chat-input:empty::before,
+#voice-chat-input:empty::before {
+  content: attr(placeholder);
+  color: #999999;
+  opacity: 0.5;
 }
 
 #chat-input:hover,
@@ -244,7 +259,7 @@ input[type="file"] {
 
 #chat-send,
 #voice-chat-send,
-#chat-input-box label {
+#chat-input-box .btn {
   padding: 4px;
   padding-left: 10px;
   padding-right: 10px;
@@ -265,11 +280,11 @@ input[type="file"] {
 
 #chat-send:hover,
 #voice-chat-send:hover,
-#chat-input-box label:hover {
+#chat-input-box .btn:hover {
   background: rgba(150, 150, 150, 0.2);
 }
 
-#chat-input-box label {
+#chat-input-box .btn {
   padding: 5px;
   padding-left: 5px;
   padding-right: 5px;
@@ -280,6 +295,21 @@ input[type="file"] {
 #chat-input-box svg {
   width: 25px;
   height: 25px;
+  min-width: 25px;
+  min-height: 25px;
+}
+
+#chat-input-box .dropdown,
+#chat-input-box .dropdown .select {
+  padding: 0;
+  background: none;
+  gap: 0;
+  min-width: 0;
+  min-height: 0;
+}
+
+#chat-input-box .dropdown .arrow {
+  display: none;
 }
 
 #cont {
@@ -391,6 +421,14 @@ input[type="file"] {
 #message:has(#emoji:not(.disabled)) {
   background: none !important;
   padding: 5px;
+}
+
+#message .mention {
+  padding: 2px;
+  border-radius: 5px;
+  background: rgba(150, 150, 150, 0.2);
+  user-select: none;
+  cursor: pointer;
 }
 
 #emoji:not(.disabled) {
