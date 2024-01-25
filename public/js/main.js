@@ -66,7 +66,7 @@ const linkify = (s, sc = false) => {
       const words = s.split(" ");
       words.forEach((w, i) => {
         if (w.includes("@")) {
-          const u = w.replace("@", "").replace("-", " ");
+          const u = w.replace("@", "").replaceAll("-", " ");
           const p = profiles[u];
           if (!p) return;
           words[i] = "<span class='mention' id='" + p.id + "' onclick='(" + 
@@ -74,7 +74,7 @@ const linkify = (s, sc = false) => {
             const r = document.querySelector(".c-" + el.id + "-" + user.id) || document.querySelector(".c-" + user.id + "-" + el.id);
             if (r) return switchChat(r);
           })
-          + ")(this)'>" + w + "</span>";
+          + ")(this)'>@" + p.name + "</span>";
         }
       });
       s = words.join(" ");
