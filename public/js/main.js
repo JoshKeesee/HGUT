@@ -482,6 +482,7 @@ const addMessage = (
   }
   const myUser = u.name == user.name;
   if (typeof currMessages != "undefined" && start) currMessages++;
+  if (getCurrentTab() != "voice") maxMessagesReached = mId == 0;
   const cms =
     getCurrentTab() != "voice"
       ? document.querySelector("#chat-messages")

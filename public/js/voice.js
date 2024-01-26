@@ -25,6 +25,10 @@ const vidConstraints = {
   width: { min: 1280 },
   height: { min: 720 },
 };
+const audConstraints = {
+  echoCancellation: true,
+  noiseSuppression: true,
+};
 
 const createEmptyAudioTrack = () => {
   const ctx = new AudioContext();
@@ -32,19 +36,16 @@ const createEmptyAudioTrack = () => {
   const dst = oscillator.connect(ctx.createMediaStreamDestination());
   oscillator.start();
   const track = dst.stream.getAudioTracks()[0];
-  return Object.assign(track, { enabled: false });
+  return Object.assign(track);
 };
 
-const createEmptyVideoTrack = ({ width, height }) => {
+const createEmptyVideoTrack = ({ width = 1280, height = 720 }) => {
   const c = Object.assign(document.createElement("canvas"), { width, height });
   c.getContext("2d").fillRect(0, 0, width, height);
   const stream = c.captureStream();
   const track = stream.getVideoTracks()[0];
-  return Object.assign(track, { enabled: false });
+  return Object.assign(track);
 };
-
-const audioTrack = createEmptyAudioTrack();
-const videoTrack = createEmptyVideoTrack({ width: 640, height: 480 });
 
 peer.on("open", (id) => (peerId = id));
 
@@ -58,14 +59,22 @@ const peerConnect = () => {
   });
 };
 
+const getTrack = async (type, constraints) => {
+  const s = await navigator.mediaDevices
+    .getUserMedia({
+      [type]: constraints,
+    })
+    .catch(() => {});
+  return s?.getTracks()[0];
+};
+
 const us = async () => {
   if (stream) return;
-  stream = await navigator.mediaDevices.getUserMedia({
-    video: vidConstraints,
-    audio: true,
-  }).catch(() => {});
-  stream?.getVideoTracks().forEach((v) => (v.enabled = false));
-  stream?.getAudioTracks().forEach((v) => (v.enabled = false));
+  stream = new MediaStream([
+    (await getTrack("video", vidConstraints)) || createEmptyVideoTrack(),
+    (await getTrack("audio", audConstraints)) || createEmptyAudioTrack(),
+  ]);
+  stream.getTracks().forEach((t) => (t.enabled = false));
 };
 
 voice.on("connect", async () => {
@@ -231,7 +240,7 @@ const addVideo = async (p, s, self = false, big = false, pre = false) => {
 
 const addPerson = (p) => {
   if (p.peerId == user.peerId) return;
-  const call = peer.call(p.peerId, stream || new MediaStream([audioTrack, videoTrack]), {
+  const call = peer.call(p.peerId, stream, {
     metadata: { pres: false, id: user.peerId },
   });
   call.on("stream", async (s) => {
@@ -266,7 +275,7 @@ peer.on("call", (call) => {
     p.peerId = call.peer;
     const pre = sw[p.peerId].present ? true : false;
     const id = pre ? "pres-" + p.peerId : p.peerId;
-    call.answer(stream || new MediaStream([audioTrack, videoTrack]));
+    call.answer(stream);
     call.on("stream", async (s) => {
       if (callList.includes(id)) return;
       callList.push(id);
@@ -338,12 +347,12 @@ const toggleCamera = async (set = !user.camera) => {
     cam.classList.remove("toggled");
     cam.querySelector("svg.on").style.display = "block";
     cam.querySelector("svg.off").style.display = "none";
-    stream?.getVideoTracks().forEach((v) => (v.enabled = true));
+    stream.getVideoTracks().forEach((v) => (v.enabled = true));
   } else {
     cam.classList.add("toggled");
     cam.querySelector("svg.on").style.display = "none";
     cam.querySelector("svg.off").style.display = "block";
-    stream?.getVideoTracks().forEach((v) => (v.enabled = false));
+    stream.getVideoTracks().forEach((v) => (v.enabled = false));
   }
   const c = document.querySelector(".person-" + user.peerId);
   c.querySelectorAll("#video").forEach((v) => {
@@ -363,13 +372,13 @@ const toggleAudio = async (set = !user.audio) => {
     mic.classList.remove("toggled");
     mic.querySelector("svg.on").style.display = "block";
     mic.querySelector("svg.off").style.display = "none";
+    stream.getAudioTracks().forEach((v) => (v.enabled = true));
   } else {
     mic.classList.add("toggled");
     mic.querySelector("svg.on").style.display = "none";
     mic.querySelector("svg.off").style.display = "block";
+    stream.getAudioTracks().forEach((v) => (v.enabled = false));
   }
-  if (user.audio) stream?.getAudioTracks().forEach((v) => (v.enabled = true));
-  else stream?.getAudioTracks().forEach((v) => (v.enabled = false));
   const c = document.querySelector(".person-" + user.peerId);
   if (!c) return;
   c.querySelectorAll("div.a").forEach(

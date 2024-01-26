@@ -104,7 +104,6 @@ chat.on("unread", (u) => {
 });
 chat.on("load messages", ([messages, start = true]) => {
   if (!start) currMessages = messages.length;
-  maxMessagesReached = messages.length < maxMessages;
   const cms = document.querySelector("#chat-messages");
   const h = cms.scrollHeight;
   if (document.querySelector("#" + loading.id)) loading.remove();
@@ -316,7 +315,6 @@ chat.on("join room", ([messages, r, u]) => {
         m.reactions,
       ]);
     });
-  maxMessagesReached = currMessages < maxMessages;
   cms.style = "";
   if (!maxMessagesReached) cms.insertBefore(loading, cms.firstChild);
   cms.scrollTop = cms.scrollHeight;
