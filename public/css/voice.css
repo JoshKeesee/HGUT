@@ -30,6 +30,7 @@
   height: 100%;
   margin-left: auto;
   margin-right: auto;
+  transition: grid-template-columns 0.2s ease;
 }
 
 #main-cont.toggled {
