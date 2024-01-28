@@ -426,9 +426,14 @@ input[type="file"] {
 #message .mention {
   padding: 4px;
   border-radius: 5px;
-  background: rgba(150, 150, 150, 0.4);
+  background: rgba(150, 150, 150, 0.3);
   user-select: none;
   cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+#message .mention:hover {
+  background: rgba(150, 150, 150, 0.5);
 }
 
 #emoji:not(.disabled) {
