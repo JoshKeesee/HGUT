@@ -195,7 +195,6 @@ body:has(#header #tabs #chats.selected) #notifications {
   transition: opacity 0.2s ease;
   overflow: hidden;
   font-size: 12px;
-  margin-bottom: 5px;
   min-height: 15px;
   height: fit-content;
 }
