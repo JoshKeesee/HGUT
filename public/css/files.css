@@ -36,6 +36,7 @@
 }
 
 #files-content {
+  position: relative;
   padding: 10px;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -47,7 +48,6 @@
 }
 
 #files-content #file-cont {
-  position: relative;
   color: #fff;
   box-sizing: border-box;
   white-space: nowrap;
@@ -73,9 +73,7 @@
   cursor: pointer;
   user-select: none;
   overflow: hidden;
-  transition:
-    padding 0.2s ease,
-    background 0.2s ease;
+  transition: padding 0.2s ease;
 }
 
 #files-content #file-cont:hover {

@@ -408,7 +408,14 @@
 				<p>
 					Note: The files shown only appear in chats you are allowed in.
 				</p>
-				<div id="files-content"></div>
+				<div id="files-content">
+					<div class="loading">
+						<div></div>
+						<div></div>
+						<div></div>
+						<div></div>
+					</div>
+				</div>
 			</div>
 			<div id="music-container">
 				<div class="keys"></div>
@@ -417,7 +424,6 @@
 	</div>
     <script src="https://unpkg.com/tone@14.7.77/build/Tone.js"></script>
 	<script src="https://unpkg.com/peerjs@1.5.1/dist/peerjs.min.js"></script>
-	<script src="https://unpkg.com/animate-css-grid@1.4.3/dist/main.js"></script>
 	<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 	<script src="js/worklet.js"></script>
 	<script src="js/main.js"></script>
@@ -428,4 +434,5 @@
 	<script src="js/files.js"></script>
 	<script src="js/settings.js"></script>
 	<script src="js/camera.js"></script>
+	<script src="js/animateGrid.js"></script>
 </body>

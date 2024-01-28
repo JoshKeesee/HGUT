@@ -10,21 +10,26 @@ const SERVER = "https://3sx4nn-3000.csb.app/";
 let profiles = {},
   accessCode = null;
 
-fetch(SERVER + "p", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({
-    passwords: true,
-    accessCode: true,
-  }),
-})
-  .then((r) => r.json())
-  .then((r) => {
-    profiles = r.profiles;
-    accessCode = r.accessCode;
-  });
+const getProfiles = () => {
+  fetch(SERVER + "p", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      passwords: true,
+      accessCode: true,
+    }),
+  })
+    .then((r) => r.json())
+    .then((r) => {
+      profiles = r.profiles;
+      accessCode = r.accessCode;
+    })
+    .catch((e) => getProfiles());
+};
+
+getProfiles();
 
 const waitForProfiles = new Promise((resolve) => {
   const int = setInterval(() => {

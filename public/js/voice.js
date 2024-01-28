@@ -39,7 +39,9 @@ const createEmptyAudioTrack = () => {
   return Object.assign(track);
 };
 
-const createEmptyVideoTrack = ({ width = 1280, height = 720 }) => {
+const createEmptyVideoTrack = () => {
+  const width = 1280;
+  const height = 720;
   const c = Object.assign(document.createElement("canvas"), { width, height });
   c.getContext("2d").fillRect(0, 0, width, height);
   const stream = c.captureStream();
@@ -134,108 +136,79 @@ voice.on("call list", async (c) => {
   c.forEach(addPerson);
 });
 
-const animateGridItems = (prevPositions, id = null) => {
-  const pec = document.querySelector("#people-container");
-  const p = pec.getBoundingClientRect();
-  Object.keys(prevPositions).forEach((e, i) => {
-    const cl = e.split(" ");
-    if (e.includes(id) && cl[1] != "big") return;
-    const c = document.querySelector("." + cl[0]);
-    if (!c) return;
-    const prev = prevPositions[e];
-    const pos = c.getBoundingClientRect();
-    if (
-      Math.floor(prev.left) == Math.floor(pos.left) &&
-      Math.floor(prev.top) == Math.floor(pos.top) &&
-      Math.floor(prev.width) == Math.floor(pos.width) &&
-      Math.floor(prev.height) == Math.floor(pos.height)
-    )
-      return;
-    c.style.transition = "none";
-    c.style.transform = `translate(${prev.left - p.left}px, ${
-      prev.top - p.top
-    }px)`;
-    c.style.width = prev.width + "px";
-    c.style.height = prev.height + "px";
-    setTimeout(() => {
-      c.style = "";
-    }, i * 50);
-  });
-};
-
 const addVideo = async (p, s, self = false, big = false, pre = false) => {
   const pec = document.querySelector("#people-container");
-  const prevPositions = {};
-  [].slice.call(pec.children).forEach((c) => {
-    prevPositions[c.className] = c.getBoundingClientRect();
-  });
-  const id = pre ? "pres-" + p.peerId : p.peerId;
-  const bg = document.createElement("div");
-  bg.id = "bg";
-  bg.classList.add("bg-" + id);
-  bg.style.background = user.settings.theme ? "#000" : "#fff";
-  if (big) bg.classList.add("big");
-  const person = document.createElement("div");
-  person.id = "person";
-  person.classList.add("person-" + id);
-  if (self) person.classList.add("self");
-  if (pre) person.classList.add("pres");
-  const video = document.createElement("video");
-  video.id = "video";
-  video.style.display = switched[id]?.camera || pre ? "block" : "none";
-  video.srcObject = s;
-  if (p.peerId == user.peerId) video.muted = true;
-  video.onloadedmetadata = () => {
-    const i = () => video.play().catch(() => setTimeout(i, 1000));
-    i();
-  };
-  const m = document.createElement("div");
-  m.id = "muted";
-  m.innerHTML = `
+  const after = async () => {
+    const id = pre ? "pres-" + p.peerId : p.peerId;
+    const bg = document.createElement("div");
+    bg.id = "bg";
+    bg.classList.add("bg-" + id);
+    bg.style.background = user.settings.theme ? "#000" : "#fff";
+    if (big) bg.classList.add("big");
+    const person = document.createElement("div");
+    person.id = "person";
+    person.classList.add("person-" + id);
+    if (self) person.classList.add("self");
+    if (pre) person.classList.add("pres");
+    const video = document.createElement("video");
+    video.id = "video";
+    video.style.display = switched[id]?.camera || pre ? "block" : "none";
+    video.srcObject = s;
+    if (p.peerId == user.peerId) video.muted = true;
+    video.onloadedmetadata = () => {
+      const i = () => video.play().catch(() => setTimeout(i, 1000));
+      i();
+    };
+    const m = document.createElement("div");
+    m.id = "muted";
+    m.innerHTML = `
 		<svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512" fill="currentColor">
 			<path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L472.1 344.7c15.2-26 23.9-56.3 23.9-88.7V216c0-13.3-10.7-24-24-24s-24 10.7-24 24v40c0 21.2-5.1 41.1-14.2 58.7L416 300.8V96c0-53-43-96-96-96s-96 43-96 96v54.3L38.8 5.1zM344 430.4c20.4-2.8 39.7-9.1 57.3-18.2l-43.1-33.9C346.1 382 333.3 384 320 384c-70.7 0-128-57.3-128-128v-8.7L144.7 210c-.5 1.9-.7 3.9-.7 6v40c0 89.1 66.2 162.7 152 174.4V464H248c-13.3 0-24 10.7-24 24s10.7 24 24 24h72 72c13.3 0 24-10.7 24-24s-10.7-24-24-24H344V430.4z"/>
 		</svg>
  `;
-  m.style.display = switched[p.peerId]?.audio ? "none" : "block";
-  const pr = getProfile(p, false);
-  const a = s?.getAudioTracks().length > 0;
-  if (a) {
-    const ring = document.createElement("div");
-    ring.id = "ring";
-    ring.classList.add("a");
-    ring.style.display = switched[p.peerId]?.audio ? "block" : "none";
-    const vol = document.createElement("div");
-    vol.id = "vol";
-    vol.classList.add("a");
-    vol.style.display = switched[p.peerId]?.audio ? "block" : "none";
-    const ac = new AudioContext();
-    const sr = ac.createMediaStreamSource(s);
-    await ac.audioWorklet.addModule(worklet);
-    const node = new AudioWorkletNode(ac, "audio-monitor", {
-      parameterData: {
-        clipLevel: 0.5,
-        averaging: 0.98,
-        clipLag: 750,
-      },
-    });
-    node.port.onmessage = (e) => {
-      const av = 1 + e.data.volume[0].value * 8;
-      vol.style.transform = `scale(${Math.max(Math.min(av, 2.2), 1)})`;
-    };
-    sr.connect(node).connect(ac.destination);
-    person.appendChild(ring);
-    person.appendChild(vol);
-  }
-  person.appendChild(video);
-  person.appendChild(pr);
-  const name = document.createElement("div");
-  name.id = "name";
-  name.innerText = p.peerId == user.peerId ? p.name + " (You)" : p.name;
-  person.appendChild(name);
-  person.appendChild(m);
-  bg.appendChild(person);
-  pec.appendChild(bg);
-  animateGridItems(prevPositions, user.peerId);
+    m.style.display = switched[p.peerId]?.audio ? "none" : "block";
+    const pr = getProfile(p, false);
+    const a = s?.getAudioTracks().length > 0;
+    if (a) {
+      const ring = document.createElement("div");
+      ring.id = "ring";
+      ring.classList.add("a");
+      ring.style.display = switched[p.peerId]?.audio ? "block" : "none";
+      const vol = document.createElement("div");
+      vol.id = "vol";
+      vol.classList.add("a");
+      vol.style.display = switched[p.peerId]?.audio ? "block" : "none";
+      const ac = new AudioContext();
+      const sr = ac.createMediaStreamSource(s);
+      await ac.audioWorklet.addModule(worklet);
+      const node = new AudioWorkletNode(ac, "audio-monitor", {
+        parameterData: {
+          clipLevel: 0.5,
+          averaging: 0.98,
+          clipLag: 750,
+        },
+      });
+      node.port.onmessage = (e) => {
+        const av = 1 + e.data.volume[0].value * 8;
+        vol.style.transform = `scale(${Math.max(Math.min(av, 2.2), 1)})`;
+      };
+      sr.connect(node).connect(ac.destination);
+      person.appendChild(ring);
+      person.appendChild(vol);
+    }
+    person.appendChild(video);
+    person.appendChild(pr);
+    const name = document.createElement("div");
+    name.id = "name";
+    name.innerText = p.peerId == user.peerId ? p.name + " (You)" : p.name;
+    person.appendChild(name);
+    person.appendChild(m);
+    bg.appendChild(person);
+    pec.appendChild(bg);
+  };
+  animateGrid(pec, after, {
+    sync: true,
+  });
 };
 
 const addPerson = (p) => {
@@ -252,17 +225,15 @@ const addPerson = (p) => {
 
 const removePerson = (p, pre = false) => {
   if (p.peerId == user.peerId && !pre) return;
-  const i = p.present ? "pres-" + p.peerId : p.peerId;
-  if (callList.includes(i)) callList.splice(callList.indexOf(i), 1);
-  const prevPositions = {};
   const pec = document.querySelector("#people-container");
-  [].slice.call(pec.children).forEach((c) => {
-    prevPositions[c.className] = c.getBoundingClientRect();
-  });
-  const id = pre ? "pres-" + p.peerId : p.peerId;
-  const c = document.querySelectorAll(".person-" + id);
-  c.forEach((e) => e.parentElement.remove());
-  animateGridItems(prevPositions, p.peerId);
+  const after = () => {
+    const i = p.present ? "pres-" + p.peerId : p.peerId;
+    if (callList.includes(i)) callList.splice(callList.indexOf(i), 1);
+    const id = pre ? "pres-" + p.peerId : p.peerId;
+    const c = document.querySelectorAll(".person-" + id);
+    c.forEach((e) => e.parentElement.remove());
+  };
+  animateGrid(pec, after);
 };
 
 voice.on("remove person", ([u, pres = false]) => removePerson(u, pres));

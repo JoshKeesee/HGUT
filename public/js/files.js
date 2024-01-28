@@ -1,10 +1,3 @@
-const grid = document.querySelector("#files-content");
-animateCSSGrid.wrapGrid(grid, {
-  duration: 500,
-  easing: "anticipate",
-  stagger: 10,
-});
-
 const loadFiles = () => {
   chat.emit("files", (e) => {
     const files = document.querySelector("#files-content");
@@ -24,12 +17,15 @@ const loadFiles = () => {
       c.innerHTML = f.name + " - " + r;
       files.appendChild(c);
       c.onclick = () => {
-        c.classList.toggle("active");
-        c.scrollIntoView({
-          behavior: "smooth",
-          block: "center",
-          inline: "center",
-        });
+        const after = () => {
+          c.classList.toggle("active");
+          c.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+            inline: "center",
+          });
+        };
+        animateGrid(files, after);
       };
     });
   });
