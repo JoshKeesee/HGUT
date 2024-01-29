@@ -425,14 +425,19 @@
     <script src="https://unpkg.com/tone@14.7.77/build/Tone.js"></script>
 	<script src="https://unpkg.com/peerjs@1.5.1/dist/peerjs.min.js"></script>
 	<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-	<script src="js/worklet.js"></script>
-	<script src="js/main.js"></script>
-	<script src="js/reg.js"></script>
-	<script src="js/chat.js"></script>
-	<script src="js/voice.js"></script>
-	<script src="js/music.js"></script>
-	<script src="js/files.js"></script>
-	<script src="js/settings.js"></script>
-	<script src="js/camera.js"></script>
-	<script src="js/animateGrid.js"></script>
+	<script>let user = <%- JSON.stringify(user) %>, profiles = <%- JSON.stringify(profiles) %></script>
+	<% if (production) { %>
+		<script src="min.js"></script>
+	<% } else { %>
+		<script src="js/worklet.js"></script>
+		<script src="js/main.js"></script>
+		<script src="js/reg.js"></script>
+		<script src="js/voice.js"></script>
+		<script src="js/music.js"></script>
+		<script src="js/files.js"></script>
+		<script src="js/settings.js"></script>
+		<script src="js/camera.js"></script>
+		<script src="js/chat.js"></script>
+		<script src="js/animateGrid.js"></script>
+	<% } %>
 </body>

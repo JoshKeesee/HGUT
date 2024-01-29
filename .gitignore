@@ -2,3 +2,5 @@ node_modules
 .devcontainer
 .codesandbox
 .vscode
+.env
+public/js/min.js

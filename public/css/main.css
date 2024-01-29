@@ -356,7 +356,7 @@ input[type="file"] {
 }
 
 #cont #chat-message.msg:nth-child(2) #message,
-#cont #chat-message:has(#emoji:not(.disabled)) + #chat-message #message,
+#cont #chat-message:has(#emoji:not(.disabled)) + #replies + #chat-message #message,
 #cont #replies:not(:empty) + #chat-message.msg #message,
 #replies #cont #chat-message:nth-child(2) #message {
   border-top-right-radius: 20px;
@@ -365,7 +365,7 @@ input[type="file"] {
 }
 
 #cont #chat-message.msg:nth-last-child(2) #message,
-#cont #chat-message:has(+ #chat-message #emoji:not(.disabled)) #message,
+#cont #chat-message:has(+ #replies + #chat-message #emoji:not(.disabled)) #message,
 #cont #chat-message.msg:has(+ #replies:not(:empty)) #message,
 #replies #cont #chat-message:last-child #message {
   border-bottom-right-radius: 20px;

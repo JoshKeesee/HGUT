@@ -4,12 +4,10 @@ const cb = document.querySelector("#chat-box");
 
 const devMode = true;
 
-let profiles = {},
-  online = {},
+let online = {},
   missed = 0,
   loadingMessages = false,
   rns = {},
-  user = {},
   lastNotification = null;
 
 const toRgba = (hex, alpha, obj) => {

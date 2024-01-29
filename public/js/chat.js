@@ -103,10 +103,12 @@ chat.on("unread", (u) => {
   });
 });
 chat.on("load messages", ([messages, start = true]) => {
-  if (!start) currMessages = messages.length;
   const cms = document.querySelector("#chat-messages");
+  if (!start) {
+    currMessages = messages.length;
+    cms.innerHTML = "";
+  }
   const h = cms.scrollHeight;
-  if (document.querySelector("#" + loading.id)) loading.remove();
   const rev = start ? messages.reverse() : messages;
   rev.forEach((m, i) => {
     addMessage(
@@ -123,6 +125,7 @@ chat.on("load messages", ([messages, start = true]) => {
       start,
     );
   });
+  maxMessagesReached = messages[0].id == 0;
   if (!maxMessagesReached) cms.insertBefore(loading, cms.firstChild);
   if (!start && messages.length == 0)
     cms.innerHTML = "Sorry, no messages here...";
@@ -270,25 +273,9 @@ chat.on("rooms", async ([rooms, p]) => {
     }
   });
 });
-chat.on("profiles", (p) => {
-  profiles = p;
-  updateProfiles();
-});
 chat.on("user", async (u) => {
   user = u;
-  user.visible = document.visibilityState == "visible";
-  setTimeout(
-    () =>
-      switchTheme(
-        user.settings.theme,
-        user.settings.accent ? user.color : null,
-      ),
-    100,
-  );
-  updateProfiles();
-  updateSettings();
-  if (user.settings.notifications[getDeviceId()])
-    user.settings.notifications[getDeviceId()] = await askNotification();
+  updateUser();
 });
 chat.on("online", (u) => {
   online = u;
@@ -603,3 +590,17 @@ document.querySelector("#chat-messages").onscroll = (e) => {
   loadingMessages = true;
   chat.emit("load messages", currMessages);
 };
+
+const updateUser = async () => {
+  user.visible = document.visibilityState == "visible";
+  updateProfiles();
+  updateSettings();
+  switchTheme(
+    user.settings.theme,
+    user.settings.accent ? user.color : null,
+  );
+  if (user.settings.notifications[getDeviceId()])
+    user.settings.notifications[getDeviceId()] = await askNotification();
+};
+
+updateUser();

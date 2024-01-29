@@ -5,6 +5,38 @@ const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
 dotenv.config();
 const bcrypt = require("bcrypt");
+const ejs = require("ejs");
+
+const uglify = require("uglify-js");
+const fs = require("fs");
+const path = require("path");
+
+app.engine("html", ejs.renderFile);
+
+const prod = process.env.NODE_ENV == "production";
+
+if (prod) {
+  const p = path.join(__dirname, "public");
+  let min = "";
+
+  const files = [
+    "js/worklet.js",
+    "js/main.js",
+    "js/reg.js",
+    "js/chat.js",
+    "js/voice.js",
+    "js/music.js",
+    "js/files.js",
+    "js/settings.js",
+    "js/camera.js",
+    "js/animateGrid.js"
+  ];
+
+  for (const file of files) min += fs.readFileSync(path.join(p, file), "utf8");
+
+  const uglified = uglify.minify(min);
+  fs.writeFileSync(path.join(p, "min.js"), uglified.code);
+}
 
 const SERVER = "https://3sx4nn-3000.csb.app/";
 let profiles = {},
@@ -59,18 +91,28 @@ const auth = (req, res, next) => {
   if (req.user || cancel.includes(req.url.split("/")[1])) return next();
   res.redirect("/login");
 };
-const getUser = (req) => {
+const getUser = async (req) => {
   const user = req.cookies["user"];
-  return profiles[user] ? profiles[user] : null;
+  if (!profiles[user]) return null;
+  const u = await (await fetch(SERVER + "get-user", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      user: profiles[user].id,
+    }),
+  })).json();
+  return u.error ? null : u;
 };
 app.use(async (req, res, next) => {
   await waitForProfiles;
-  req.user = getUser(req);
+  req.user = await getUser(req);
   auth(req, res, next);
 });
 app.use(express.static(__dirname + "/public"));
 app.get("/", (req, res) => res.redirect("/chat"));
-app.get("/chat", (req, res) => res.sendFile(__dirname + "/public/chat.html"));
+app.get("/chat", (req, res) => res.render(__dirname + "/public/chat.html", { user: req.user, production: prod, profiles }));
 app.get("/login", (req, res) => {
   if (req.user) return res.redirect("/chat");
   res.sendFile(__dirname + "/public/login.html");
