@@ -74,19 +74,19 @@
 
 #files-content #file-name {
   position: absolute;
-  top: 0;
   bottom: 0;
   left: 0;
-  right: 0;
+  width: calc(100% - 20px);
+  overflow-x: hidden;
   color: #fff;
   text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
   font-size: 18px;
   font-weight: bold;
   text-align: left;
+  white-space: nowrap;
   text-overflow: ellipsis;
-  display: flex;
-  align-items: flex-end;
-  justify-content: flex-start;
+  direction: ltr;
+  display: block;
   padding: 10px;
   transition: padding 0.2s ease;
 }
