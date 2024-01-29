@@ -422,9 +422,9 @@
 			</div>
 		</div>
 	</div>
-	<script src="assets/Tone.js"></script>
-	<script src="assets/Peer.js"></script>
-	<script src="assets/Socket.io.js"></script>
+    <script src="https://unpkg.com/tone@14.7.77/build/Tone.js"></script>
+	<script src="https://unpkg.com/peerjs@1.5.1/dist/peerjs.min.js"></script>
+	<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 	<script>let user = <%- JSON.stringify(user) %>, profiles = <%- JSON.stringify(profiles) %></script>
 	<% if (production) { %>
 		<script src="min.js"></script>

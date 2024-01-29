@@ -20,9 +20,6 @@ if (prod) {
   let min = "";
 
   const files = [
-    "assets/Tone.js",
-    "assets/Peer.js",
-    "assets/Socket.io.js",
     "js/worklet.js",
     "js/main.js",
     "js/reg.js",
