@@ -94,6 +94,7 @@ body:has(#header #tabs #chats.selected) #notifications {
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
+  gap: 10px;
   overflow: hidden;
 }
 

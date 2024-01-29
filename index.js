@@ -91,36 +91,36 @@ const auth = (req, res, next) => {
   if (req.user || cancel.includes(req.url.split("/")[1])) return next();
   res.redirect("/login");
 };
-const getUser = async (req) => {
+const getUserData = async (req) => {
   const user = req.cookies["user"];
-  if (!profiles[user]) return null;
+  if (!profiles[user]) return {};
   const u = await (
-    await fetch(SERVER + "get-user", {
+    await fetch(SERVER + "user-data", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Accept: "application/json",
       },
       body: JSON.stringify({
         user: profiles[user].id,
       }),
     })
   ).json();
-  return u.error ? null : u;
+  return u.error ? {} : u;
 };
 app.use(async (req, res, next) => {
   await waitForProfiles;
-  req.user = await getUser(req);
+  const u = await getUserData(req);
+  req.user = u.user;
+  req.userData = u;
+  req.userData.tab = req.query.tab || "messages";
+  req.userData.production = prod;
   auth(req, res, next);
 });
 app.use(express.static(__dirname + "/public"));
 app.get("/", (req, res) => res.redirect("/chat"));
 app.get("/chat", (req, res) =>
-  res.render(__dirname + "/public/chat.html", {
-    user: req.user,
-    production: prod,
-    profiles,
-    tab: req.query.tab || "messages",
-  }),
+  res.render(__dirname + "/public/chat.html", req.userData),
 );
 app.get("/login", (req, res) => {
   if (req.user) return res.redirect("/chat");

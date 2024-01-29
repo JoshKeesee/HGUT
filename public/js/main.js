@@ -1,6 +1,5 @@
 const SERVER = "https://3sx4nn-3000.csb.app/";
 const icon = document.querySelector("#icon");
-const cb = document.querySelector("#chat-box");
 
 const devMode = true;
 
@@ -56,7 +55,7 @@ const linkify = (s, sc = false) => {
     img.onload = () => {
       if (!sc) return;
       const cms = document.querySelector("#chat-messages");
-      cms.scrollTo(0, cms.scrollHeight);
+      cms.scrollTop = cms.scrollHeight;
     };
     return `<img src="${src}">`;
   } else {
@@ -688,8 +687,3 @@ const init = () => {
 
 window.onload = init;
 window.onpopstate = init;
-if (cb)
-  cb.onanimationend = (e) => {
-    const cms = document.querySelector("#chat-messages");
-    cms.scrollTo(0, cms.scrollHeight);
-  };
