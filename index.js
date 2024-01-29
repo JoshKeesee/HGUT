@@ -23,12 +23,12 @@ if (prod) {
     "js/worklet.js",
     "js/main.js",
     "js/reg.js",
-    "js/chat.js",
     "js/voice.js",
     "js/music.js",
     "js/files.js",
     "js/settings.js",
     "js/camera.js",
+    "js/chat.js",
     "js/animateGrid.js"
   ];
 
