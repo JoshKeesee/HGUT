@@ -202,30 +202,13 @@ chat.on("online", (u) => {
   online = u;
   updateOnline();
 });
-chat.on("join room", ([messages, r, u]) => {
+chat.on("join room", ([m, r, u]) => {
   loadingMessages = false;
   currMessages = 0;
   user.unread = u;
   input.value = "";
   user.room = r;
-  const cms = document.querySelector("#chat-messages");
-  cms.innerHTML = "";
-  if (messages.length == 0) cms.innerText = "Sorry, no messages here...";
-  else
-    messages.forEach((m, i) => {
-      addMessage([
-        m.message,
-        profiles[m.name],
-        m.date,
-        messages[i - 1],
-        messages.length - i - 1,
-        m.replies,
-        m.reactions,
-      ]);
-    });
-  cms.style = "";
-  if (!maxMessagesReached) cms.insertBefore(loading, cms.firstChild);
-  cms.scrollTop = cms.scrollHeight;
+  loadMessages(m, false);
 });
 chat.on("redirect", (d) => (window.location.href = d));
 
@@ -292,11 +275,8 @@ const updateProfiles = () => {
       if (
         user.room == r.id + "-" + user.id ||
         user.room == user.id + "-" + r.id
-      ) {
-        const el = cr.querySelector("#chat-room");
-        el.style.background = user.settings.theme ? "black" : "white";
-        el.querySelector("#chat-room-bg").style.opacity = 1;
-      }
+      )
+        updateRoomName(cr);
     });
   const sub = document.querySelector("#submenu-mention");
   sub.innerHTML = "";
@@ -545,6 +525,21 @@ const loadMessages = (messages, start = true) => {
   loadingMessages = false;
 };
 
+const updateRoomName = (cr) => {
+  const el = cr.querySelector("#chat-room");
+  el.style.background = user.settings.theme ? "black" : "white";
+  el.querySelector("#chat-room-bg").style.opacity = 1;
+  let n = roomNames[el.className.replace("c-", "")];
+  if (Number(n.split("-")[0])) {
+    const p = Object.values(profiles).find(
+      (e) =>
+        (e.id == n.split("-")[0] || e.id == n.split("-")[1]) && e.id != user.id,
+    );
+    if (p) n = p.name;
+  }
+  document.querySelector("#chat-name").innerHTML = n;
+};
+
 const updateRooms = () => {
   loadingMessages = true;
   rn = Object.keys(rooms);
@@ -578,29 +573,15 @@ const updateRooms = () => {
       !Object.values(profiles).find((e) => e.id == u[1])
     )
       crs.appendChild(cr);
-    if (user.room == k) {
-      const el = cr.querySelector("#chat-room");
-      el.style.background = user.settings.theme ? "black" : "white";
-      el.querySelector("#chat-room-bg").style.opacity = 1;
-      let n = r.name;
-      if (Number(n.split("-")[0])) {
-        const p = Object.values(profiles).find(
-          (e) =>
-            (e.id == n.split("-")[0] || e.id == n.split("-")[1]) &&
-            e.id != user.id,
-        );
-        if (p) n = p.name;
-      }
-      document.querySelector("#chat-name").innerHTML = n;
-    }
+    if (user.room == k) updateRoomName(cr);
   });
 };
 
 const updateUser = async () => {
   user.visible = document.visibilityState == "visible";
-  updateProfiles();
   updateSettings();
   updateRooms();
+  updateProfiles();
   loadMessages(messages, false);
   switchTheme(user.settings.theme, user.settings.accent ? user.color : null);
   if (user.settings.notifications[getDeviceId()])
