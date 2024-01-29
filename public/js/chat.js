@@ -103,11 +103,10 @@ chat.on("unread", (u) => {
   });
 });
 chat.on("load messages", ([messages, start = true]) => {
+  if (!start) currMessages = messages.length;
   const cms = document.querySelector("#chat-messages");
-  if (!start) {
-    currMessages = messages.length;
-    cms.innerHTML = "";
-  }
+  if (cms.querySelector("#loading"))
+    cms.removeChild(cms.querySelector("#loading"));
   const h = cms.scrollHeight;
   const rev = start ? messages.reverse() : messages;
   rev.forEach((m, i) => {

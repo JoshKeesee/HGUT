@@ -67,12 +67,19 @@ const linkify = (s, sc = false) => {
           const u = w.replace("@", "").replaceAll("-", " ");
           const p = profiles[u];
           if (!p) return;
-          words[i] = "<span class='mention' id='" + p.id + "' onclick='(" + 
-          ((el) => {
-            const r = document.querySelector(".c-" + el.id + "-" + user.id) || document.querySelector(".c-" + user.id + "-" + el.id);
-            if (r) return switchChat(r);
-          })
-          + ")(this)'>@" + p.name + "</span>";
+          words[i] =
+            "<span class='mention' id='" +
+            p.id +
+            "' onclick='(" +
+            ((el) => {
+              const r =
+                document.querySelector(".c-" + el.id + "-" + user.id) ||
+                document.querySelector(".c-" + user.id + "-" + el.id);
+              if (r) return switchChat(r);
+            }) +
+            ")(this)'>@" +
+            p.name +
+            "</span>";
         }
       });
       s = words.join(" ");
@@ -270,9 +277,10 @@ const updateReactOnclick = () => {
 const addReplies = (m) => {
   const replies = m.replies || [];
   const myUser = user.name == m.name;
-  const cms = getCurrentTab() != "voice"
-    ? document.querySelector("#chat-messages")
-    : document.querySelector("#voice-chat-messages");
+  const cms =
+    getCurrentTab() != "voice"
+      ? document.querySelector("#chat-messages")
+      : document.querySelector("#voice-chat-messages");
   const r = document.createElement("div");
   r.id = "replies";
   r.classList.add("r-" + m.id);
@@ -517,11 +525,6 @@ const addMessage = (
   updateReactOnclick();
 
   if (scroll && !start && atBottom) {
-    cm.scrollIntoView({
-      behavior: "smooth",
-      block: "end",
-      inline: "nearest",
-    });
     cm.animate(
       {
         opacity: [0, 1],
@@ -532,6 +535,7 @@ const addMessage = (
         easing: "ease-out",
       },
     );
+    cms.scrollTop = cms.scrollHeight;
   }
 };
 
