@@ -102,7 +102,7 @@ body:has(#header #tabs #chats.selected) #notifications {
   background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.2);
 }
 
-#chat-room div {
+#chat-room * {
   z-index: 1;
 }
 
