@@ -5,16 +5,20 @@ const loadFiles = () => {
     e.forEach((f) => {
       const c = document.createElement("div");
       c.id = "file-cont";
-      c.style.backgroundImage = `
-        linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.5)), url(${SERVER + f.url})
-      `;
+      c.style.backgroundImage = `url(${SERVER + f.url})`;
       let r = roomNames[f.room];
       if (r.includes(user.id))
         r =
           Object.values(profiles).find(
             (p) => p.id == r.replace(user.id, "").replace("-", ""),
           )?.name || r;
-      c.innerHTML = f.name + " - " + r;
+      const name = document.createElement("div");
+      name.id = "file-name";
+      name.innerHTML = f.name + " - " + r;
+      const bg = document.createElement("div");
+      bg.id = "file-bg";
+      c.appendChild(bg);
+      c.appendChild(name);
       files.appendChild(c);
       c.onclick = () => {
         const after = () => {

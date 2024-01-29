@@ -48,21 +48,13 @@
 }
 
 #files-content #file-cont {
-  color: #fff;
+  position: relative;
   box-sizing: border-box;
   white-space: nowrap;
   user-select: none;
   padding: 10px;
   width: 100%;
   height: 100%;
-  text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-  font-size: 18px;
-  font-weight: bold;
-  text-align: left;
-  text-overflow: ellipsis;
-  display: flex;
-  align-items: flex-end;
-  justify-content: flex-start;
   border-radius: 10px;
   background: rgba(150, 150, 150, 0.2);
   background-size: cover;
@@ -73,14 +65,46 @@
   cursor: pointer;
   user-select: none;
   overflow: hidden;
-  transition: padding 0.2s ease;
-}
-
-#files-content #file-cont:hover {
-  padding-bottom: 20px;
 }
 
 #files-content #file-cont.active {
   grid-column: span 2;
   grid-row: span 2;
+}
+
+#files-content #file-name {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  color: #fff;
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  font-size: 18px;
+  font-weight: bold;
+  text-align: left;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding: 10px;
+  transition: padding 0.2s ease;
+}
+
+#files-content #file-cont:hover #file-name {
+  padding-bottom: 20px;
+}
+
+#files-content #file-bg {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0));
+  transition: all 0.2s ease;
+}
+
+#files-content #file-cont:hover #file-bg {
+  opacity: 0.1;
 }

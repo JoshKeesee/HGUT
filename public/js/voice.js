@@ -72,6 +72,12 @@ const getTrack = async (type, constraints) => {
 
 const us = async () => {
   if (stream) return;
+  await navigator.mediaDevices
+    .getUserMedia({
+      video: vidConstraints,
+      audio: audConstraints,
+    })
+    .catch(() => {});
   stream = new MediaStream([
     (await getTrack("video", vidConstraints)) || createEmptyVideoTrack(),
     (await getTrack("audio", audConstraints)) || createEmptyAudioTrack(),
@@ -143,7 +149,6 @@ const addVideo = async (p, s, self = false, big = false, pre = false) => {
     const bg = document.createElement("div");
     bg.id = "bg";
     bg.classList.add("bg-" + id);
-    bg.style.background = user.settings.theme ? "#000" : "#fff";
     if (big) bg.classList.add("big");
     const person = document.createElement("div");
     person.id = "person";
@@ -268,48 +273,12 @@ const updateVoiceOnline = () => {
       if (k != user.id) {
         const bg = document.createElement("div");
         bg.id = "bg";
-        bg.style.background = user.settings.theme ? "black" : "white";
         const pc = getProfile(r, true);
         pc.style.opacity = online[k].visible ? 1 : 0.5;
         bg.appendChild(pc);
         o.appendChild(bg);
       }
     });
-};
-
-const switchVoiceTheme = (dark = !user.settings.theme, color) => {
-  user.settings.theme = dark;
-  const d = dark ? "dark" : "light";
-  document.body.className = d;
-  document.querySelector("#online").className = d + "-box";
-  document.querySelector("#light-icon").style.opacity = user.settings.theme
-    ? 0
-    : 1;
-  document.querySelector("#dark-icon").style.opacity = user.settings.theme
-    ? 1
-    : 0;
-  document
-    .querySelectorAll("#bg")
-    .forEach(
-      (b) => (b.style.background = user.settings.theme ? "black" : "white"),
-    );
-  document
-    .querySelectorAll(".loading div")
-    .forEach(
-      (b) =>
-        (b.style.background = user.settings.theme
-          ? "radial-gradient(#fff, transparent)"
-          : "radial-gradient(#000, transparent)"),
-    );
-
-  if (color) {
-    const rgb = toRgba(color, 1, true);
-    const root = document.querySelector(":root");
-    Object.keys(rgb).forEach((k) =>
-      root.style.setProperty("--theme-" + k, rgb[k]),
-    );
-  }
-  voice.emit("theme", user.settings.theme);
 };
 
 const toggleCamera = async (set = !user.camera) => {
@@ -364,8 +333,7 @@ const toggleAudio = async (set = !user.audio) => {
 const togglePresent = async () => {
   user.present = !user.present;
   if (user.present) {
-    present.style.background =
-      "rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.9)";
+    present.style.background = "rgba(var(--r), var(--g), var(--b), 0.9)";
     try {
       pres = await navigator.mediaDevices.getDisplayMedia({
         video: true,
@@ -427,8 +395,7 @@ voiceSend.onclick = (e) => {
 toggleChat.onclick = () => {
   user.chat = !user.chat;
   if (user.chat)
-    toggleChat.style.background =
-      "rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.9)";
+    toggleChat.style.background = "rgba(var(--r), var(--g), var(--b), 0.9)";
   else toggleChat.style = "";
   const c = document.querySelector("#main-cont");
   c.classList.toggle("toggled");

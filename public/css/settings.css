@@ -165,17 +165,25 @@
   transition: all 0.2s ease;
 }
 
+body:not(.dark) .settings-toggle {
+  border-color: #000;
+}
+
+body:not(.dark) .settings-toggle-circle {
+  background-color: #000;
+}
+
 .settings-toggle:hover {
   background: rgba(150, 150, 150, 0.2);
 }
 
 .settings-toggle.active {
-  background-color: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.8);
+  background-color: rgba(var(--r), var(--g), var(--b), 0.8);
   border-color: transparent;
 }
 
 .settings-toggle.active:hover {
-  background-color: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 1);
+  background-color: rgba(var(--r), var(--g), var(--b), 1);
 }
 
 .settings-toggle-circle {

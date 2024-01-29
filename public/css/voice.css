@@ -54,8 +54,7 @@
 }
 
 #people-container #bg {
-  animation: zoom 0.5s ease;
-  background: #000;
+  animation: fade-in 0.5s ease forwards;
   border-radius: 20px;
   display: flex;
   align-items: center;
@@ -65,11 +64,12 @@
   overflow: hidden;
   transition: background 0.2s ease;
   user-select: none;
+  opacity: 0;
 }
 
 #person {
   position: relative;
-  background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.4);
+  background: rgba(var(--r), var(--g), var(--b), 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -93,7 +93,7 @@
   z-index: 10;
   width: 250px;
   height: 150px;
-  outline: 2px solid rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.6);
+  outline: 2px solid rgba(var(--r), var(--g), var(--b), 0.6);
 }
 
 #person #video {
@@ -146,14 +146,22 @@
 }
 
 #person #ring {
-  border: 1px solid #999;
+  border: 1px solid #fff;
   animation: ring 4s infinite;
 }
 
+body.dark #person #ring {
+  border: 1px solid #999;
+}
+
 #person #vol {
-  background: #999;
+  background: #fff;
   transition: transform 0.2s ease;
   opacity: 0.2;
+}
+
+body.dark #person #vol {
+  background: #999;
 }
 
 #person #profile {
@@ -202,6 +210,10 @@
   transition: opacity 0.2s ease;
 }
 
+body.dark #meeting-cont #divider {
+  background: #fff;
+}
+
 #control-bar {
   text-align: center;
   font-size: 20px;
@@ -226,7 +238,7 @@
   padding: 10px;
   width: 20px;
   height: 20px;
-  background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.5);
+  background: rgba(var(--r), var(--g), var(--b), 0.5);
   border-radius: 30px;
   transition: all 0.2s ease;
   display: flex;
@@ -237,17 +249,17 @@
 
 #toggle-chat:hover,
 #toggle-presentation:hover {
-  background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.6);
+  background: rgba(var(--r), var(--g), var(--b), 0.6);
 }
 
 #toggle-cam,
 #toggle-mic {
-  background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.8);
+  background: rgba(var(--r), var(--g), var(--b), 0.8);
 }
 
 #toggle-cam:hover,
 #toggle-mic:hover {
-  background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.9);
+  background: rgba(var(--r), var(--g), var(--b), 0.9);
 }
 
 #toggle-cam.toggled,
@@ -380,5 +392,14 @@
   100% {
     transform: scale(2.2);
     opacity: 0;
+  }
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
   }
 }

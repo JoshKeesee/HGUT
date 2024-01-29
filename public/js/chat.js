@@ -226,7 +226,6 @@ const switchChat = (el) => {
     document.querySelector("." + user.room);
   lr.style = "";
   lr.querySelector("#chat-room-bg").style = "";
-  el.style.background = user.settings.theme ? "black" : "white";
   el.querySelector("#chat-room-bg").style.opacity = 1;
   el.querySelector("#unread").style.display = "none";
   const cms = document.querySelector("#chat-messages");
@@ -314,7 +313,6 @@ const updateOnline = () => {
       if (!Object.keys(online).includes(r.id.toString())) return;
       const bg = document.createElement("div");
       bg.id = "bg";
-      bg.style.background = user.settings.theme ? "black" : "white";
       const pc = getProfile(r, true);
       pc.onclick = () =>
         switchChat(
@@ -368,20 +366,6 @@ const switchTheme = (dark = !user.settings.theme, color) => {
   const d = dark ? "dark" : "light";
   const th = dark ? "black" : "white";
   document.body.className = d;
-  document.querySelector("#chat-box").className = d + "-box";
-  document
-    .querySelectorAll("#online")
-    .forEach((o) => (o.className = d + "-box"));
-  document
-    .querySelectorAll("#profile #info")
-    .forEach((b) => (b.style.background = th));
-  document.querySelectorAll("#bg").forEach((b) => (b.style.background = th));
-  document.querySelector("#light-icon").style.opacity = user.settings.theme
-    ? 0
-    : 1;
-  document.querySelector("#dark-icon").style.opacity = user.settings.theme
-    ? 1
-    : 0;
   const lr =
     !user.room || getCurrentTab() == "voice"
       ? null
@@ -392,40 +376,12 @@ const switchTheme = (dark = !user.settings.theme, color) => {
         document.querySelector("." + user.room) ||
         null;
   if (lr) lr.style.background = th;
-  document
-    .querySelectorAll(".loading div")
-    .forEach(
-      (b) =>
-        (b.style.background = user.settings.theme
-          ? "radial-gradient(#fff, transparent)"
-          : "radial-gradient(#000, transparent)"),
-    );
-  document
-    .querySelectorAll("#unread")
-    .forEach(
-      (b) => (b.style.background = user.settings.theme ? "black" : "white"),
-    );
-  document
-    .querySelectorAll("#ring")
-    .forEach(
-      (b) => (b.style.borderColor = user.settings.theme ? "#999" : "#fff"),
-    );
-  document
-    .querySelectorAll("#vol")
-    .forEach(
-      (b) => (b.style.background = user.settings.theme ? "#999" : "#fff"),
-    );
-  document
-    .querySelectorAll("#meeting-cont #divider")
-    .forEach(
-      (b) => (b.style.background = user.settings.theme ? "#fff" : "#000"),
-    );
   if (color) {
     const rgb = toRgba(color, 1, true);
-    const root = document.querySelector(":root");
-    Object.keys(rgb).forEach((k) =>
-      root.style.setProperty("--theme-" + k, rgb[k]),
-    );
+    Object.keys(rgb).forEach((k) => {
+      document.body.style.setProperty("--bg-" + k, rgb[k]);
+      document.querySelector(":root").style.setProperty("--" + k, rgb[k]);
+    });
   }
   updateSettings();
   chat.emit("settings", user.settings);
@@ -527,7 +483,6 @@ const loadMessages = (messages, start = true) => {
 
 const updateRoomName = (cr) => {
   const el = cr.querySelector("#chat-room");
-  el.style.background = user.settings.theme ? "black" : "white";
   el.querySelector("#chat-room-bg").style.opacity = 1;
   let n = roomNames[el.className.replace("c-", "")];
   if (Number(n.split("-")[0])) {

@@ -17,7 +17,7 @@
   left: 0;
   z-index: 2;
   border-radius: 10px;
-  background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.3);
+  background: rgba(var(--r), var(--g), var(--b), 0.3);
   backdrop-filter: blur(5px);
   padding: 10px;
   user-select: none;
@@ -67,6 +67,8 @@ body:has(#header #tabs #chats.selected) #notifications {
   grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
   gap: 5px;
   overflow-x: hidden;
+  scroll-snap-type: y mandatory;
+  padding-bottom: 100px;
 }
 
 #chat-room-container {
@@ -86,20 +88,21 @@ body:has(#header #tabs #chats.selected) #notifications {
   letter-spacing: 1px;
   padding: 10px;
   cursor: pointer;
-  background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.05);
+  background: rgba(var(--r), var(--g), var(--b), 0.05);
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
   border-bottom-right-radius: 20px;
   border-bottom-left-radius: 20px;
-  transition: all 0.2s ease;
+  transition: background 0.2s ease;
   display: flex;
   align-items: center;
   gap: 10px;
   overflow: hidden;
+  scroll-snap-align: end;
 }
 
 #chat-room:hover {
-  background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.2);
+  background: rgba(var(--r), var(--g), var(--b), 0.2);
 }
 
 #chat-room * {
@@ -113,7 +116,7 @@ body:has(#header #tabs #chats.selected) #notifications {
   left: 0;
   right: 0;
   z-index: 0;
-  background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.6);
+  background: rgba(var(--r), var(--g), var(--b), 0.6);
   opacity: 0;
   transition: opacity 0.2s ease;
 }
@@ -134,9 +137,13 @@ body:has(#header #tabs #chats.selected) #notifications {
   width: 15px;
   height: 15px;
   padding: 2px;
-  background: #000;
+  background: #fff;
   border-radius: 50%;
   transition: background 0.2s ease;
+}
+
+body.dark #unread {
+  background: #000;
 }
 
 #unread #dot {

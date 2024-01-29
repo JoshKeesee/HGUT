@@ -93,9 +93,9 @@ const auth = (req, res, next) => {
 };
 const getUserData = async (req) => {
   const user = req.cookies["user"];
-  if (!profiles[user]) return {};
-  const u = await (
-    await fetch(SERVER + "user-data", {
+  return new Promise((res) => {
+    if (!profiles[user]) return res({});
+    fetch(SERVER + "user-data", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -105,12 +105,15 @@ const getUserData = async (req) => {
         user: profiles[user].id,
       }),
     })
-  ).json();
-  return u.error ? {} : u;
+      .then((r) => r.json())
+      .then((r) => res(r))
+      .catch(() => res({ error: true }));
+  });
 };
 app.use(async (req, res, next) => {
   await waitForProfiles;
-  const u = await getUserData(req);
+  let u = { error: true };
+  while (u.error) u = await getUserData(req);
   req.user = u.user;
   req.userData = u;
   req.userData.tab = req.query.tab || "messages";

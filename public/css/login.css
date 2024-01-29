@@ -47,8 +47,8 @@ button {
   color: inherit;
   padding: 10px;
   font-size: 15px;
-  background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.3);
-  border: 2px solid rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.4);
+  background: rgba(var(--r), var(--g), var(--b), 0.3);
+  border: 2px solid rgba(var(--r), var(--g), var(--b), 0.4);
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   border-bottom-left-radius: 20px;
@@ -62,24 +62,24 @@ button {
 }
 
 button:hover {
-  background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.5);
-  border: 2px solid rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.6);
+  background: rgba(var(--r), var(--g), var(--b), 0.5);
+  border: 2px solid rgba(var(--r), var(--g), var(--b), 0.6);
 }
 
 input {
   color: inherit;
   width: calc(100% - 20px);
   padding: 10px;
-  background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.1);
+  background: rgba(var(--r), var(--g), var(--b), 0.1);
   transition: background 0.2s ease;
 }
 
 input:hover {
-  background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.2);
+  background: rgba(var(--r), var(--g), var(--b), 0.2);
 }
 
 input:focus {
-  background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.3);
+  background: rgba(var(--r), var(--g), var(--b), 0.3);
 }
 
 .top {

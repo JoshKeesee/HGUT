@@ -10,10 +10,14 @@
 body {
   background-image: radial-gradient(
     circle,
-    rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.2) 0%,
+    rgba(var(--bg-r), var(--bg-g), var(--bg-b), 0.3) 0%,
     transparent 100%
   );
-  transition: all 0.2s ease;
+  transition:
+    all 0.2s ease,
+    --bg-r 0.2s ease,
+    --bg-g 0.2s ease,
+    --bg-b 0.2s ease;
 }
 
 body,
@@ -30,9 +34,41 @@ html {
 }
 
 :root {
-  --theme-r: 0;
-  --theme-g: 0;
-  --theme-b: 255;
+  --r: 0;
+  --g: 0;
+  --b: 255;
+}
+
+@property --bg-r {
+  syntax: "<integer>";
+  initial-value: 0;
+  inherits: false;
+}
+
+@property --bg-g {
+  syntax: "<integer>";
+  initial-value: 0;
+  inherits: false;
+}
+
+@property --bg-b {
+  syntax: "<integer>";
+  initial-value: 255;
+  inherits: false;
+}
+
+body.dark #bg {
+  background: #000;
+}
+
+#tabs #light-icon,
+#tabs #dark-icon {
+  opacity: 0;
+}
+
+body:not(.dark) #tabs #light-icon,
+body.dark #tabs #dark-icon {
+  opacity: 1;
 }
 
 #container {
@@ -93,7 +129,7 @@ html {
   font-size: 18px;
   font-weight: 1000;
   letter-spacing: 1px;
-  background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.4);
+  background: rgba(var(--r), var(--g), var(--b), 0.4);
   border-radius: 35px;
   transition:
     width 0.2s ease,
@@ -118,7 +154,7 @@ html {
   pointer-events: none;
   gap: 5px;
   padding: 10px;
-  border: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.5) solid 2px;
+  border: rgba(var(--r), var(--g), var(--b), 0.5) solid 2px;
   border-radius: 10px;
   position: absolute;
   top: 100%;
@@ -126,6 +162,14 @@ html {
   transition:
     opacity 0.2s ease,
     background 0.2s ease;
+}
+
+body.dark #profile #info {
+  background: #000;
+}
+
+body:not(.dark) #profile #info {
+  background: #fff;
 }
 
 #info-container {
@@ -164,11 +208,11 @@ html {
     width 0.2s ease;
 }
 
-#online.dark-box {
+body.dark #online {
   background: #000;
 }
 
-#online.light-box {
+body:not(.dark) #online {
   background: #fff;
 }
 
@@ -186,7 +230,6 @@ html {
 }
 
 #online #bg {
-  background: black;
   border-radius: 50%;
   position: relative;
   margin-top: -18px;
@@ -226,7 +269,7 @@ html {
   border-top-right-radius: 10px;
   border-bottom-left-radius: 20px;
   border-bottom-right-radius: 10px;
-  background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.2);
+  background: rgba(var(--r), var(--g), var(--b), 0.2);
   max-height: 300px;
   overflow: hidden;
   overflow-y: scroll;
@@ -245,12 +288,12 @@ html {
 
 #chat-input:hover,
 #voice-chat-input:hover {
-  background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.3);
+  background: rgba(var(--r), var(--g), var(--b), 0.3);
 }
 
 #chat-input:focus,
 #voice-chat-input:focus {
-  background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.4);
+  background: rgba(var(--r), var(--g), var(--b), 0.4);
 }
 
 input[type="file"] {
@@ -356,7 +399,11 @@ input[type="file"] {
 }
 
 #cont #chat-message.msg:nth-child(2) #message,
-#cont #chat-message:has(#emoji:not(.disabled)) + #replies + #chat-message #message,
+#cont
+  #chat-message:has(#emoji:not(.disabled))
+  + #replies
+  + #chat-message
+  #message,
 #cont #replies:not(:empty) + #chat-message.msg #message,
 #replies #cont #chat-message:nth-child(2) #message {
   border-top-right-radius: 20px;
@@ -365,7 +412,9 @@ input[type="file"] {
 }
 
 #cont #chat-message.msg:nth-last-child(2) #message,
-#cont #chat-message:has(+ #replies + #chat-message #emoji:not(.disabled)) #message,
+#cont
+  #chat-message:has(+ #replies + #chat-message #emoji:not(.disabled))
+  #message,
 #cont #chat-message.msg:has(+ #replies:not(:empty)) #message,
 #replies #cont #chat-message:last-child #message {
   border-bottom-right-radius: 20px;
@@ -384,7 +433,7 @@ input[type="file"] {
   scroll-snap-align: end;
   padding: 20px;
   border-radius: 20px;
-  border: dashed 4px rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.5);
+  border: dashed 4px rgba(var(--r), var(--g), var(--b), 0.5);
   background: rgba(150, 150, 150, 0.1);
 }
 
@@ -408,7 +457,7 @@ input[type="file"] {
   height: max-content;
   letter-spacing: 0px;
   text-align: left;
-  background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.4);
+  background: rgba(var(--r), var(--g), var(--b), 0.4);
   padding: 15px;
   font-size: 17px;
   overflow: hidden;
@@ -717,7 +766,7 @@ body:has(#header.toggled) #tabs .tab {
   gap: 10px;
   margin-bottom: 5px;
   margin-right: 15px;
-  background: rgba(var(--theme-r), var(--theme-g), var(--theme-b), 0.5);
+  background: rgba(var(--r), var(--g), var(--b), 0.5);
   backdrop-filter: blur(5px);
   padding: 10px;
   border-radius: 20px;

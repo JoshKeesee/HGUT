@@ -50,7 +50,8 @@ const animateGridItem = (
 const animateGrid = async (grid, after, opts = {}) => {
   const prevFilePositions = [],
     nextFilePositions = [];
-  const children = [...grid.children];
+  let children = [...grid.children];
+  const origNum = children.length;
   children.forEach((c, i) => {
     const n = c.getBoundingClientRect();
     prevFilePositions[i] = {
@@ -62,6 +63,19 @@ const animateGrid = async (grid, after, opts = {}) => {
   });
   if (opts.sync) await after();
   else after();
+  children = [...grid.children];
+  if (children.length > origNum) {
+    for (let i = origNum; i < children.length; i++) {
+      const c = children[i];
+      const n = c.getBoundingClientRect();
+      prevFilePositions[i] = nextFilePositions[i] = {
+        width: n.width.toFixed(0),
+        height: n.height.toFixed(0),
+        x: n.x.toFixed(0),
+        y: n.y.toFixed(0),
+      };
+    }
+  }
   children.forEach((c, i) => {
     const n = c.getBoundingClientRect();
     nextFilePositions[i] = {
@@ -73,7 +87,7 @@ const animateGrid = async (grid, after, opts = {}) => {
   });
   const g = grid.getBoundingClientRect();
   maxI = 0;
-  children.forEach((c, i) => {
+  [...grid.children].forEach((c, i) => {
     const n = nextFilePositions[i];
     const p = prevFilePositions[i];
     animateGridItem(g, c, n, p, i, opts);
