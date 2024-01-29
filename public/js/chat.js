@@ -125,7 +125,7 @@ chat.on("load messages", ([messages, start = true]) => {
       start,
     );
   });
-  maxMessagesReached = messages[0].id == 0;
+  maxMessagesReached = !messages[0] || messages[0].id == 0;
   if (!maxMessagesReached) cms.insertBefore(loading, cms.firstChild);
   if (!start && messages.length == 0)
     cms.innerHTML = "Sorry, no messages here...";
@@ -480,14 +480,15 @@ const switchTheme = (dark = !user.settings.theme, color) => {
   document.querySelector("#dark-icon").style.opacity = user.settings.theme
     ? 1
     : 0;
-  const lr = !user.room || getCurrentTab() == "voice"
-    ? null
-    : document.querySelector(".c-" + user.room) ||
-      document.querySelector(
-        ".c-" + user.room?.split("-").reverse().join("-"),
-      ) ||
-      document.querySelector("." + user.room) ||
-      null;
+  const lr =
+    !user.room || getCurrentTab() == "voice"
+      ? null
+      : document.querySelector(".c-" + user.room) ||
+        document.querySelector(
+          ".c-" + user.room?.split("-").reverse().join("-"),
+        ) ||
+        document.querySelector("." + user.room) ||
+        null;
   if (lr) lr.style.background = th;
   document
     .querySelectorAll(".loading div")
@@ -529,7 +530,8 @@ const switchTheme = (dark = !user.settings.theme, color) => {
 };
 
 input.onkeydown = (e) => {
-  const i = input.innerHTML, ml = 1000;
+  const i = input.innerHTML,
+    ml = 1000;
   if (e.key == "Enter") e.preventDefault();
   if (i.length > ml) {
     e.preventDefault();
@@ -595,10 +597,7 @@ const updateUser = async () => {
   user.visible = document.visibilityState == "visible";
   updateProfiles();
   updateSettings();
-  switchTheme(
-    user.settings.theme,
-    user.settings.accent ? user.color : null,
-  );
+  switchTheme(user.settings.theme, user.settings.accent ? user.color : null);
   if (user.settings.notifications[getDeviceId()])
     user.settings.notifications[getDeviceId()] = await askNotification();
 };

@@ -20,6 +20,9 @@ if (prod) {
   let min = "";
 
   const files = [
+    "assets/Tone.js",
+    "assets/Peer.js",
+    "assets/Socket.io.js",
     "js/worklet.js",
     "js/main.js",
     "js/reg.js",
@@ -29,7 +32,7 @@ if (prod) {
     "js/settings.js",
     "js/camera.js",
     "js/chat.js",
-    "js/animateGrid.js"
+    "js/animateGrid.js",
   ];
 
   for (const file of files) min += fs.readFileSync(path.join(p, file), "utf8");
@@ -94,15 +97,17 @@ const auth = (req, res, next) => {
 const getUser = async (req) => {
   const user = req.cookies["user"];
   if (!profiles[user]) return null;
-  const u = await (await fetch(SERVER + "get-user", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      user: profiles[user].id,
-    }),
-  })).json();
+  const u = await (
+    await fetch(SERVER + "get-user", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        user: profiles[user].id,
+      }),
+    })
+  ).json();
   return u.error ? null : u;
 };
 app.use(async (req, res, next) => {
@@ -112,7 +117,14 @@ app.use(async (req, res, next) => {
 });
 app.use(express.static(__dirname + "/public"));
 app.get("/", (req, res) => res.redirect("/chat"));
-app.get("/chat", (req, res) => res.render(__dirname + "/public/chat.html", { user: req.user, production: prod, profiles }));
+app.get("/chat", (req, res) =>
+  res.render(__dirname + "/public/chat.html", {
+    user: req.user,
+    production: prod,
+    profiles,
+    tab: req.query.tab || "messages",
+  }),
+);
 app.get("/login", (req, res) => {
   if (req.user) return res.redirect("/chat");
   res.sendFile(__dirname + "/public/login.html");
