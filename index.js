@@ -20,16 +20,16 @@ if (prod) {
   let min = "";
 
   const files = [
-    "js/worklet.js",
-    "js/main.js",
     "js/reg.js",
-    "js/voice.js",
-    "js/music.js",
-    "js/files.js",
+    "js/main.js",
     "js/settings.js",
-    "js/camera.js",
     "js/chat.js",
+    "js/camera.js",
+    "js/worklet.js",
+    "js/voice.js",
     "js/animateGrid.js",
+    "js/files.js",
+    "js/music.js",
   ];
 
   for (const file of files) min += fs.readFileSync(path.join(p, file), "utf8");

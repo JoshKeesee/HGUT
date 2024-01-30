@@ -1,42 +1,35 @@
-importScripts(
-  "https://storage.googleapis.com/workbox-cdn/releases/5.1.2/workbox-sw.js",
-);
+importScripts("https://unpkg.com/workbox-sw@7.0.0/build/workbox-sw.js");
 
-const VERSION = "v1";
-const CACHE = "hgut" + VERSION;
-const offlineFallbackPage = "offline.html";
-const icon = "favicon.png";
+const CACHE = "hgut-v1";
 const SERVER = "https://3sx4nn-3000.csb.app/";
 
-self.addEventListener("message", (e) => {
-  if (e.data && e.data.type == "SKIP_WAITING") self.skipWaiting();
+self.addEventListener("install", (e) => {
+  e.waitUntil(self.skipWaiting());
 });
 
-self.addEventListener("install", async (e) => {
-  e.waitUntil(
-    caches.open(CACHE).then((cache) => cache.add(offlineFallbackPage)),
-  );
+self.addEventListener("activate", (e) => {
+  e.waitUntil(self.clients.claim());
 });
 
-if (workbox.navigationPreload.isSupported()) workbox.navigationPreload.enable();
+self.addEventListener(
+  "message",
+  (e) => e.data && e.data.type == "SKIP_WAITING" && self.skipWaiting(),
+);
 
 self.addEventListener("fetch", (e) => {
-  if (e.request.mode == "navigate") {
-    e.respondWith(
-      (async () => {
-        try {
-          const preloadResp = await e.preloadResponse;
-          if (preloadResp) return preloadResp;
-          const networkResp = await fetch(e.request);
-          return networkResp;
-        } catch (error) {
-          const cache = await caches.open(CACHE);
-          const cachedResp = await cache.match(offlineFallbackPage);
-          return cachedResp;
-        }
-      })(),
-    );
-  }
+  e.respondWith(
+    caches.match(e.request).then((r) => {
+      return (
+        r ||
+        fetch(e.request).then((response) => {
+          return caches.open(CACHE).then((cache) => {
+            cache.put(e.request, response.clone());
+            return response;
+          });
+        })
+      );
+    }),
+  );
 });
 
 self.addEventListener("push", (e) => {
@@ -44,7 +37,7 @@ self.addEventListener("push", (e) => {
   e.waitUntil(
     self.registration.showNotification(data.title, {
       body: data.body,
-      icon: data.icon || icon,
+      icon: data.icon || "favicon.png",
       image: data.image || false,
       badge: "chat.png",
       actions: data.actions || [],

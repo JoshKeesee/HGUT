@@ -9,14 +9,16 @@ const getDeviceId = () => {
   return newId;
 };
 
-const registerSw = async (p) => {
-  const registrations = await navigator.serviceWorker.getRegistrations();
-  for (const r of registrations) await r.unregister();
+const register = async () => {
+  const f = await navigator.serviceWorker.getRegistrations();
+  f.forEach((r) => r.unregister());
 
-  const register = await navigator.serviceWorker.register("../sw.js", {
+  const r = await navigator.serviceWorker.register("../sw.js", {
     scope: "/chat",
   });
+};
 
+const getNotifications = async (p) => {
   await navigator.serviceWorker.ready;
 
   if (p != "granted") return;
@@ -48,7 +50,7 @@ const registerSw = async (p) => {
 };
 
 const askNotification = async () => {
-  const f = registerSw.bind(null, Notification.permission);
+  const f = getNotifications.bind(null, Notification.permission);
   return new Promise((res) => {
     Notification.requestPermission().then(() => {
       f();
@@ -56,3 +58,5 @@ const askNotification = async () => {
     });
   });
 };
+
+register();
