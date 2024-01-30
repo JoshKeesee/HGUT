@@ -10,14 +10,12 @@ const getDeviceId = () => {
 };
 
 const register = async () => {
-  if (navigator.onLine) {
-    const f = await navigator.serviceWorker.getRegistrations();
-    for (const r of f) await r.unregister();
+  const f = await navigator.serviceWorker.getRegistrations();
+  for (const r of f) await r.update();
 
-    const r = await navigator.serviceWorker.register("../sw.js", {
-      scope: "/chat",
-    });
-  }
+  await navigator.serviceWorker.register("../sw.js", {
+    scope: "/chat",
+  });
 };
 
 const getNotifications = async (p) => {

@@ -1,35 +1,11 @@
-importScripts("https://unpkg.com/workbox-sw@7.0.0/build/workbox-sw.js");
-
-const CACHE = "hgut-v1";
 const SERVER = "https://3sx4nn-3000.csb.app/";
-const denyCache = ["socket.io", "peerjs", "manifest.json", "reg.js"]
 
-self.addEventListener("install", (e) => {
-  e.waitUntil(self.skipWaiting());
-});
-
-self.addEventListener("activate", (e) => {
-  e.waitUntil(self.clients.claim());
-});
-
+self.addEventListener("install", (e) => e.waitUntil(self.skipWaiting()));
+self.addEventListener("activate", (e) => e.waitUntil(self.clients.claim()));
 self.addEventListener(
   "message",
   (e) => e.data && e.data.type == "SKIP_WAITING" && self.skipWaiting(),
 );
-
-self.addEventListener("fetch", (e) => {
-  e.respondWith(
-    caches
-      .match(e.request)
-      .then((r) => r || fetch(e.request))
-      .then((r) =>
-        caches.open(CACHE).then((cache) => {
-          !denyCache.some(c => e.request.url.includes(c)) && e.request.method != "POST" && cache.put(e.request, r.clone());
-          return r;
-        }),
-      ),
-  );
-});
 
 self.addEventListener("push", (e) => {
   const data = e.data.json();
