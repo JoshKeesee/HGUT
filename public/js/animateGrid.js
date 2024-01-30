@@ -1,53 +1,74 @@
+let resetI = null,
+  currGrid = null;
+
+const resetItems = (grid) => {
+  if (currGrid != grid.id) return;
+  const children = [...grid.children];
+  children.forEach((c) => setItemPosition(null, c, null, true));
+};
+
+const setItemPosition = (g, c, p, r = false) => {
+  if (r) {
+    c.getAnimations().forEach((a) => a.cancel());
+    c.style.position = "";
+    c.style.top = "";
+    c.style.left = "";
+    c.style.width = "";
+    c.style.height = "";
+    return;
+  }
+  c.style.position = "absolute";
+  c.style.top = p.y - g.y + "px";
+  c.style.left = p.x - g.x + "px";
+  c.style.width = p.width + "px";
+  c.style.height = p.height + "px";
+};
+
 const animateGridItem = (
   g,
   c,
   n,
   p,
   i,
-  { duration = 500, stagger = 0, easing = "ease" },
+  { duration = 500, stagger = 0, easing = "ease", ...opts },
 ) => {
   if (p.x == n.x && p.y == n.y && p.width == n.width && p.height == n.height)
     maxI++;
-  c.style.position = "absolute";
-  c.style.top = p.y - g.y + "px";
-  c.style.left = p.x - g.x + "px";
-  c.style.width = p.width + "px";
-  c.style.height = p.height + "px";
-  setTimeout(
-    () => {
-      c.style.position = "";
-      c.style.top = "";
-      c.style.left = "";
-      c.style.width = "";
-      c.style.height = "";
-      c.animate(
-        [
-          {
-            position: "absolute",
-            top: p.y - g.y + "px",
-            left: p.x - g.x + "px",
-            width: p.width + "px",
-            height: p.height + "px",
-          },
-          {
-            position: "absolute",
-            top: n.y - g.y + "px",
-            left: n.x - g.x + "px",
-            width: n.width + "px",
-            height: n.height + "px",
-          },
-        ],
-        {
-          duration,
-          easing,
-        },
-      );
+  setItemPosition(g, c, p);
+  c.animate(
+    [
+      {
+        position: "absolute",
+        top: p.y - g.y + "px",
+        left: p.x - g.x + "px",
+        width: p.width + "px",
+        height: p.height + "px",
+      },
+      {
+        position: "absolute",
+        top: n.y - g.y + "px",
+        left: n.x - g.x + "px",
+        width: n.width + "px",
+        height: n.height + "px",
+      },
+    ],
+    {
+      id: g.id + "-" + i,
+      duration,
+      easing,
+      delay: (i - maxI) * stagger,
+      ...opts,
     },
-    (i - maxI) * stagger,
   );
+  setTimeout(() => setItemPosition(g, c, n), (i - maxI) * stagger + duration);
 };
 
 const animateGrid = async (grid, after, opts = {}) => {
+  if (resetI) {
+    resetItems(grid);
+    clearTimeout(resetI);
+  }
+  currGrid = grid.id;
   const prevFilePositions = [],
     nextFilePositions = [];
   let children = [...grid.children];
@@ -87,9 +108,13 @@ const animateGrid = async (grid, after, opts = {}) => {
   });
   const g = grid.getBoundingClientRect();
   maxI = 0;
-  [...grid.children].forEach((c, i) => {
+  children.forEach((c, i) => {
     const n = nextFilePositions[i];
     const p = prevFilePositions[i];
     animateGridItem(g, c, n, p, i, opts);
   });
+  resetI = setTimeout(
+    () => resetItems(grid),
+    (children.length - maxI) * (opts.stagger || 0) + (opts.duration || 500),
+  );
 };

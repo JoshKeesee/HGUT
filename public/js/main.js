@@ -50,6 +50,22 @@ const linkify = (s, sc = false) => {
   const emojiPattern = /\p{Extended_Pictographic}/gu;
   if (s.startsWith("/images/")) {
     const src = (SERVER + s).replace("//images", "/images");
+    if (src.includes(".svg+xml")) {
+      const randId = "svg-" + crypto.randomUUID();
+      fetch(src)
+        .then((r) => r.text())
+        .then((r) => {
+          const cms = document.querySelector("#chat-messages");
+          cms.scrollTop = cms.scrollHeight;
+          const svg = document.querySelector(`#${randId}`);
+          if (!svg) return;
+          svg.innerHTML = r;
+          const s = svg.querySelector("svg");
+          s.style.width = "100%";
+          s.style.height = "auto";
+        });
+      return `<div id="${randId}"></div>`;
+    }
     const img = new Image();
     img.src = src;
     img.onload = () => {
