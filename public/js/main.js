@@ -653,6 +653,7 @@ const switchTab = async (tab) => {
     voice.disconnect();
     for (const m in peer.connections)
       peer.connections[m].forEach((c) => c.close());
+    chat.emit("join room", user.room);
   }
   if (tab.id == "files") loadFiles();
 };
