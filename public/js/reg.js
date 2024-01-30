@@ -11,7 +11,7 @@ const getDeviceId = () => {
 
 const register = async () => {
   const f = await navigator.serviceWorker.getRegistrations();
-  f.forEach((r) => r.unregister());
+  for (const r of f) await r.unregister();
 
   const r = await navigator.serviceWorker.register("../sw.js", {
     scope: "/chat",
