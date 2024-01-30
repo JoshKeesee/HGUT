@@ -7,36 +7,7 @@ dotenv.config();
 const bcrypt = require("bcrypt");
 const ejs = require("ejs");
 
-const uglify = require("uglify-js");
-const fs = require("fs");
-const path = require("path");
-
 app.engine("html", ejs.renderFile);
-
-const prod = process.env.NODE_ENV == "production";
-
-if (prod) {
-  const p = path.join(__dirname, "public");
-  let min = "";
-
-  const files = [
-    "js/reg.js",
-    "js/main.js",
-    "js/settings.js",
-    "js/chat.js",
-    "js/camera.js",
-    "js/worklet.js",
-    "js/voice.js",
-    "js/animateGrid.js",
-    "js/files.js",
-    "js/music.js",
-  ];
-
-  for (const file of files) min += fs.readFileSync(path.join(p, file), "utf8");
-
-  const uglified = uglify.minify(min);
-  fs.writeFileSync(path.join(p, "min.js"), uglified.code);
-}
 
 const SERVER = "https://3sx4nn-3000.csb.app/";
 let profiles = {},
@@ -117,7 +88,6 @@ app.use(async (req, res, next) => {
   req.user = u.user;
   req.userData = u;
   req.userData.tab = req.query.tab || "messages";
-  req.userData.production = prod;
   auth(req, res, next);
 });
 app.use(express.static(__dirname + "/public"));
