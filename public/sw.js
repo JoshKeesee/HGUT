@@ -2,7 +2,7 @@ importScripts("https://unpkg.com/workbox-sw@7.0.0/build/workbox-sw.js");
 
 const CACHE = "hgut-v1";
 const SERVER = "https://3sx4nn-3000.csb.app/";
-const denyCache = ["socket.io", "peerjs", "manifest.json"];
+const denyCache = ["socket.io", "peerjs", "manifest.json", "reg.js"]
 
 self.addEventListener("install", (e) => {
   e.waitUntil(self.skipWaiting());

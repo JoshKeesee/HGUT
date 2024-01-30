@@ -1,6 +1,7 @@
 const scripts = [
   "https://cdn.socket.io/4.7.2/socket.io.min.js",
   "js/reg.js",
+  "js/status.js",
   "js/main.js",
   "js/settings.js",
   "js/chat.js",
@@ -12,7 +13,6 @@ const scripts = [
   "js/files.js",
   "https://unpkg.com/tone@14.7.77/build/Tone.js",
   "js/music.js",
-  "js/status.js",
 ];
 
 const createScript = async (src) => {

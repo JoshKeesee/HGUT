@@ -14,9 +14,9 @@ const register = async () => {
     const f = await navigator.serviceWorker.getRegistrations();
     for (const r of f) await r.unregister();
 
-    // const r = await navigator.serviceWorker.register("../sw.js", {
-    //   scope: "/chat",
-    // });
+    const r = await navigator.serviceWorker.register("../sw.js", {
+      scope: "/chat",
+    });
   }
 };
 
