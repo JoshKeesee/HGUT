@@ -1,19 +1,6 @@
-const chat = io(SERVER + "chat", {
-  autoConnect: false,
-  reconnection: false,
-  forceNew: true,
-  transports: ["websocket"],
-  query: {
-    user: document.cookie,
-  },
-});
 const input = document.querySelector("#chat-input");
 const send = document.querySelector("#chat-send");
 const addFile = document.querySelector("#add-file");
-const loading = document.createElement("div");
-loading.id = "loading";
-loading.className = "loading";
-for (let i = 0; i < 4; i++) loading.appendChild(document.createElement("div"));
 const maxMessages = 50;
 let maxMessagesReached = false,
   currMessages = maxMessages,

@@ -1,7 +1,31 @@
 const SERVER = "https://3sx4nn-3000.csb.app/";
+const chat = io(SERVER + "chat", {
+  autoConnect: false,
+  reconnection: false,
+  forceNew: true,
+  query: {
+    user: document.cookie,
+  },
+});
+const voice = io(SERVER + "voice", {
+  autoConnect: false,
+  reconnection: false,
+  forceNew: true,
+  query: {
+    user: document.cookie,
+  },
+});
 const icon = document.querySelector("#icon");
+const cb = document.querySelector("#chat-box");
+cb.onanimationend = () => {
+  const cms = document.querySelector("#chat-messages");
+  cms.scrollTop = cms.scrollHeight;
+};
 
-const devMode = true;
+const loading = document.createElement("div");
+loading.id = "loading";
+loading.className = "loading";
+for (let i = 0; i < 4; i++) loading.appendChild(document.createElement("div"));
 
 let online = {},
   missed = 0,

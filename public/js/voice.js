@@ -1,13 +1,4 @@
 const peer = new Peer();
-const voice = io(SERVER + "voice", {
-  autoConnect: false,
-  reconnection: false,
-  forceNew: true,
-  transports: ["websocket"],
-  query: {
-    user: document.cookie,
-  },
-});
 const cam = document.querySelector("#toggle-cam");
 const mic = document.querySelector("#toggle-mic");
 const leave = document.querySelector("#leave-voice");

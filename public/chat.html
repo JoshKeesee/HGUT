@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="author" content="Joshua Keesee" />
+	<meta name="description" content="The chat site for The Hobo's Guide to the Universe of Texas" />
 	<title>HGUT - Chat</title>
 	<link rel="stylesheet" href="css/main.css" />
 	<link rel="stylesheet" href="css/chat.css" />
@@ -12,6 +14,14 @@
 	<link rel="stylesheet" href="css/loading.css" />
 	<link rel="manifest" href="manifest.json" />
 	<link rel="icon" href="favicon.png" />
+	<script>
+		let user = <%- JSON.stringify(user) %>,
+			profiles = <%- JSON.stringify(profiles) %>,
+			rooms = <%- JSON.stringify(rooms) %>,
+			messages = <%- JSON.stringify(messages) %>,
+			production = <%= production %>;
+	</script>
+	<script src="js/load.js"></script>
 </html>
 
 <body class="<%= user.settings.theme ? 'dark' : 'light' %>">
@@ -265,8 +275,8 @@
 				<div id="settings-user">
 					<div id="settings-profile"></div>
 					<div>
-						<span id="settings-username"></span><br>
-						<div class="settings-title small" id="settings-born"></div>
+						<span id="settings-username"><%= user.name %></span><br>
+						<div class="settings-title small" id="settings-born"><%= user.dob %></div>
 					</div>
 				</div>
 				<div id="settings-content">
@@ -282,7 +292,7 @@
 								</svg>
 								<div>Light</div>
 							</div>
-							<div class="settings-toggle" data-setting="theme">
+							<div class="settings-toggle <%= user.settings.theme ? 'active' : '' %>" data-setting="theme">
 								<div class="settings-toggle-circle"></div>
 							</div>
 							<div class="settings-option-title">
@@ -300,7 +310,7 @@
 						</p>
 						<div class="settings-option">
 							<div class="settings-option-title">Off</div>
-							<div class="settings-toggle" data-setting="accent">
+							<div class="settings-toggle <%= user.settings.accent ? 'active' : '' %>" data-setting="accent">
 								<div class="settings-toggle-circle"></div>
 							</div>
 							<div class="settings-option-title">On</div>
@@ -364,7 +374,7 @@
 								</svg>
 								<div>Off</div>
 							</div>
-							<div class="settings-toggle" data-setting="dontDisturb">
+							<div class="settings-toggle <%= user.settings.dontDisturb ? 'active' : '' %>" data-setting="dontDisturb">
 								<div class="settings-toggle-circle"></div>
 							</div>
 							<div class="settings-option-title">
@@ -382,7 +392,7 @@
 						</p>
 						<div class="settings-option">
 							<div class="settings-option-title">Off</div>
-							<div class="settings-toggle" data-setting="emoji">
+							<div class="settings-toggle <%= user.settings.emoji ? 'active' : '' %>" data-setting="emoji">
 								<div class="settings-toggle-circle"></div>
 							</div>
 							<div class="settings-option-title">On</div>
@@ -415,27 +425,4 @@
 			</div>
 		</div>
 	</div>
-    <script src="https://unpkg.com/tone@14.7.77/build/Tone.js"></script>
-	<script src="https://unpkg.com/peerjs@1.5.1/dist/peerjs.min.js"></script>
-	<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-	<script>
-		let user = <%- JSON.stringify(user) %>,
-			profiles = <%- JSON.stringify(profiles) %>,
-			rooms = <%- JSON.stringify(rooms) %>,
-			messages = <%- JSON.stringify(messages) %>;
-	</script>
-	<% if (production) { %>
-		<script src="min.js"></script>
-	<% } else { %>
-		<script src="js/worklet.js"></script>
-		<script src="js/main.js"></script>
-		<script src="js/reg.js"></script>
-		<script src="js/voice.js"></script>
-		<script src="js/music.js"></script>
-		<script src="js/files.js"></script>
-		<script src="js/settings.js"></script>
-		<script src="js/camera.js"></script>
-		<script src="js/chat.js"></script>
-		<script src="js/animateGrid.js"></script>
-	<% } %>
 </body>
