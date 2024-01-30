@@ -50,14 +50,16 @@ const roomButton = (text, cn, u = true, d, p = false) => {
 };
 
 chat.on("connect", () => {
+  createStatus("Connected", "success");
   chat.emit("visible", document.visibilityState == "visible");
 });
 chat.on("disconnect", () => {
+  createStatus("Disconnected", "error");
   const t = getCurrentTab();
   if (t == "voice") return;
   const i = () => {
     if (chat.connected) return (currMessages = maxMessages);
-    console.log("Reconnecting to Chat...");
+    createStatus("Reconnecting...", "info");
     chat.connect();
     setTimeout(i, 10000);
   };
@@ -196,6 +198,9 @@ chat.on("join room", ([m, r, u]) => {
   input.value = "";
   user.room = r;
   loadMessages(m, false);
+});
+chat.on("person joined", (u) => {
+  createStatus(u.name + " joined", "person", u);
 });
 chat.on("redirect", (d) => (window.location.href = d));
 

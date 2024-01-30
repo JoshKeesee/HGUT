@@ -29,9 +29,7 @@ const loadFiles = () => {
             inline: "center",
           });
         };
-        animateGrid(files, after, {
-          stagger: 30,
-        });
+        animateGrid(files, after);
       };
     });
   });

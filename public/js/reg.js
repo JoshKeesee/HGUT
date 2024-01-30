@@ -14,16 +14,16 @@ const register = async () => {
     const f = await navigator.serviceWorker.getRegistrations();
     for (const r of f) await r.unregister();
 
-    const r = await navigator.serviceWorker.register("../sw.js", {
-      scope: "/chat",
-    });
+    // const r = await navigator.serviceWorker.register("../sw.js", {
+    //   scope: "/chat",
+    // });
   }
 };
 
 const getNotifications = async (p) => {
   await navigator.serviceWorker.ready;
 
-  if (p != "granted") return;
+  if (p != "granted") return createStatus("Notifications disabled", "info");
 
   const register = await navigator.serviceWorker.getRegistration("/chat");
   await register.update();
@@ -34,7 +34,7 @@ const getNotifications = async (p) => {
       applicationServerKey: publicKey,
       endpoint: "/chat",
     })
-    .catch(() => {});
+    .catch(() => createStatus("Enabling notifications failed", "error"));
 
   await fetch(SERVER + "subscribe", {
     method: "POST",
@@ -59,7 +59,10 @@ const askNotification = async () => {
   return new Promise((res) => {
     Notification.requestPermission().then(() => {
       f();
-      res(Notification.permission == "granted");
+      const r = Notification.permission == "granted";
+      if (r) createStatus("Notifications enabled!", "success");
+      else createStatus("Notification permission denied", "info");
+      res(r);
     });
   });
 };

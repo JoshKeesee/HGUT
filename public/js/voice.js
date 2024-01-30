@@ -77,17 +77,19 @@ const us = async () => {
 };
 
 voice.on("connect", async () => {
+  createStatus("Connected", "success");
   await peerConnect();
   await us();
   user.peerId = peerId;
   voice.emit("id", user.peerId);
 });
 voice.on("disconnect", () => {
+  createStatus("Disconnected", "error");
   const t = getCurrentTab();
   if (t != "voice") return;
   const i = () => {
     if (voice.connected) return;
-    console.log("Reconnecting to Voice Chat...");
+    createStatus("Reconnecting...", "info");
     voice.connect();
     setTimeout(i, 10000);
   };
@@ -108,6 +110,9 @@ voice.on("user", async (u) => {
 voice.on("online", (u) => {
   online = u;
   updateVoiceOnline();
+});
+voice.on("person joined", (u) => {
+  createStatus(u.name + " joined", "person", u);
 });
 voice.on("camera", ([camera, id]) => {
   switched[id].camera = camera;

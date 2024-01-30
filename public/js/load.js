@@ -12,6 +12,7 @@ const scripts = [
   "js/files.js",
   "https://unpkg.com/tone@14.7.77/build/Tone.js",
   "js/music.js",
+  "js/status.js",
 ];
 
 const createScript = async (src) => {

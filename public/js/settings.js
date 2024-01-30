@@ -19,6 +19,7 @@ settingToggles.forEach((t) => {
       document.querySelectorAll("#emoji").forEach((e) => {
         e.classList.toggle("disabled", !user.settings.emoji);
       });
+    if (s == "dontDisturb" && user.settings[s]) createStatus("Do not disturb enabled", "info");
     t.classList.toggle(
       "active",
       n ? user.settings[s][getDeviceId()] : user.settings[s],
@@ -92,6 +93,7 @@ const updateSettings = () => {
         chat.emit("profile", pr.src, (profile) => {
           user.profile = profile;
           p.querySelector("img").src = SERVER + profile;
+          createStatus("Profile picture updated", "success");
         });
       };
       reader.readAsDataURL(e.target.files[0]);
