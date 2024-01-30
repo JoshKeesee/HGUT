@@ -182,6 +182,7 @@ Tone.loaded().then(() => {
     currOctave = Math.min(octaves, Math.max(startOctave, currOctave));
   });
 
+  if (!navigator.requestMIDIAccess) return;
   navigator.requestMIDIAccess().then((access) => {
     const inputs = access.inputs.values();
     for (let input = inputs.next(); input && !input.done; input = inputs.next()) {

@@ -153,6 +153,7 @@ const getProfile = (u, info = true) => {
   if (u.profile) {
     const p = document.createElement("img");
     p.src = SERVER + u.profile;
+    p.alt = u.name;
     pc.appendChild(p);
   } else {
     pc.innerText = u.name
@@ -648,12 +649,12 @@ const switchTab = async (tab) => {
     chat.disconnect();
     voice.connect();
     document.querySelector("#voice-chat-messages").innerHTML = "";
+    document.querySelector("#chat-messages").innerHTML = "";
   } else {
     chat.connect();
     voice.disconnect();
     for (const m in peer.connections)
       peer.connections[m].forEach((c) => c.close());
-    chat.emit("join room", user.room);
   }
   if (tab.id == "files") loadFiles();
 };

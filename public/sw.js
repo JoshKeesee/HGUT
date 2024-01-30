@@ -2,6 +2,7 @@ importScripts("https://unpkg.com/workbox-sw@7.0.0/build/workbox-sw.js");
 
 const CACHE = "hgut-v1";
 const SERVER = "https://3sx4nn-3000.csb.app/";
+const denyCache = ["socket.io", "peerjs", "manifest.json"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(self.skipWaiting());
@@ -18,17 +19,15 @@ self.addEventListener(
 
 self.addEventListener("fetch", (e) => {
   e.respondWith(
-    caches.match(e.request).then((r) => {
-      return (
-        r ||
-        fetch(e.request).then((response) => {
-          return caches.open(CACHE).then((cache) => {
-            cache.put(e.request, response.clone());
-            return response;
-          });
-        })
-      );
-    }),
+    caches
+      .match(e.request)
+      .then((r) => r || fetch(e.request))
+      .then((r) =>
+        caches.open(CACHE).then((cache) => {
+          !denyCache.some(c => e.request.url.includes(c)) && e.request.method != "POST" && cache.put(e.request, r.clone());
+          return r;
+        }),
+      ),
   );
 });
 

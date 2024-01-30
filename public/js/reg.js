@@ -25,6 +25,9 @@ const getNotifications = async (p) => {
 
   if (p != "granted") return;
 
+  const register = await navigator.serviceWorker.getRegistration("/chat");
+  await register.update();
+
   const subscription = await register.pushManager
     .subscribe({
       userVisibleOnly: true,

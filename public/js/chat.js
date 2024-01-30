@@ -526,8 +526,6 @@ const updateUser = async () => {
   updateProfiles();
   loadMessages(messages, false);
   switchTheme(user.settings.theme, user.settings.accent ? user.color : null);
-  if (user.settings.notifications[getDeviceId()])
-    user.settings.notifications[getDeviceId()] = await askNotification();
 };
 
 updateUser();
