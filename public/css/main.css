@@ -286,6 +286,13 @@ body:not(.dark) #online {
   color: #999;
 }
 
+#chat-input-box:has(#chat-input:not(:empty)) .btn {
+  transform: scale(0);
+  opacity: 0;
+  margin-left: -20px;
+  margin-right: -20px;
+}
+
 #chat-input:hover,
 #voice-chat-input:hover {
   background: rgba(var(--r), var(--g), var(--b), 0.3);
@@ -333,6 +340,7 @@ input[type="file"] {
   padding-right: 5px;
   border-radius: 50px;
   height: fit-content;
+  transition: all 0.2s ease;
 }
 
 #chat-input-box svg {
