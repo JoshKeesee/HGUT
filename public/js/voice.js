@@ -88,13 +88,13 @@ voice.on("disconnect", () => {
   const t = getCurrentTab();
   if (t != "voice") return;
   createStatus("Disconnected", "error");
-  const i = () => {
-    if (voice.connected) return;
-    createStatus("Reconnecting...", "info");
+  const i = (msg = true) => {
+    if (voice.connected) return (currMessages = maxMessages);
+    if (msg) createStatus("Reconnecting...", "info");
     voice.connect();
-    setTimeout(i, 10000);
+    setTimeout(() => i(), 10000);
   };
-  i();
+  i(false);
 });
 voice.on("chat message", addMessage);
 voice.on("profiles", (p) => (p ? (profiles = p) : ""));
@@ -427,7 +427,7 @@ const createEmojiReaction = (emoji, u) => {
   em.style.fontSize = fs + "px";
   em.innerText = emoji;
   if (a) {
-    em.style.animationName = emojiAnimations[emojis.indexOf(emoji)];
+    em.style.animationName = "emoji-" + a;
     em.style.animationDuration = Math.random() * (4 - 1) + 1 + "s";
     em.style.animationIterationCount = "infinite";
     em.style.animationTimingFunction = "ease-in-out";

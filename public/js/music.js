@@ -137,6 +137,7 @@ let octaves = 6,
 
 const initMusic = () => {
   octaves = Math.min(7, Math.max(1, Math.floor(musCont.offsetWidth / 200)));
+  startOctave = Math.floor((7 - octaves) / 2) + 1;
   document
     .querySelector(":root")
     .style.setProperty(

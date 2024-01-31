@@ -57,13 +57,13 @@ chat.on("disconnect", () => {
   const t = getCurrentTab();
   if (t == "voice") return;
   createStatus("Disconnected", "error");
-  const i = () => {
+  const i = (msg = true) => {
     if (chat.connected) return (currMessages = maxMessages);
-    createStatus("Reconnecting...", "info");
+    if (msg) createStatus("Reconnecting...", "info");
     chat.connect();
-    setTimeout(i, 10000);
+    setTimeout(() => i(), 10000);
   };
-  i();
+  i(false);
 });
 chat.on("typing", (t) => {
   const typing = document.querySelector("#typing");
