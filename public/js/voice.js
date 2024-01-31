@@ -415,7 +415,8 @@ toggleEmoji.onclick = () => {
 };
 
 const createEmojiReaction = (emoji, u) => {
-  const d = Math.random() * (6 - 2) + 2,
+  const a = emojiAnimations[emojis.indexOf(emoji)];
+  const d = Math.random() * (6 - 3) + 3,
     fs = Math.floor(Math.random() * (80 - 40) + 40);
   const e = document.createElement("div");
   e.classList.add("emoji-react");
@@ -425,6 +426,12 @@ const createEmojiReaction = (emoji, u) => {
   const em = document.createElement("div");
   em.style.fontSize = fs + "px";
   em.innerText = emoji;
+  if (a) {
+    em.style.animationName = emojiAnimations[emojis.indexOf(emoji)];
+    em.style.animationDuration = Math.random() * (4 - 1) + 1 + "s";
+    em.style.animationIterationCount = "infinite";
+    em.style.animationTimingFunction = "ease-in-out";
+  }
   const n = document.createElement("div");
   n.classList.add("name");
   n.innerText = u;
@@ -434,6 +441,7 @@ const createEmojiReaction = (emoji, u) => {
   document.querySelector("#emoji-display").appendChild(e);
 };
 
+const emojiAnimations = ["bounce", "spin", "zoom", "slide", "grow", "shake", "wobble", "tada", "jello"];
 const emojis = ["😁", "😃", "😂", "👍", "😲", "😴", "😭", "😡", "🦶", ...(user.emojis || [])];
 for (const e of emojis) {
   const emoji = document.createElement("div");
