@@ -336,9 +336,9 @@ const addReplies = (m) => {
   r.classList.add(myUser ? "right" : "left");
   replies.forEach((e, i) => {
     const [c, appendEl, appendBefore] = createMessage(
-      [e.message, profiles[m.name], e.date, replies[i - 1], m.id],
+      [e.message, profiles[e.name], e.date, replies[i - 1], m.id],
       false,
-      myUser,
+      user.name == e.name,
       i,
       false,
       true,
