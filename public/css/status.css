@@ -1,81 +1,81 @@
 #status {
-    position: fixed;
-    top: 0;
-    right: 0;
-    z-index: 9999;
-    text-align: center;
-    display: flex;
-    flex-direction: column-reverse;
-    gap: 2px;
-    align-items: flex-end;
-    justify-content: flex-start;
-    padding: 20px;
-    pointer-events: none;
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 9999;
+  text-align: center;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 2px;
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding: 20px;
+  pointer-events: none;
 }
 
 #status div.status {
-    background: rgba(0, 0, 0, 0.8);
-    border: #aaa solid 1.5px;
-    border-radius: 10px;
-    color: #fff;
-    font-size: 15px;
-    padding: 10px;
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-    align-items: center;
-    justify-content: flex-start;
-    text-align: left;
-    animation: status 5s ease-in-out forwards;
-    pointer-events: all;
+  background: rgba(0, 0, 0, 0.8);
+  border: #aaa solid 1.5px;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 15px;
+  padding: 10px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: left;
+  animation: status 5s ease-in-out forwards;
+  pointer-events: all;
 }
 
 #status div.status.error {
-    background: #ff0000;
-    border: none;
+  background: #ff0000;
+  border: none;
 }
 
 #status div.status.success {
-    background: #008000;
-    border: none;
+  background: #008000;
+  border: none;
 }
 
 #status div.status.warning {
-    background: #eeee00;
-    border: none;
+  background: #eeee00;
+  border: none;
 }
 
 #status div.status.info {
-    background: #0080ff;
-    border: none;
+  background: #0080ff;
+  border: none;
 }
 
 #status div.status.person {
-    padding: 5px 10px;
+  padding: 5px 10px;
 }
 
 @keyframes status {
-    0% {
-        margin-top: -40px;
-        opacity: 0;
-        transform: translateY(-100%);
-    }
+  0% {
+    margin-top: -40px;
+    opacity: 0;
+    transform: translateY(-100%);
+  }
 
-    10% {
-        margin-top: 0;
-        opacity: 1;
-        transform: translateY(0);
-    }
+  10% {
+    margin-top: 0;
+    opacity: 1;
+    transform: translateY(0);
+  }
 
-    90% {
-        margin-top: 0;
-        opacity: 1;
-        transform: translateY(0);
-    }
+  90% {
+    margin-top: 0;
+    opacity: 1;
+    transform: translateY(0);
+  }
 
-    100% {
-        margin-top: -40px;
-        opacity: 0;
-        transform: translateY(-100%);
-    }
+  100% {
+    margin-top: -40px;
+    opacity: 0;
+    transform: translateY(-100%);
+  }
 }
