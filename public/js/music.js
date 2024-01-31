@@ -1,4 +1,4 @@
-const inst = new Tone.Sampler({
+const opts = {
   urls: {
     A0: "A0.mp3",
     C1: "C1.mp3",
@@ -33,7 +33,9 @@ const inst = new Tone.Sampler({
   },
   release: 2,
   baseUrl: "https://tonejs.github.io/audio/salamander/",
-}).toDestination();
+};
+
+let inst = null;
 
 const keyMap = {
   a: "c",
@@ -152,57 +154,60 @@ const initMusic = () => {
   }
 };
 
-Tone.loaded().then(() => {
-  chat.on("note start", ([note, u]) => {
-    if (getCurrentTab() != "music") return;
-    const k = document.querySelector(`div[data-note="${note}"]`);
-    down({
-      target: k,
-      buttons: 1,
-      dontSend: true,
+window.addEventListener("click", () => {
+  inst = new Tone.Sampler(opts).toDestination();
+  Tone.loaded().then(() => {
+    chat.on("note start", ([note, u]) => {
+      if (getCurrentTab() != "music") return;
+      const k = document.querySelector(`div[data-note="${note}"]`);
+      down({
+        target: k,
+        buttons: 1,
+        dontSend: true,
+      });
     });
-  });
-  chat.on("note stop", ([note, u]) => {
-    if (getCurrentTab() != "music") return;
-    const k = document.querySelector(`div[data-note="${note}"]`);
-    up({
-      target: k,
-      buttons: 1,
-      dontSend: true,
+    chat.on("note stop", ([note, u]) => {
+      if (getCurrentTab() != "music") return;
+      const k = document.querySelector(`div[data-note="${note}"]`);
+      up({
+        target: k,
+        buttons: 1,
+        dontSend: true,
+      });
     });
-  });
 
-  initMusic();
-  new ResizeObserver(initMusic).observe(musCont);
-  window.addEventListener("keydown", (e) => {
-    if (getCurrentTab() != "music") return;
-    if (e.repeat) return;
-    if (e.key == "z") currOctave--;
-    if (e.key == "x") currOctave++;
-    currOctave = Math.min(octaves, Math.max(startOctave, currOctave));
-  });
+    initMusic();
+    new ResizeObserver(initMusic).observe(musCont);
+    window.addEventListener("keydown", (e) => {
+      if (getCurrentTab() != "music") return;
+      if (e.repeat) return;
+      if (e.key == "z") currOctave--;
+      if (e.key == "x") currOctave++;
+      currOctave = Math.min(octaves, Math.max(startOctave, currOctave));
+    });
 
-  if (!navigator.requestMIDIAccess) return;
-  navigator.requestMIDIAccess().then((access) => {
-    const inputs = access.inputs.values();
-    for (let input = inputs.next(); input && !input.done; input = inputs.next()) {
-      input.value.onmidimessage = (e) => {
-        if (getCurrentTab() != "music") return;
-        const [cmd, note] = e.data;
-        if (cmd == 144) {
-          const k = document.querySelector(`div[data-note="${note}"]`);
-          down({
-            target: k,
-            buttons: 1,
-          });
-        } else if (cmd == 128) {
-          const k = document.querySelector(`div[data-note="${note}"]`);
-          up({
-            target: k,
-            buttons: 1,
-          });
-        }
-      };
-    }
-  });
-}).catch(() => {})
+    if (!navigator.requestMIDIAccess) return;
+    navigator.requestMIDIAccess().then((access) => {
+      const inputs = access.inputs.values();
+      for (let input = inputs.next(); input && !input.done; input = inputs.next()) {
+        input.value.onmidimessage = (e) => {
+          if (getCurrentTab() != "music") return;
+          const [cmd, note] = e.data;
+          if (cmd == 144) {
+            const k = document.querySelector(`div[data-note="${note}"]`);
+            down({
+              target: k,
+              buttons: 1,
+            });
+          } else if (cmd == 128) {
+            const k = document.querySelector(`div[data-note="${note}"]`);
+            up({
+              target: k,
+              buttons: 1,
+            });
+          }
+        };
+      }
+    });
+  }).catch(() => {});
+});

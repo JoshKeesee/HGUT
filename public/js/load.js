@@ -1,25 +1,29 @@
 const scripts = [
   "https://cdn.socket.io/4.7.2/socket.io.min.js",
-  "js/reg.js",
+  "https://unpkg.com/peerjs@1.5.1/dist/peerjs.min.js",
+  "https://unpkg.com/tone@14.7.77/build/Tone.js",
   "js/status.js",
   "js/main.js",
   "js/settings.js",
   "js/chat.js",
-  "js/camera.js",
-  "https://unpkg.com/peerjs@1.5.1/dist/peerjs.min.js",
-  "js/worklet.js",
   "js/voice.js",
+  "js/camera.js",
+  "js/worklet.js",
   "js/animateGrid.js",
   "js/files.js",
-  "https://unpkg.com/tone@14.7.77/build/Tone.js",
   "js/music.js",
+  "js/reg.js",
 ];
+
+const sync = [0, 1, 2, 4, 5, 7];
 
 const createScript = async (src) => {
   const script = document.createElement("script");
   script.src = src;
   return new Promise((resolve) => {
-    script.onload = () => resolve();
+    const i = scripts.indexOf(src);
+    if (sync.includes(i)) script.onload = () => resolve();
+    else resolve();
     document.body.appendChild(script);
   });
 };

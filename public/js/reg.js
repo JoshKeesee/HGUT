@@ -1,14 +1,6 @@
 const publicKey =
   "BJVqvnCWx0flqmuHgSv0OQ6VRl-FRTgRKzByVlMf-4iyFStJlJMSn6G90e0LNICbHaGzx5gwRDLttMZ2xDVhRxk";
 
-const getDeviceId = () => {
-  const id = localStorage.getItem("deviceId");
-  if (id) return id;
-  const newId = crypto.randomUUID();
-  localStorage.setItem("deviceId", newId);
-  return newId;
-};
-
 const register = async () => {
   const f = await navigator.serviceWorker.getRegistrations();
   for (const r of f) await r.update();
@@ -21,7 +13,7 @@ const register = async () => {
 const getNotifications = async (p) => {
   await navigator.serviceWorker.ready;
 
-  if (p != "granted") return createStatus("Notifications disabled", "info");
+  if (p != "granted") return;
 
   const register = await navigator.serviceWorker.getRegistration("/chat");
   await register.update();
