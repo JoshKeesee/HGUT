@@ -6,6 +6,8 @@ const chatInput = document.querySelector("#voice-chat-input");
 const voiceSend = document.querySelector("#voice-chat-send");
 const toggleChat = document.querySelector("#toggle-chat");
 const present = document.querySelector("#toggle-presentation");
+const toggleEmoji = document.querySelector("#toggle-emojis");
+const emojiReactions = document.querySelector("#emoji-reactions");
 let stream = null,
   pres = null;
 let peerId = null;
@@ -62,7 +64,6 @@ const getTrack = async (type, constraints) => {
 };
 
 const us = async () => {
-  if (stream) return;
   await navigator.mediaDevices
     .getUserMedia({
       video: vidConstraints,
@@ -232,7 +233,7 @@ const removePerson = (p, pre = false) => {
     if (callList.includes(i)) callList.splice(callList.indexOf(i), 1);
     const id = pre ? "pres-" + p.peerId : p.peerId;
     const c = document.querySelectorAll(".person-" + id);
-    c.forEach((e) => e.parentElement.remove());
+    c.forEach((e) => e?.parentElement.remove());
   };
   animateGrid(pec, after);
 };
@@ -401,6 +402,47 @@ toggleChat.onclick = () => {
 };
 
 present.onclick = togglePresent;
+
+toggleEmoji.onclick = () => {
+  toggleEmoji.classList.toggle("toggled");
+  if (toggleEmoji.classList.contains("toggled")) {
+    toggleEmoji.style = "background: rgba(var(--r), var(--g), var(--b), 0.9)";
+    emojiReactions.classList.remove("closed");
+  } else {
+    toggleEmoji.style = "";
+    emojiReactions.classList.add("closed");
+  }
+};
+
+const createEmojiReaction = (emoji, u) => {
+  const d = Math.random() * (6 - 2) + 2,
+    fs = Math.floor(Math.random() * (80 - 40) + 40);
+  const e = document.createElement("div");
+  e.classList.add("emoji-react");
+  e.style.left =
+    "calc(" + Math.random() * (100 - 10) + 10 + "% - " + fs * 1.5 + "px)";
+  e.style.animationDuration = d + "s";
+  const em = document.createElement("div");
+  em.style.fontSize = fs + "px";
+  em.innerText = emoji;
+  const n = document.createElement("div");
+  n.classList.add("name");
+  n.innerText = u;
+  e.appendChild(em);
+  e.appendChild(n);
+  setTimeout(() => e.remove(), d * 1000);
+  document.querySelector("#emoji-display").appendChild(e);
+};
+
+const emojis = document.querySelectorAll(".emoji");
+for (const emoji of emojis) {
+  emoji.onclick = () => {
+    voice.emit("react emoji", emoji.innerText);
+    createEmojiReaction(emoji.innerText, user.name);
+  };
+}
+
+voice.on("react emoji", ([e, u]) => createEmojiReaction(e, u));
 
 const updateTime = () => {
   setTimeout(updateTime, 1000);
