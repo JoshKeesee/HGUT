@@ -84,9 +84,9 @@ voice.on("connect", async () => {
   voice.emit("id", user.peerId);
 });
 voice.on("disconnect", () => {
-  createStatus("Disconnected", "error");
   const t = getCurrentTab();
   if (t != "voice") return;
+  createStatus("Disconnected", "error");
   const i = () => {
     if (voice.connected) return;
     createStatus("Reconnecting...", "info");

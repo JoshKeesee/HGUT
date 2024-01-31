@@ -54,9 +54,9 @@ chat.on("connect", () => {
   chat.emit("visible", document.visibilityState == "visible");
 });
 chat.on("disconnect", () => {
-  createStatus("Disconnected", "error");
   const t = getCurrentTab();
   if (t == "voice") return;
+  createStatus("Disconnected", "error");
   const i = () => {
     if (chat.connected) return (currMessages = maxMessages);
     createStatus("Reconnecting...", "info");
@@ -448,6 +448,7 @@ const loadMessages = (messages, start = true) => {
   const cms = document.querySelector("#chat-messages");
   if (cms.querySelector("#loading"))
     cms.removeChild(cms.querySelector("#loading"));
+  if (!start) cms.innerHTML = "";
   const h = cms.scrollHeight;
   const rev = start ? messages.reverse() : messages;
   rev.forEach((m, i) => {
@@ -469,7 +470,8 @@ const loadMessages = (messages, start = true) => {
   if (!maxMessagesReached) cms.insertBefore(loading, cms.firstChild);
   if (!start && messages.length == 0)
     cms.innerHTML = "Sorry, no messages here...";
-  cms.scrollTop = cms.scrollHeight - h;
+  if (!start) cms.scrollTop = cms.scrollHeight;
+  else cms.scrollTop = cms.scrollHeight - h;
   loadingMessages = false;
 };
 
@@ -529,7 +531,6 @@ const updateUser = async () => {
   updateSettings();
   updateRooms();
   updateProfiles();
-  loadMessages(messages, false);
   switchTheme(user.settings.theme, user.settings.accent ? user.color : null);
 };
 

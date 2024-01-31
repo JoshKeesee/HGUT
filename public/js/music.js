@@ -35,7 +35,7 @@ const opts = {
   baseUrl: "https://tonejs.github.io/audio/salamander/",
 };
 
-let inst = null;
+const inst = new Tone.Sampler(opts).toDestination();
 
 const keyMap = {
   a: "c",
@@ -154,9 +154,8 @@ const initMusic = () => {
   }
 };
 
-window.addEventListener("click", () => {
-  inst = new Tone.Sampler(opts).toDestination();
-  Tone.loaded().then(() => {
+Tone.loaded()
+  .then(() => {
     chat.on("note start", ([note, u]) => {
       if (getCurrentTab() != "music") return;
       const k = document.querySelector(`div[data-note="${note}"]`);
@@ -189,7 +188,11 @@ window.addEventListener("click", () => {
     if (!navigator.requestMIDIAccess) return;
     navigator.requestMIDIAccess().then((access) => {
       const inputs = access.inputs.values();
-      for (let input = inputs.next(); input && !input.done; input = inputs.next()) {
+      for (
+        let input = inputs.next();
+        input && !input.done;
+        input = inputs.next()
+      ) {
         input.value.onmidimessage = (e) => {
           if (getCurrentTab() != "music") return;
           const [cmd, note] = e.data;
@@ -209,5 +212,5 @@ window.addEventListener("click", () => {
         };
       }
     });
-  }).catch(() => {});
-});
+  })
+  .catch(() => {});

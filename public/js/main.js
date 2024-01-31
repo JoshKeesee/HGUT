@@ -619,16 +619,6 @@ const switchTab = async (tab) => {
   if (!tab) return;
   if (tab.id == "theme") return;
   if (tab.id == "logout") return (window.location.href = "logout");
-  const prevTab = getCurrentTab();
-  if (prevTab == tab.id) return;
-  if (prevTab == "voice") {
-    voice.disconnect();
-    for (const m in peer.connections)
-      peer.connections[m].forEach((c) => c.close());
-    document.querySelector("#voice-chat-messages").innerHTML = "";
-    document.querySelector("#chat-messages").innerHTML = "";
-    chat.connect();
-  }
   const url = new URL(window.location.href);
   url.searchParams.set("tab", tab.id);
   window.history.pushState({}, "", url);
@@ -668,6 +658,11 @@ const switchTab = async (tab) => {
     voice.connect();
     document.querySelector("#voice-chat-messages").innerHTML = "";
     document.querySelector("#chat-messages").innerHTML = "";
+  } else {
+    voice.disconnect();
+    chat.connect();
+    for (const m in peer.connections)
+      peer.connections[m].forEach((c) => c.close());
   }
   if (tab.id == "files") loadFiles();
 };

@@ -19,8 +19,7 @@
 	<script>
 		let user = <%- JSON.stringify(user) %>,
 			profiles = <%- JSON.stringify(profiles) %>,
-			rooms = <%- JSON.stringify(rooms) %>,
-			messages = <%- JSON.stringify(messages) %>;
+			rooms = <%- JSON.stringify(rooms) %>;
 	</script>
 	<script src="js/load.js"></script>
 </html>
@@ -151,7 +150,14 @@
 			</div>
 			<div id="chat-box" class="light-box">
 				<div id="chat-name"></div>
-				<div id="chat-messages"></div>
+				<div id="chat-messages">
+					<div id="loading">
+						<div></div>
+						<div></div>
+						<div></div>
+						<div></div>
+					</div>
+				</div>
 				<div id="typing"></div>
 				<div id="chat-input-box">
 					<input type="file" accept="image/*" id="add-file">
