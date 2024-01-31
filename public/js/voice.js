@@ -434,8 +434,12 @@ const createEmojiReaction = (emoji, u) => {
   document.querySelector("#emoji-display").appendChild(e);
 };
 
-const emojis = document.querySelectorAll(".emoji");
-for (const emoji of emojis) {
+const emojis = ["😁", "😃", "😂", "👍", "😲", "😴", "😭", "😡", "🦶", ...(user.emojis || [])];
+for (const e of emojis) {
+  const emoji = document.createElement("div");
+  emoji.classList.add("emoji");
+  emoji.innerText = e;
+  document.querySelector("#emoji-cont").appendChild(emoji);
   emoji.onclick = () => {
     voice.emit("react emoji", emoji.innerText);
     createEmojiReaction(emoji.innerText, user.name);
