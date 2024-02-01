@@ -21,6 +21,7 @@ const vidConstraints = {
 const audConstraints = {
   echoCancellation: true,
   noiseSuppression: true,
+  sampleRate: 44100,
 };
 
 const createEmptyAudioTrack = () => {
@@ -60,7 +61,7 @@ const getTrack = async (type, constraints) => {
     .getUserMedia({
       [type]: constraints,
     })
-    .catch(() => {});
+    .catch((e) => console.error(e));
   return s?.getTracks()[0];
 };
 
@@ -76,9 +77,7 @@ const us = async () => {
     (await getTrack("video", vidConstraints)) || createEmptyVideoTrack();
   const at =
     (await getTrack("audio", audConstraints)) || createEmptyAudioTrack();
-  stream = new MediaStream();
-  stream.addTrack(vt);
-  stream.addTrack(at);
+  stream = new MediaStream([vt, at]);
   stream.getTracks().forEach((t) => (t.enabled = false));
 };
 
@@ -161,23 +160,22 @@ const addVideo = async (p, s, self = false, big = false, pre = false) => {
     const video = document.createElement("video");
     video.id = "video";
     video.style.display = switched[id]?.camera || pre ? "block" : "none";
-    if (p.peerId == user.peerId) video.muted = true;
+    video.muted = true;
     video.onloadedmetadata = () => {
       const i = () => video.play().catch(() => setTimeout(i, 1000));
       i();
     };
+    video.srcObject = s;
     const audio = document.createElement("audio");
     audio.id = "audio";
     audio.style.display = "none";
-    if (p.peerId == user.peerId) audio.muted = true;
-    audio.onloadedmetadata = () => {
-      const i = () => audio.play().catch(() => setTimeout(i, 1000));
-      i();
-    };
-    if (pre) video.srcObject = s;
-    else {
+    if (s.getAudioTracks()[0]) {
+      audio.onloadedmetadata = () => {
+        const i = () => audio.play().catch(() => setTimeout(i, 1000));
+        i();
+      };
+      if (p.peerId == user.peerId) audio.muted = true;
       audio.srcObject = new MediaStream([s.getAudioTracks()[0]]);
-      video.srcObject = new MediaStream([s.getVideoTracks()[0]]);
     }
     const m = document.createElement("div");
     m.id = "muted";
@@ -217,7 +215,7 @@ const addVideo = async (p, s, self = false, big = false, pre = false) => {
       person.appendChild(vol);
     }
     person.appendChild(video);
-    person.appendChild(audio);
+    if (!pre) person.appendChild(audio);
     person.appendChild(pr);
     const name = document.createElement("div");
     name.id = "name";
