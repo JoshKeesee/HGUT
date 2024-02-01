@@ -33,11 +33,9 @@ const createEmptyAudioTrack = () => {
 };
 
 const createEmptyVideoTrack = () => {
-  const width = 1280;
-  const height = 720;
-  const c = Object.assign(document.createElement("canvas"), { width, height });
-  c.getContext("2d").fillRect(0, 0, width, height);
-  const stream = c.captureStream();
+  const canvas = Object.assign(document.createElement("canvas"), { width: 1, height: 1 });
+  canvas.getContext("2d").fillRect(0, 0, 1, 1);
+  const stream = canvas.captureStream();
   const track = stream.getVideoTracks()[0];
   return Object.assign(track);
 };
@@ -64,16 +62,18 @@ const getTrack = async (type, constraints) => {
 };
 
 const us = async () => {
+  if (stream) return;
   await navigator.mediaDevices
     .getUserMedia({
       video: vidConstraints,
       audio: audConstraints,
     })
     .catch(() => {});
-  stream = new MediaStream([
-    (await getTrack("video", vidConstraints)) || createEmptyVideoTrack(),
-    (await getTrack("audio", audConstraints)) || createEmptyAudioTrack(),
-  ]);
+  const vt = (await getTrack("video", vidConstraints)) || createEmptyVideoTrack();
+  const at = (await getTrack("audio", audConstraints)) || createEmptyAudioTrack();
+  stream = new MediaStream();
+  stream.addTrack(vt);
+  stream.addTrack(at);
   stream.getTracks().forEach((t) => (t.enabled = false));
 };
 
@@ -420,8 +420,7 @@ const createEmojiReaction = (emoji, u) => {
     fs = Math.floor(Math.random() * (80 - 40) + 40);
   const e = document.createElement("div");
   e.classList.add("emoji-react");
-  e.style.left =
-    "calc(" + Math.random() * (100 - 10) + 10 + "% - " + fs * 1.5 + "px)";
+  e.style.left = `clamp(0%, ${Math.floor(Math.random() * 100)}%, calc(100% - ${fs * 1.5}px))`;
   e.style.animationDuration = d + "s";
   const em = document.createElement("div");
   em.style.fontSize = fs + "px";
