@@ -17,7 +17,7 @@ const voice = io(SERVER + "voice", {
 });
 const icon = document.querySelector("#icon");
 const cb = document.querySelector("#chat-box");
-cb.onanimationend = () => {
+if (cb) cb.onanimationend = () => {
   const cms = document.querySelector("#chat-messages");
   cms.scrollTop = cms.scrollHeight;
 };

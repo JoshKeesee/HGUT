@@ -4,3 +4,5 @@ node_modules
 .vscode
 .env
 public/js/min.js
+.replit
+replit.nix

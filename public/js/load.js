@@ -2,6 +2,7 @@ const scripts = [
   "https://cdn.socket.io/4.7.2/socket.io.min.js",
   "https://unpkg.com/peerjs@1.5.1/dist/peerjs.min.js",
   "https://unpkg.com/tone@14.7.77/build/Tone.js",
+  "js/animateGrid.js",
   "js/status.js",
   "js/main.js",
   "js/settings.js",
@@ -9,13 +10,12 @@ const scripts = [
   "js/voice.js",
   "js/camera.js",
   "js/worklet.js",
-  "js/animateGrid.js",
   "js/files.js",
   "js/music.js",
   "js/reg.js",
 ];
 
-const sync = [0, 1, 2, 4, 5, 7];
+const sync = [0, 1, 2, 5, 6, 8];
 
 const createScript = async (src) => {
   const script = document.createElement("script");

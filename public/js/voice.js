@@ -89,6 +89,7 @@ voice.on("disconnect", () => {
   if (t != "voice") return;
   createStatus("Disconnected", "error");
   const i = (msg = true) => {
+    if (getCurrentTab() != "voice") return;
     if (voice.connected) return (currMessages = maxMessages);
     if (msg) createStatus("Reconnecting...", "info");
     voice.connect();

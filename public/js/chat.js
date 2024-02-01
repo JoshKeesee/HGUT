@@ -58,6 +58,7 @@ chat.on("disconnect", () => {
   if (t == "voice") return;
   createStatus("Disconnected", "error");
   const i = (msg = true) => {
+    if (getCurrentTab() == "voice") return;
     if (chat.connected) return (currMessages = maxMessages);
     if (msg) createStatus("Reconnecting...", "info");
     chat.connect();
