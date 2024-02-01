@@ -207,6 +207,41 @@ body.dark #unread {
   height: fit-content;
 }
 
+#scroll-down {
+  position: absolute;
+  z-index: 1;
+  bottom: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #0080ff;
+  padding: 5px;
+  backdrop-filter: blur(5px);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  pointer-events: none;
+  opacity: 0;
+  transition: background 0.2s ease, opacity 0.2s ease;
+}
+
+#scroll-down.active {
+  pointer-events: all;
+  opacity: 1;
+}
+
+#scroll-down:hover {
+  background: #0066cc;
+}
+
+#scroll-down #arrow {
+  width: 20px;
+  height: 20px;
+  fill: #fff;
+  transform: rotate(90deg);
+}
+
 a {
   color: #0000ff;
   text-decoration: underline;

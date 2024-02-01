@@ -573,6 +573,7 @@ const addMessage = (
   updateReactOnclick();
 
   if (scroll && !start && atBottom) {
+    cms.scrollTop = cms.scrollHeight;
     cm.animate(
       {
         opacity: [0, 1],
@@ -583,7 +584,6 @@ const addMessage = (
         easing: "ease-out",
       },
     );
-    cms.scrollTop = cms.scrollHeight;
   }
 };
 

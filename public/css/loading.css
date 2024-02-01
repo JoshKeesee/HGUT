@@ -9,6 +9,7 @@
 
 .loading div {
   position: absolute;
+  z-index: 10;
   top: 33px;
   width: 13px;
   height: 13px;

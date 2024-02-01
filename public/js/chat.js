@@ -1,6 +1,7 @@
 const input = document.querySelector("#chat-input");
 const send = document.querySelector("#chat-send");
 const addFile = document.querySelector("#add-file");
+const sd = document.querySelector("#scroll-down");
 const maxMessages = 50;
 let maxMessagesReached = false,
   currMessages = maxMessages,
@@ -434,14 +435,21 @@ addFile.onchange = (e) => {
 };
 
 document.querySelector("div[data-value='camera']").onclick = () => initCamera();
-
 document.querySelector("#theme").onclick = () => switchTheme();
 
 document.querySelector("#chat-messages").onscroll = (e) => {
   const t = e.target.scrollTop;
+  if (e.target.scrollHeight - t - e.target.clientHeight > 100 + 10) sd.classList.add("active");
+  else sd.classList.remove("active");
   if (t > 10 || maxMessagesReached || loadingMessages) return;
   loadingMessages = true;
   chat.emit("load messages", currMessages);
+};
+
+sd.onclick = () => {
+  const cms = document.querySelector("#chat-messages");
+  cms.scrollTop = cms.scrollHeight;
+  sd.classList.remove("active");
 };
 
 const loadMessages = (messages, start = true) => {
