@@ -33,7 +33,10 @@ const createEmptyAudioTrack = () => {
 };
 
 const createEmptyVideoTrack = () => {
-  const canvas = Object.assign(document.createElement("canvas"), { width: 1, height: 1 });
+  const canvas = Object.assign(document.createElement("canvas"), {
+    width: 1,
+    height: 1,
+  });
   canvas.getContext("2d").fillRect(0, 0, 1, 1);
   const stream = canvas.captureStream();
   const track = stream.getVideoTracks()[0];
@@ -69,8 +72,10 @@ const us = async () => {
       audio: audConstraints,
     })
     .catch(() => {});
-  const vt = (await getTrack("video", vidConstraints)) || createEmptyVideoTrack();
-  const at = (await getTrack("audio", audConstraints)) || createEmptyAudioTrack();
+  const vt =
+    (await getTrack("video", vidConstraints)) || createEmptyVideoTrack();
+  const at =
+    (await getTrack("audio", audConstraints)) || createEmptyAudioTrack();
   stream = new MediaStream();
   stream.addTrack(vt);
   stream.addTrack(at);
@@ -156,10 +161,19 @@ const addVideo = async (p, s, self = false, big = false, pre = false) => {
     const video = document.createElement("video");
     video.id = "video";
     video.style.display = switched[id]?.camera || pre ? "block" : "none";
-    video.srcObject = s;
+    video.srcObject = new MediaStream([s.getVideoTracks()[0]]);
     if (p.peerId == user.peerId) video.muted = true;
     video.onloadedmetadata = () => {
       const i = () => video.play().catch(() => setTimeout(i, 1000));
+      i();
+    };
+    const audio = document.createElement("audio");
+    audio.id = "audio";
+    audio.style.display = "none";
+    audio.srcObject = new MediaStream([s.getAudioTracks()[0]]);
+    if (p.peerId == user.peerId) audio.muted = true;
+    audio.onloadedmetadata = () => {
+      const i = () => audio.play().catch(() => setTimeout(i, 1000));
       i();
     };
     const m = document.createElement("div");
@@ -200,6 +214,7 @@ const addVideo = async (p, s, self = false, big = false, pre = false) => {
       person.appendChild(vol);
     }
     person.appendChild(video);
+    person.appendChild(audio);
     person.appendChild(pr);
     const name = document.createElement("div");
     name.id = "name";
@@ -421,7 +436,9 @@ const createEmojiReaction = (emoji, u) => {
     fs = Math.floor(Math.random() * (80 - 40) + 40);
   const e = document.createElement("div");
   e.classList.add("emoji-react");
-  e.style.left = `clamp(0%, ${Math.floor(Math.random() * 100)}%, calc(100% - ${fs * 1.5}px))`;
+  e.style.left = `clamp(0%, ${Math.floor(Math.random() * 100)}%, calc(100% - ${
+    fs * 1.5
+  }px))`;
   e.style.animationDuration = d + "s";
   const em = document.createElement("div");
   em.style.fontSize = fs + "px";
@@ -441,8 +458,29 @@ const createEmojiReaction = (emoji, u) => {
   document.querySelector("#emoji-display").appendChild(e);
 };
 
-const emojiAnimations = ["bounce", "spin", "zoom", "slide", "grow", "shake", "wobble", "tada", "jello"];
-const emojis = ["😁", "😃", "😂", "👍", "😲", "😴", "😭", "😡", "🦶", ...(user.emojis || [])];
+const emojiAnimations = [
+  "bounce",
+  "spin",
+  "zoom",
+  "slide",
+  "grow",
+  "shake",
+  "wobble",
+  "tada",
+  "jello",
+];
+const emojis = [
+  "😁",
+  "😃",
+  "😂",
+  "👍",
+  "😲",
+  "😴",
+  "😭",
+  "😡",
+  "🦶",
+  ...(user.emojis || []),
+];
 for (const e of emojis) {
   const emoji = document.createElement("div");
   emoji.classList.add("emoji");

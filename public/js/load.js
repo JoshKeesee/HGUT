@@ -3,19 +3,19 @@ const scripts = [
   "https://unpkg.com/peerjs@1.5.1/dist/peerjs.min.js",
   "https://unpkg.com/tone@14.7.77/build/Tone.js",
   "js/animateGrid.js",
+  "js/worklet.js",
   "js/status.js",
   "js/main.js",
   "js/settings.js",
   "js/chat.js",
   "js/voice.js",
   "js/camera.js",
-  "js/worklet.js",
   "js/files.js",
   "js/music.js",
   "js/reg.js",
 ];
 
-const sync = [0, 1, 2, 5, 6, 8];
+const sync = [0, 1, 2, 6, 7, 9];
 
 const createScript = async (src) => {
   const script = document.createElement("script");
