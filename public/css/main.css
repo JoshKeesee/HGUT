@@ -385,9 +385,6 @@ input[type="file"] {
   gap: 5px;
   max-width: 70%;
   width: fit-content;
-}
-
-#cont :last-child {
   scroll-snap-align: end;
 }
 

@@ -2,6 +2,7 @@ let resetI = null,
   currGrid = null;
 
 const resetItems = (grid) => {
+  resetI = null;
   if (currGrid != grid.id) return;
   const children = [...grid.children];
   children.forEach((c) => setItemPosition(null, c, null, true));
@@ -9,12 +10,12 @@ const resetItems = (grid) => {
 
 const setItemPosition = (g, c, p, r = false) => {
   if (r) {
-    c.getAnimations().forEach((a) => a.cancel());
     c.style.position = "";
     c.style.top = "";
     c.style.left = "";
     c.style.width = "";
     c.style.height = "";
+    c.getAnimations().forEach((a) => a.cancel());
     return;
   }
   c.style.position = "absolute";
@@ -60,7 +61,7 @@ const animateGridItem = (
       ...opts,
     },
   );
-  setTimeout(() => setItemPosition(g, c, n), (i - maxI) * stagger + duration);
+  setTimeout(() => setItemPosition(g, c, n), (i - maxI) * stagger + duration - 10);
 };
 
 const animateGrid = async (grid, after, opts = {}) => {
@@ -115,6 +116,6 @@ const animateGrid = async (grid, after, opts = {}) => {
   });
   resetI = setTimeout(
     () => resetItems(grid),
-    (children.length - maxI) * (opts.stagger || 0) + (opts.duration || 500),
+    (children.length - maxI) * (opts.stagger || 0) + (opts.duration || 500) + 10,
   );
 };
