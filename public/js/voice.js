@@ -161,7 +161,6 @@ const addVideo = async (p, s, self = false, big = false, pre = false) => {
     const video = document.createElement("video");
     video.id = "video";
     video.style.display = switched[id]?.camera || pre ? "block" : "none";
-    video.srcObject = new MediaStream([s.getVideoTracks()[0]]);
     if (p.peerId == user.peerId) video.muted = true;
     video.onloadedmetadata = () => {
       const i = () => video.play().catch(() => setTimeout(i, 1000));
@@ -170,12 +169,16 @@ const addVideo = async (p, s, self = false, big = false, pre = false) => {
     const audio = document.createElement("audio");
     audio.id = "audio";
     audio.style.display = "none";
-    audio.srcObject = new MediaStream([s.getAudioTracks()[0]]);
     if (p.peerId == user.peerId) audio.muted = true;
     audio.onloadedmetadata = () => {
       const i = () => audio.play().catch(() => setTimeout(i, 1000));
       i();
     };
+    if (pre) video.srcObject = s;
+    else {
+      audio.srcObject = new MediaStream([s.getAudioTracks()[0]]);
+      video.srcObject = new MediaStream([s.getVideoTracks()[0]]);
+    }
     const m = document.createElement("div");
     m.id = "muted";
     m.innerHTML = `
@@ -406,15 +409,18 @@ voiceSend.onclick = (e) => {
 };
 
 toggleChat.onclick = () => {
-  user.chat = !user.chat;
-  if (user.chat)
-    toggleChat.style.background = "rgba(var(--r), var(--g), var(--b), 0.9)";
-  else toggleChat.style = "";
+  toggleChat.classList.toggle("toggled");
   const c = document.querySelector("#main-cont");
-  c.classList.toggle("toggled");
   const ci = document.querySelector("#voice-chat-input");
-  if (user.chat) ci.focus();
-  else ci.blur();
+  if (toggleChat.classList.contains("toggled")) {
+    toggleChat.style.background = "rgba(var(--r), var(--g), var(--b), 0.9)";
+    c.classList.add("toggled");
+    ci.focus();
+  } else {
+    toggleChat.style = "";
+    c.classList.remove("toggled");
+    ci.blur();
+  }
 };
 
 present.onclick = togglePresent;
@@ -422,7 +428,7 @@ present.onclick = togglePresent;
 toggleEmoji.onclick = () => {
   toggleEmoji.classList.toggle("toggled");
   if (toggleEmoji.classList.contains("toggled")) {
-    toggleEmoji.style = "background: rgba(var(--r), var(--g), var(--b), 0.9)";
+    toggleEmoji.style.background = "rgba(var(--r), var(--g), var(--b), 0.9)";
     emojiReactions.classList.remove("closed");
   } else {
     toggleEmoji.style = "";
