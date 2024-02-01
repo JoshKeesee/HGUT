@@ -432,8 +432,8 @@ toggleEmoji.onclick = () => {
 
 const createEmojiReaction = (emoji, u) => {
   const a = emojiAnimations[emojis.indexOf(emoji)];
-  const d = Math.random() * (6 - 3) + 3,
-    fs = Math.floor(Math.random() * (80 - 40) + 40);
+  const d = Math.random() * (6 - 2) + 2,
+    fs = Math.floor(Math.random() * (70 - 40) + 40);
   const e = document.createElement("div");
   e.classList.add("emoji-react");
   e.style.left = `clamp(0%, ${Math.floor(Math.random() * 100)}%, calc(100% - ${

@@ -1,6 +1,7 @@
 :root {
   --circle: 50%;
   --max-circle: 100px;
+  --max-emoji: 70px;
 }
 
 #voice-container {
@@ -479,7 +480,7 @@ body.dark #meeting-cont #divider {
 
 @keyframes emoji-react {
   0% {
-    bottom: -80px;
+    bottom: calc(-1 * var(--max-emoji));
     opacity: 1;
   }
   30% {
