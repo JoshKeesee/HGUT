@@ -445,6 +445,7 @@ document.querySelector("#chat-messages").onscroll = (e) => {
 };
 
 const loadMessages = (messages, start = true) => {
+  loadingMessages = true;
   if (!start) currMessages = messages.length;
   const cms = document.querySelector("#chat-messages");
   if (cms.querySelector("#loading"))
