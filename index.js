@@ -9,7 +9,7 @@ const ejs = require("ejs");
 
 app.engine("html", ejs.renderFile);
 
-const SERVER = "https://3sx4nn-3000.csb.app/";
+const SERVER = "https://wtvd8d-3000.csb.app/";
 let profiles = {},
   accessCode = null;
 
