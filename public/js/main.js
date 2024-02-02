@@ -1,4 +1,4 @@
-const SERVER = "https://wtvd8d-3000.csb.app/";
+const SERVER = "https://4xrv6hn1-8080.use.devtunnels.ms/";
 const chat = io(SERVER + "chat", {
   autoConnect: false,
   reconnection: false,
