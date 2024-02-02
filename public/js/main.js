@@ -160,6 +160,7 @@ const getProfile = (u, info = true) => {
   const pc = document.createElement("div");
   pc.id = "profile";
   pc.className = u.name.replaceAll(" ", "-");
+  pc.title = u.name;
   if (u.color) pc.style.background = toRgba(u.color, 0.6);
   if (u.profile) {
     const p = document.createElement("img");
