@@ -17,10 +17,11 @@ const voice = io(SERVER + "voice", {
 });
 const icon = document.querySelector("#icon");
 const cb = document.querySelector("#chat-box");
-if (cb) cb.onanimationend = () => {
-  const cms = document.querySelector("#chat-messages");
-  cms.scrollTop = cms.scrollHeight;
-};
+if (cb)
+  cb.onanimationend = () => {
+    const cms = document.querySelector("#chat-messages");
+    cms.scrollTop = cms.scrollHeight;
+  };
 
 const getDeviceId = () => {
   const id = localStorage.getItem("deviceId");
@@ -132,7 +133,9 @@ const linkify = (s, sc = false) => {
       s = words.join(" ");
     }
     if (s.replace(emojiPattern, "").length == 0)
-      return `<p id="emoji" class="${user.settings.emoji ? "" : "disabled"}">${s}</p>`;
+      return `<p id="emoji" class="${
+        user.settings.emoji ? "" : "disabled"
+      }">${s}</p>`;
     return s
       .replace(urlPattern, "<a target='_blank' href='$&'>$&</a>")
       .replace(pseudoUrlPattern, "$1<a target='_blank' href='http://$2'>$2</a>")
@@ -507,14 +510,18 @@ const createMessage = (
     n.innerText = myUser ? "" : u.name;
     const time = document.createElement("div");
     time.id = "time";
-    time.innerHTML = d
-      ? new Date(d).toLocaleString("en-us", {
-          weekday: "long",
-          hour: "numeric",
-          minute: "numeric",
-          hour12: true,
-        })
-      : "";
+    const month = new Date(d).getMonth() - new Date().getMonth();
+    const day = new Date(d).getDate() - new Date().getDate();
+    const year = new Date(d).getFullYear() - new Date().getFullYear();
+    const o = {
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true,
+    };
+    if (month) o.month = "long";
+    if (day) o.weekday = "long";
+    if (year) o.year = "numeric";
+    time.innerHTML = d ? new Date(d).toLocaleString("en-us", o) : "";
     n.appendChild(time);
     cont.appendChild(n);
     cont.appendChild(cm);

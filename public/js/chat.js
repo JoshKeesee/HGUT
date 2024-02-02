@@ -439,7 +439,7 @@ document.querySelector("#theme").onclick = () => switchTheme();
 
 document.querySelector("#chat-messages").onscroll = (e) => {
   const t = e.target.scrollTop;
-  if (e.target.scrollHeight - t - e.target.clientHeight > 100 + 10) sd.classList.add("active");
+  if (e.target.scrollHeight - t - e.target.clientHeight > 100 + 50) sd.classList.add("active");
   else sd.classList.remove("active");
   if (t > 10 || maxMessagesReached || loadingMessages) return;
   loadingMessages = true;
