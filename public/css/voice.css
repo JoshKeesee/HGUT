@@ -47,7 +47,7 @@
 #people-container {
   overflow: hidden;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
   grid-template-rows: repeat(auto-fit, minmax(150px, 1fr));
   grid-gap: 5px;
   width: 100%;
@@ -87,7 +87,7 @@
   order: -1;
 }
 
-#people-container:has(#bg:nth-child(3)) #bg:has(#person.self) {
+#people-container:has(#bg:nth-child(5)) #bg:has(#person.self) {
   position: absolute;
   bottom: 10px;
   right: 10px;
