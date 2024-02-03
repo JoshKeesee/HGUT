@@ -1,4 +1,5 @@
-const SERVER = "https://4xrv6hn1-8080.use.devtunnels.ms/";
+const VOICESERVER = "https://4xrv6hn1-8080.use.devtunnels.ms/";
+const SERVER = "https://j4slmg-8080.csb.app/";
 const chat = io(SERVER + "chat", {
   autoConnect: false,
   reconnection: false,
@@ -7,7 +8,7 @@ const chat = io(SERVER + "chat", {
     user: document.cookie,
   },
 });
-const voice = io(SERVER + "voice", {
+const voice = io(VOICESERVER + "voice", {
   autoConnect: false,
   reconnection: false,
   forceNew: true,

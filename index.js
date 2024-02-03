@@ -9,7 +9,7 @@ const ejs = require("ejs");
 
 app.engine("html", ejs.renderFile);
 
-const SERVER = "https://4xrv6hn1-8080.use.devtunnels.ms/";
+const SERVER = "https://j4slmg-8080.csb.app/";
 let profiles = {},
   accessCode = null;
 

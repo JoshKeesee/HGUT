@@ -1,4 +1,4 @@
-const SERVER = "https://4xrv6hn1-8080.use.devtunnels.ms/";
+const SERVER = "https://j4slmg-8080.csb.app/";
 
 self.addEventListener("install", (e) => e.waitUntil(self.skipWaiting()));
 self.addEventListener("activate", (e) => e.waitUntil(self.clients.claim()));
