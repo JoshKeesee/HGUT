@@ -53,6 +53,7 @@
   width: 100%;
   height: 100%;
   position: relative;
+  transition: grid-template-columns 0.2s ease, grid-template-rows 0.2s ease;
 }
 
 #people-container #bg {
@@ -76,6 +77,11 @@
   justify-content: center;
   width: 100%;
   height: 100%;
+}
+
+#people-container:has(#bg.big) {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-rows: repeat(auto-fit, minmax(150px, 1fr));
 }
 
 #people-container #bg.big:not(:has(#person.self)) {
