@@ -201,7 +201,7 @@ const updateSettings = () => {
     if (emoji.match(ep).length > 1) return createStatus("Only one emoji allowed", "error");
     chat.emit("add emoji", emoji, (emojis) => {
       user.emojis = emojis;
-      emojiCont.appendChild(createEmoji(emoji));
+      emojiCont.appendChild(createEmoji(emoji, true));
       emojiInput.value = "";
       createStatus("Emoji added", "success");
       setEmojis();
