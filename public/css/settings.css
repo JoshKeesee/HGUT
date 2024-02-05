@@ -149,6 +149,10 @@
   transition: background 0.2s ease;
 }
 
+.settings-button:hover {
+  background: rgba(150, 150, 150, 0.4);
+}
+
 .settings-button.logout:hover {
   background: rgba(150, 0, 0, 0.8);
 }
@@ -163,6 +167,78 @@
   margin-left: 10px;
   margin-right: 10px;
   transition: all 0.2s ease;
+}
+
+.custom-emojis {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 10px 0;
+  user-select: none;
+}
+
+.custom-emojis .emoji {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  border-radius: 10px;
+  background: rgba(150, 150, 150, 0.2);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.custom-emojis .emoji:not(:has(.delete:hover)):hover {
+  background: rgba(150, 150, 150, 0.4);
+}
+
+.custom-emojis .emoji .delete {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 15px;
+  height: 15px;
+  transform: translate(50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(150, 150, 150, 0.4);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.custom-emojis .emoji .delete svg {
+  width: 15px;
+  height: 15px;
+}
+
+.custom-emojis .emoji:hover .delete:hover {
+  background: rgba(150, 150, 150, 0.6);
+}
+
+.input-cont {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.settings-input {
+  padding: 10px;
+  border-radius: 10px;
+  background: rgba(150, 150, 150, 0.2);
+  color: inherit;
+  transition: background 0.2s ease;
+}
+
+.settings-input:focus {
+  background: rgba(150, 150, 150, 0.4);
 }
 
 body:not(.dark) .settings-toggle {

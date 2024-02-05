@@ -8,6 +8,46 @@ const toggleChat = document.querySelector("#toggle-chat");
 const present = document.querySelector("#toggle-presentation");
 const toggleEmoji = document.querySelector("#toggle-emojis");
 const emojiReactions = document.querySelector("#emoji-reactions");
+let emojis = [];
+const maxCustomEmojis = 10;
+const emojiAnimations = [
+  "bounce",
+  "spin",
+  "zoom",
+  "slide",
+  "grow",
+  "shake",
+  "wobble",
+  "tada",
+  "jello",
+];
+const setEmojis = () => {
+  emojis = [
+    "😁",
+    "😃",
+    "😂",
+    "👍",
+    "😲",
+    "😴",
+    "😭",
+    "😡",
+    "🦶",
+    ...(user.emojis || []),
+  ];
+  const ec = document.querySelector("#emoji-cont");
+  ec.innerHTML = "";
+  for (const e of emojis) {
+    const emoji = document.createElement("div");
+    emoji.classList.add("emoji");
+    emoji.innerText = e;
+    ec.appendChild(emoji);
+    emoji.onclick = () => {
+      voice.emit("react emoji", emoji.innerText);
+      createEmojiReaction(emoji.innerText, user.name);
+    };
+  }
+};
+setEmojis();
 let stream = null,
   pres = null;
 let peerId = null;
@@ -461,40 +501,6 @@ const createEmojiReaction = (emoji, u) => {
   setTimeout(() => e.remove(), d * 1000);
   document.querySelector("#emoji-display").appendChild(e);
 };
-
-const emojiAnimations = [
-  "bounce",
-  "spin",
-  "zoom",
-  "slide",
-  "grow",
-  "shake",
-  "wobble",
-  "tada",
-  "jello",
-];
-const emojis = [
-  "😁",
-  "😃",
-  "😂",
-  "👍",
-  "😲",
-  "😴",
-  "😭",
-  "😡",
-  "🦶",
-  ...(user.emojis || []),
-];
-for (const e of emojis) {
-  const emoji = document.createElement("div");
-  emoji.classList.add("emoji");
-  emoji.innerText = e;
-  document.querySelector("#emoji-cont").appendChild(emoji);
-  emoji.onclick = () => {
-    voice.emit("react emoji", emoji.innerText);
-    createEmojiReaction(emoji.innerText, user.name);
-  };
-}
 
 voice.on("react emoji", ([e, u]) => createEmojiReaction(e, u));
 

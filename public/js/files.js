@@ -1,7 +1,8 @@
 const loadFiles = () => {
-  chat.emit("files", (e) => {
+  chat.emit("files", (f) => {
     const files = document.querySelector("#files-content");
     files.innerHTML = "";
+    const e = f.reverse();
     e.forEach((f) => {
       const c = document.createElement("div");
       c.id = "file-cont";

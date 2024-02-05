@@ -8,6 +8,8 @@
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 20px;
   overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  padding-bottom: 100px;
   transition: background 0.2s ease;
 }
 
@@ -65,6 +67,8 @@
   cursor: pointer;
   user-select: none;
   overflow: hidden;
+  scroll-snap-align: end;
+  scroll-margin-bottom: 10px;
 }
 
 #files-content #file-cont.active {

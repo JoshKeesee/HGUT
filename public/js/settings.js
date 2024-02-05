@@ -74,6 +74,32 @@ dropdowns.forEach((d) => {
   });
 });
 
+const createEmoji = (e, d) => {
+  const emoji = document.createElement("div");
+  emoji.className = "emoji";
+  emoji.innerText = e;
+  const del = document.createElement("div");
+  del.className = "delete";
+  const delSvg = getSvg("x-svg", "M18 6L6 18M6 6l12 12", {
+    fill: "#fff",
+    stroke: "#fff",
+    viewBox: "0 0 24 24",
+    "stroke-width": 2,
+    "stroke-linecap": "round",
+  });
+  del.appendChild(delSvg);
+  del.onclick = () => {
+    chat.emit("remove emoji", e, (emojis) => {
+      user.emojis = emojis;
+      emoji.remove();
+      createStatus("Emoji deleted", "success");
+      setEmojis();
+    });
+  };
+  if (d) emoji.appendChild(del);
+  return emoji;
+};
+
 const updateSettings = () => {
   settingUser.querySelector("#settings-username").innerText = user.name;
   settingUser.querySelector("#settings-born").innerText = "Born: " + user.dob;
@@ -156,6 +182,33 @@ const updateSettings = () => {
       }
     }
   });
+  if (!user.emojis) return;
+  const emojiCont = document.querySelector(".custom-emojis");
+  emojiCont.innerHTML = "";
+  emojis.forEach((e) => {
+    emojiCont.appendChild(createEmoji(e, user.emojis.includes(e)));
+  });
+  const addEmoji = document.querySelector(".add-emoji");
+  const emojiInput = document.querySelector("#custom-emoji-input");
+  const emojiClick = (e) => {
+    if (e.key && e.key != "Enter") return;
+    const emoji = emojiInput.value;
+    const ep = /[\p{Emoji}]/gu;
+    if (user.emojis.length >= maxCustomEmojis) return createStatus("You can't add more emojis", "error");
+    if (user.emojis.includes(emoji)) return createStatus("You already have this emoji", "error");
+    if (emojis.includes(emoji)) return createStatus("You can't add a default emoji", "error");
+    if (!emoji.match(ep)) return createStatus("Invalid emoji", "error");
+    if (emoji.match(ep).length > 1) return createStatus("Only one emoji allowed", "error");
+    chat.emit("add emoji", emoji, (emojis) => {
+      user.emojis = emojis;
+      emojiCont.appendChild(createEmoji(emoji));
+      emojiInput.value = "";
+      createStatus("Emoji added", "success");
+      setEmojis();
+    });
+  };
+  addEmoji.onclick = emojiClick;
+  emojiInput.onkeyup = emojiClick;
 };
 
 document

@@ -7,15 +7,15 @@ const scripts = [
   "js/worklet.js",
   "js/status.js",
   "js/main.js",
+  "js/voice.js",
   "js/settings.js",
   "js/chat.js",
-  "js/voice.js",
   "js/camera.js",
   "js/music.js",
   "js/reg.js",
 ];
 
-const sync = [0, 1, 2, 7, 8, 10];
+const sync = [0, 1, 2, 7, 8, 9, 10];
 
 const createScript = async (src) => {
   const script = document.createElement("script");
