@@ -118,7 +118,10 @@ const updateSettings = () => {
         pr.src = reader.result;
         chat.emit("profile", pr.src, (profile) => {
           user.profile = profile;
-          p.querySelector("img").src = SERVER + profile;
+          const img = p.querySelector("img"), initials = p.querySelector("#initials");
+          img.src = SERVER + profile;
+          img.style.display = "";
+          initials.style.display = "none";
           createStatus("Profile picture updated", "success");
         });
       };

@@ -161,18 +161,21 @@ const getProfile = (u, info = true) => {
   pc.id = "profile";
   pc.className = u.name.replaceAll(" ", "-");
   pc.title = u.name;
+  const initials = u.name
+    .split(" ")
+    .map((e) => e[0])
+    .join("");
   if (u.color) pc.style.background = toRgba(u.color, 0.6);
-  if (u.profile) {
-    const p = document.createElement("img");
-    p.src = SERVER + u.profile;
-    p.alt = u.name;
-    pc.appendChild(p);
-  } else {
-    pc.innerText = u.name
-      .split(" ")
-      .map((e) => e[0])
-      .join("");
-  }
+  const initialsDiv = document.createElement("div");
+  initialsDiv.id = "initials";
+  initialsDiv.innerText = initials;
+  initialsDiv.style.display = "none";
+  pc.appendChild(initialsDiv);
+  const p = document.createElement("img");
+  p.src = SERVER + u.profile;
+  p.alt = u.name;
+  p.onerror = () => (p.style.display = "none") && (initialsDiv.style.display = "block");
+  pc.appendChild(p);
   if (info) {
     const i = document.createElement("div");
     i.id = "info";
