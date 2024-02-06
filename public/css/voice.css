@@ -78,11 +78,6 @@
   height: 100%;
 }
 
-#people-container:has(#bg.big) {
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  grid-template-rows: repeat(auto-fit, minmax(150px, 1fr));
-}
-
 #people-container #bg.big:not(:has(#person.self)) {
   grid-column: span 2 / span 2;
   grid-row: span 3 / span 3;
@@ -440,7 +435,7 @@ body.dark #meeting-cont #divider {
     pointer-events: none;
   }
 
-  #meeting-cont div:not(#time) {
+  #meeting-cont div:not(#voice-time) {
     opacity: 0;
   }
 
