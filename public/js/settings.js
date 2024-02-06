@@ -1,4 +1,5 @@
 const settingToggles = document.querySelectorAll(".settings-toggle");
+const settingForms = document.querySelectorAll(".settings-form");
 const dropdowns = document.querySelectorAll(".dropdown");
 const settingUser = document.querySelector("#settings-user");
 
@@ -25,6 +26,42 @@ settingToggles.forEach((t) => {
       n ? user.settings[s][getDeviceId()] : user.settings[s],
     );
     chat.emit("settings", user.settings);
+  });
+});
+
+settingForms.forEach((f) => {
+  f.querySelectorAll("#settings-show-password").forEach((p) => {
+    p.addEventListener("click", () => {
+      const i = f.querySelector("#settings-new-password");
+      i.type = i.type == "password" ? "text" : "password";
+    });
+  });
+  f.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const s = f.dataset.setting;
+    const sub = f.querySelector(".submit");
+    if (sub.disabled) return;
+    if (s == "password") {
+      const o = f.querySelector("#settings-old-password").value;
+      const n = f.querySelector("#settings-new-password").value;
+      if (!o) return createStatus("Enter your old password", "error");
+      if (!n) return createStatus("Enter a new password", "error");
+      if (o == n) return createStatus("New password can't be the same", "error");
+      if (n.length < 6) return createStatus("Password must be at least 6 characters", "error");
+      if (n.length > 50) return createStatus("Password can't be longer than 50 characters", "error");
+      if (n.match(/\s/)) return createStatus("Password can't contain spaces", "error");
+      sub.disabled = true;
+      const c = setTimeout(() => {
+        createStatus("Error: request timed out", "error");
+        sub.disabled = false;
+      }, 5000);
+      chat.emit("password", [o, n], (success) => {
+        if (!success) return createStatus("An error occurred", "error");
+        createStatus("Password updated", "success");
+        f.reset();
+        clearTimeout(c);
+      });
+    }
   });
 });
 
@@ -91,6 +128,8 @@ const createEmoji = (e, d) => {
   del.onclick = () => {
     chat.emit("remove emoji", e, (emojis) => {
       user.emojis = emojis;
+      const addEmoji = document.querySelector(".add-emoji");
+      addEmoji.disabled = user.emojis.length >= maxCustomEmojis;
       emoji.remove();
       createStatus("Emoji deleted", "success");
       setEmojis();
@@ -178,13 +217,14 @@ const updateSettings = () => {
       }
     }
   });
-  if (!user.emojis) return;
+  if (!user.emojis) user.emojis = [];
   const emojiCont = document.querySelector(".custom-emojis");
   emojiCont.innerHTML = "";
   emojis.forEach((e) => {
     emojiCont.appendChild(createEmoji(e, user.emojis.includes(e)));
   });
   const addEmoji = document.querySelector(".add-emoji");
+  addEmoji.disabled = user.emojis.length >= maxCustomEmojis;
   const emojiInput = document.querySelector("#custom-emoji-input");
   const emojiClick = (e) => {
     if (e.key && e.key != "Enter") return;
@@ -200,6 +240,7 @@ const updateSettings = () => {
       user.emojis = emojis;
       emojiCont.appendChild(createEmoji(emoji, true));
       emojiInput.value = "";
+      addEmoji.disabled = user.emojis.length >= maxCustomEmojis;
       createStatus("Emoji added", "success");
       setEmojis();
     });

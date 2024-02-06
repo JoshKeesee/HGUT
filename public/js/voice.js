@@ -9,7 +9,7 @@ const present = document.querySelector("#toggle-presentation");
 const toggleEmoji = document.querySelector("#toggle-emojis");
 const emojiReactions = document.querySelector("#emoji-reactions");
 let emojis = [];
-const maxCustomEmojis = 10;
+const maxCustomEmojis = 6;
 const emojiAnimations = [
   "bounce",
   "spin",

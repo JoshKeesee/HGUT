@@ -126,6 +126,61 @@
   margin-bottom: 10px;
 }
 
+.settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 300px;
+  border: dashed 4px rgba(var(--r), var(--g), var(--b), 0.5);
+  background: rgba(150, 150, 150, 0.1);
+  padding: 10px;
+  border-radius: 10px;
+  user-select: none;
+}
+
+.settings-form .settings-button {
+  width: fit-content;
+  margin-left: auto;
+}
+
+.settings-checkbox-cont {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.settings-checkbox {
+  width: 20px;
+  height: 20px;
+  appearance: none;
+  border: 1.8px solid #fff;
+  border-radius: 50%;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.settings-checkbox:hover {
+  background: rgba(150, 150, 150, 0.2);
+}
+
+.settings-checkbox::after {
+  content: "";
+  width: 10px;
+  height: 10px;
+  background: #fff;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 0.1s ease;
+}
+
+.settings-checkbox:checked::after {
+  transform: translate(-50%, -50%) scale(1);
+}
+
 .settings-option-title {
   font-size: 1rem;
   font-weight: bold;
@@ -144,16 +199,24 @@
   padding: 10px;
   border-radius: 10px;
   background: rgba(150, 150, 150, 0.2);
+  color: inherit;
+  font-size: 16px;
   cursor: pointer;
   user-select: none;
   transition: background 0.2s ease;
 }
 
-.settings-button:hover {
+.settings-button:disabled {
+  background: rgba(150, 150, 150, 0.1);
+  color: #666;
+  cursor: not-allowed;
+}
+
+.settings-button:not(:disabled):hover {
   background: rgba(150, 150, 150, 0.4);
 }
 
-.settings-button.logout:hover {
+.settings-button.logout:not(:disabled):hover {
   background: rgba(150, 0, 0, 0.8);
 }
 

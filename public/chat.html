@@ -646,6 +646,35 @@
         </div>
         <div id="settings-content">
           <div id="settings-box">
+            <div id="settings-title">Password</div>
+            <p>Change your password.</p>
+            <div class="settings-option">
+              <form class="settings-form" data-setting="password">
+                <input
+                  type="password"
+                  id="settings-old-password"
+                  class="settings-input"
+                  placeholder="Old Password"
+                />
+                <input
+                  type="password"
+                  id="settings-new-password"
+                  class="settings-input"
+                  placeholder="New Password"
+                />
+                <div class="settings-checkbox-cont">
+                  <input
+                    type="checkbox"
+                    id="settings-show-password"
+                    class="settings-checkbox"
+                  />
+                  <label for="settings-show-password">Show Password</label>
+                </div>
+                <input type="submit" class="settings-button change-password submit" value="Change" />
+              </form>
+            </div>
+          </div>
+          <div id="settings-box">
             <div id="settings-title">Theme</div>
             <p>Change the theme of the app.</p>
             <div class="settings-option">
