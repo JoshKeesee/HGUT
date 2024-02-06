@@ -78,6 +78,36 @@
   height: 100%;
 }
 
+#people-container:has(#bg.big:not(#person.self)):not(:has(#bg:nth-child(6))) {
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  grid-template-rows: repeat(auto-fit, minmax(130px, 1fr));
+}
+
+#people-container:has(#bg:nth-child(6)) {
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  grid-template-rows: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+#people-container:has(#bg:nth-child(11)) {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-rows: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+#people-container:has(#bg:nth-child(14)) {
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  grid-template-rows: repeat(auto-fit, minmax(100px, 1fr));
+}
+
+#people-container:has(#bg:nth-child(27)) {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-rows: repeat(auto-fit, minmax(100px, 1fr));
+}
+
+#people-container:has(#bg:nth-child(32)) {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  grid-template-rows: repeat(auto-fit, minmax(100px, 1fr));
+}
+
 #people-container #bg.big:not(:has(#person.self)) {
   grid-column: span 2 / span 2;
   grid-row: span 3 / span 3;
