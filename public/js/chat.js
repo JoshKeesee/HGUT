@@ -368,9 +368,7 @@ const updateOnline = () => {
 
 const switchTheme = (dark = !user.settings.theme, color) => {
   user.settings.theme = dark;
-  const d = dark ? "dark" : "light";
-  const th = dark ? "black" : "white";
-  document.body.className = d;
+  document.body.className = dark ? "dark" : "light";
   const lr =
     !user.room || getCurrentTab() == "voice"
       ? null
@@ -380,7 +378,7 @@ const switchTheme = (dark = !user.settings.theme, color) => {
         ) ||
         document.querySelector("." + user.room) ||
         null;
-  if (lr) lr.style.background = th;
+  if (lr) lr.style.background = dark ? "#000" : "#fff";
   if (color) {
     const rgb = toRgba(color, 1, true);
     Object.keys(rgb).forEach((k) => {
