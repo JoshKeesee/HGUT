@@ -190,6 +190,7 @@ const updateSettings = () => {
     if (e.key && e.key != "Enter") return;
     const emoji = emojiInput.value;
     const ep = /[\p{Emoji}]/gu;
+    if (!emoji) return;
     if (user.emojis.length >= maxCustomEmojis) return createStatus("You can't add more emojis", "error");
     if (user.emojis.includes(emoji)) return createStatus("You already have this emoji", "error");
     if (emojis.includes(emoji)) return createStatus("You can't add a default emoji", "error");
