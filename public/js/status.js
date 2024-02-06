@@ -5,6 +5,7 @@ const createStatus = (text, type, u = null) => {
     s.classList.add("status");
     s.classList.add(type);
     if (type == "person") {
+        if (u.name == user.name) return;
         const profile = getProfile(u);
         s.appendChild(profile);
         const n = document.createElement("div");

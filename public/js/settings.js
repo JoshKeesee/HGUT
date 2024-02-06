@@ -116,14 +116,7 @@ const updateSettings = () => {
       const reader = new FileReader();
       reader.onload = () => {
         pr.src = reader.result;
-        chat.emit("profile", pr.src, (profile) => {
-          user.profile = profile;
-          const img = p.querySelector("img"), initials = p.querySelector("#initials");
-          img.src = SERVER + profile;
-          img.style.display = "";
-          initials.style.display = "none";
-          createStatus("Profile picture updated", "success");
-        });
+        chat.emit("profile", pr.src, () => createStatus("Profile picture updated", "success"));
       };
       reader.readAsDataURL(e.target.files[0]);
       selectImg.remove();
