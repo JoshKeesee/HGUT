@@ -22,8 +22,8 @@ const roomButton = (text, cn, u = true, d, p = false) => {
   const crbg = document.createElement("div");
   crbg.id = "chat-room-bg";
   if (p) {
-    const id = cn.split("-").find((e) => e != user.id && e != "c");
-    const u = profiles[Object.keys(profiles).find((e) => profiles[e].id == id)];
+    const id = cn.replace("c-", "").replace("-", ",").split(",").find((e) => e != user.id);
+    const u = findProfile(id);
     const profile = getProfile(u);
     cr.appendChild(profile);
   }
@@ -73,7 +73,7 @@ chat.on("typing", (t) => {
   else typing.style.opacity = 1;
   let text = "";
   t.forEach((id, i) => {
-    const u = profiles[Object.keys(profiles).find((e) => profiles[e].id == id)];
+    const u = findProfile(id);
     const n = u.name.split(" ")[0];
     text +=
       i == 0
@@ -93,7 +93,7 @@ chat.on("unread", (u) => {
     const d =
       document.querySelector(".c-" + c + " #unread") ||
       document.querySelector(
-        ".c-" + c.split("-").reverse().join("-") + " #unread",
+        ".c-" + c.replace("-", ",").split(",").reverse().join("-") + " #unread",
       ) ||
       document.querySelector("." + c + " #unread");
     if (d) d.style.display = "block";
@@ -218,7 +218,7 @@ chat.on("update profile", (u) => {
 chat.on("redirect", (d) => (window.location.href = d));
 
 const switchChat = (el) => {
-  const r = user.room.split("-");
+  const r = user.room.replace("-", ",").split(",");
   if (
     user.room == el.className.replace("c-", "") ||
     "c-" + r[1] + "-" + r[0] == el.className ||
@@ -227,7 +227,7 @@ const switchChat = (el) => {
     return;
   const lr =
     document.querySelector(".c-" + user.room) ||
-    document.querySelector(".c-" + user.room.split("-").reverse().join("-")) ||
+    document.querySelector(".c-" + user.room.replace("-", ",").split(",").reverse().join("-")) ||
     document.querySelector("." + user.room);
   lr.style = "";
   lr.querySelector("#chat-room-bg").style = "";
@@ -242,10 +242,10 @@ const switchChat = (el) => {
   const cn = document.querySelector("#chat-name");
   cn.innerHTML = "";
   let n = rns[el.className.replace("c-", "")] || el.className.replace("c-", "");
-  if (Number(n.split("-")[0])) {
+  if (n.replace("-", ",").split(",")[0] >= Object.values(profiles)[0].id) {
     const p = Object.values(profiles).find(
       (e) =>
-        (e.id == n.split("-")[0] || e.id == n.split("-")[1]) && e.id != user.id,
+        (e.id == n.replace("-", ",").split(",")[0] || e.id == n.replace("-", ",").split(",")[1]) && e.id != user.id,
     );
     if (p) n = p.name;
   }
@@ -263,8 +263,7 @@ const updateProfiles = () => {
     .map((e) => e.character)
     .sort()
     .forEach((k) => {
-      const r =
-        profiles[Object.keys(profiles).find((e) => profiles[e].character == k)];
+      const r = findProfile(k, "character");
       const cn = rn[r.id + "-" + user.id]
         ? "c-" + r.id + "-" + user.id
         : "c-" + user.id + "-" + r.id;
@@ -287,8 +286,7 @@ const updateProfiles = () => {
   Object.values(profiles)
     .map((e) => e.character)
     .forEach((k) => {
-      const r =
-        profiles[Object.keys(profiles).find((e) => profiles[e].character == k)];
+      const r = findProfile(k, "character");
       const cn = rn[r.id + "-" + user.id]
         ? "c-" + r.id + "-" + user.id
         : "c-" + user.id + "-" + r.id;
@@ -313,8 +311,7 @@ const updateOnline = () => {
     .map((e) => e.character)
     .sort()
     .forEach((k) => {
-      const r =
-        profiles[Object.keys(profiles).find((e) => profiles[e].character == k)];
+      const r = findProfile(k, "character");
       if (!Object.keys(online).includes(r.id.toString())) return;
       const bg = document.createElement("div");
       bg.id = "bg";
@@ -340,14 +337,13 @@ const updateOnline = () => {
         const cr = c.querySelector("#chat-room").className.replace("c-", "");
         return (
           (online[id].room == cr ||
-            online[id].room == cr.split("-").reverse().join("-")) &&
+            online[id].room == cr.replace("-", ",").split(",").reverse().join("-")) &&
           id != user.id
         );
       })
       .forEach((k) => {
         const o = online[k];
-        const r =
-          profiles[Object.keys(profiles).find((e) => profiles[e].id == k)];
+        const r = findProfile(k);
         const bg = document.createElement("div");
         bg.id = "bg";
         const pc = getProfile(r, false);
@@ -374,7 +370,7 @@ const switchTheme = (dark = !user.settings.theme, color) => {
       ? null
       : document.querySelector(".c-" + user.room) ||
         document.querySelector(
-          ".c-" + user.room?.split("-").reverse().join("-"),
+          ".c-" + user.room?.replace("-", ",").split(",").reverse().join("-"),
         ) ||
         document.querySelector("." + user.room) ||
         null;
@@ -497,11 +493,12 @@ const loadMessages = (messages, start = true) => {
 const updateRoomName = (cr) => {
   const el = cr.querySelector("#chat-room");
   el.querySelector("#chat-room-bg").style.opacity = 1;
+  const cn = el.className.replace("c-", "");
   let n = roomNames[el.className.replace("c-", "")];
-  if (Number(n.split("-")[0])) {
+  if (n?.split("-")[0] >= Object.values(profiles)[0].id) {
     const p = Object.values(profiles).find(
       (e) =>
-        (e.id == n.split("-")[0] || e.id == n.split("-")[1]) && e.id != user.id,
+        (e.id == n.replace("-", ",").split(",")[0] || e.id == n.replace("-", ",").split(",")[1]) && e.id != user.id,
     );
     if (p) n = p.name;
   }
@@ -529,7 +526,7 @@ const updateRooms = () => {
     if (!rooms[k].allowed.includes(user.id) && rooms[k].allowed != "all")
       return;
     const r = rooms[k];
-    const u = k.split("-");
+    const u = k.replace("-", ",").split(",");
     const cr = roomButton(
       r.name,
       k.replaceAll(" ", "-"),

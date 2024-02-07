@@ -323,8 +323,7 @@ const updateVoiceOnline = () => {
   Object.values(profiles)
     .map((e) => e.id)
     .forEach((k) => {
-      const r =
-        profiles[Object.keys(profiles).find((e) => profiles[e].id == k)];
+      const r = findProfile(k);
       if (!Object.keys(online).includes(k.toString())) return;
       if (k != user.id) {
         const bg = document.createElement("div");
