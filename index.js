@@ -34,14 +34,16 @@ const getProfiles = () => {
 
 getProfiles();
 
-const waitForProfiles = new Promise((resolve) => {
-  const int = setInterval(() => {
-    if (Object.keys(profiles).length > 0) {
-      clearInterval(int);
-      resolve();
-    }
+const waitForProfiles = () => {
+  return new Promise((resolve) => {
+    const int = setInterval(() => {
+      if (Object.keys(profiles).length > 0) {
+        clearInterval(int);
+        resolve();
+      }
+    });
   });
-});
+};
 
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -82,7 +84,7 @@ const getUserData = async (req) => {
   });
 };
 app.use(async (req, res, next) => {
-  await waitForProfiles;
+  await waitForProfiles();
   let u = { error: true };
   while (u.error) u = await getUserData(req);
   req.user = u.user;
@@ -99,7 +101,10 @@ app.get("/login", (req, res) => {
   if (req.user) return res.redirect("/chat");
   res.sendFile(__dirname + "/public/login.html");
 });
-app.post("/login", (req, res) => {
+app.post("/login", async (req, res) => {
+  profiles = {};
+  getProfiles();
+  await waitForProfiles();
   const username = req.body["name"];
   const password = req.body["password"];
   const ac = req.body["access-code"];
