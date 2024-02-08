@@ -22,7 +22,11 @@ const roomButton = (text, cn, u = true, d, p = false) => {
   const crbg = document.createElement("div");
   crbg.id = "chat-room-bg";
   if (p) {
-    const id = cn.replace("c-", "").replace("-", ",").split(",").find((e) => e != user.id);
+    const id = cn
+      .replace("c-", "")
+      .replace("-", ",")
+      .split(",")
+      .find((e) => e != user.id);
     const u = findProfile(id);
     const profile = getProfile(u);
     cr.appendChild(profile);
@@ -118,6 +122,9 @@ chat.on("chat message", async ([m, u, d, lm, a, mId]) => {
   if (u.room != user.room || getCurrentTab() != "messages")
     createNotification([messageText, u, u.room]);
 });
+chat.on("ai error", () =>
+  createStatus("An error with the AI has occurred", "error"),
+);
 chat.on("edit", ({ id, message }) => {
   const m = document.querySelector(".m-" + id);
   if (!m) return;
@@ -208,7 +215,8 @@ chat.on("update profile", (u) => {
   profiles[u.name] = u;
   const pics = document.querySelectorAll("." + u.name.replaceAll(" ", "-"));
   pics.forEach((p) => {
-    const img = p.querySelector("img"), initials = p.querySelector("#initials");
+    const img = p.querySelector("img"),
+      initials = p.querySelector("#initials");
     img.src = SERVER + u.profile;
     img.style.display = u.profile ? "" : "none";
     initials.style.display = u.profile ? "none" : "";
@@ -227,7 +235,9 @@ const switchChat = (el) => {
     return;
   const lr =
     document.querySelector(".c-" + user.room) ||
-    document.querySelector(".c-" + user.room.replace("-", ",").split(",").reverse().join("-")) ||
+    document.querySelector(
+      ".c-" + user.room.replace("-", ",").split(",").reverse().join("-"),
+    ) ||
     document.querySelector("." + user.room);
   lr.style = "";
   lr.querySelector("#chat-room-bg").style = "";
@@ -245,7 +255,9 @@ const switchChat = (el) => {
   if (n.replace("-", ",").split(",")[0] >= Object.values(profiles)[0].id) {
     const p = Object.values(profiles).find(
       (e) =>
-        (e.id == n.replace("-", ",").split(",")[0] || e.id == n.replace("-", ",").split(",")[1]) && e.id != user.id,
+        (e.id == n.replace("-", ",").split(",")[0] ||
+          e.id == n.replace("-", ",").split(",")[1]) &&
+        e.id != user.id,
     );
     if (p) n = p.name;
   }
@@ -337,7 +349,8 @@ const updateOnline = () => {
         const cr = c.querySelector("#chat-room").className.replace("c-", "");
         return (
           (online[id].room == cr ||
-            online[id].room == cr.replace("-", ",").split(",").reverse().join("-")) &&
+            online[id].room ==
+              cr.replace("-", ",").split(",").reverse().join("-")) &&
           id != user.id
         );
       })
@@ -444,7 +457,8 @@ document.querySelector("#theme").onclick = () => switchTheme();
 
 document.querySelector("#chat-messages").onscroll = (e) => {
   const t = e.target.scrollTop;
-  if (e.target.scrollHeight - t - e.target.clientHeight > 100 + 50) sd.classList.add("active");
+  if (e.target.scrollHeight - t - e.target.clientHeight > 100 + 50)
+    sd.classList.add("active");
   else sd.classList.remove("active");
   if (t > 10 || maxMessagesReached || loadingMessages) return;
   loadingMessages = true;
@@ -498,7 +512,9 @@ const updateRoomName = (cr) => {
   if (n?.split("-")[0] >= Object.values(profiles)[0].id) {
     const p = Object.values(profiles).find(
       (e) =>
-        (e.id == n.replace("-", ",").split(",")[0] || e.id == n.replace("-", ",").split(",")[1]) && e.id != user.id,
+        (e.id == n.replace("-", ",").split(",")[0] ||
+          e.id == n.replace("-", ",").split(",")[1]) &&
+        e.id != user.id,
     );
     if (p) n = p.name;
   }

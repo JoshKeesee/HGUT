@@ -443,6 +443,7 @@ input[type="file"] {
   border-radius: 20px;
   border: dashed 4px rgba(var(--r), var(--g), var(--b), 0.5);
   background: rgba(150, 150, 150, 0.1);
+  transition: border 0.2s ease;
 }
 
 #replies:empty {

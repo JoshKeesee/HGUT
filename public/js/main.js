@@ -158,7 +158,8 @@ const getSvg = (id, path, opts = {}) => {
 
 const findProfile = (id, k = "id") => {
   const keys = Object.keys(profiles);
-  for (const p in keys) if (profiles[keys[p]][k] == id) return profiles[keys[p]];
+  for (const p in keys)
+    if (profiles[keys[p]][k] == id) return profiles[keys[p]];
   return null;
 };
 
@@ -180,7 +181,10 @@ const getProfile = (u, info = true) => {
   const p = document.createElement("img");
   p.src = SERVER + u.profile;
   p.alt = u.name;
-  p.onerror = () => (p.style.display = "none") && (initialsDiv.style.display = "block");
+  const pError = () =>
+    (p.style.display = "none") && (initialsDiv.style.display = "block");
+  p.onerror = pError;
+  if (!u.profile) pError();
   pc.appendChild(p);
   if (info) {
     const i = document.createElement("div");
@@ -373,11 +377,7 @@ const createReacts = (reacts) => {
   const r = document.createElement("div");
   r.id = "reacts";
   r.title = Object.values(reacts)
-    .map(
-      (e) =>
-        e.name ||
-        findProfile(e)?.name
-    )
+    .map((e) => e.name || findProfile(e)?.name)
     .join(", ");
   const rt = document.createElement("div");
   rt.id = "reacts-text";
@@ -696,7 +696,10 @@ const createNotification = ([m, u, r]) => {
   cont.id = "cont";
   const name = document.createElement("div");
   name.id = "n";
-  const room = rns[r].replace("-", ",").split(",")[0] >= Object.values(profiles)[0].id ? "" : " in <b>" + rns[r] + "</b>";
+  const room =
+    rns[r].replace("-", ",").split(",")[0] >= Object.values(profiles)[0].id
+      ? ""
+      : " in <b>" + rns[r] + "</b>";
   name.innerHTML =
     "<b>" + u.name.split(" ")[0] + "</b> sent you a message" + room;
   const message = document.createElement("div");
@@ -722,7 +725,9 @@ const createNotification = ([m, u, r]) => {
     if (e.target.id == "x" || e.target.id == "x-svg") return;
     const lr =
       document.querySelector(".c-" + r) ||
-      document.querySelector(".c-" + r.replace("-", ",").split(",").reverse().join("-")) ||
+      document.querySelector(
+        ".c-" + r.replace("-", ",").split(",").reverse().join("-"),
+      ) ||
       document.querySelector("." + r);
     switchTab(tabs.querySelector("#messages"));
     switchChat(lr);
