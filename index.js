@@ -114,6 +114,7 @@ app.post("/login", async (req, res) => {
   if (!bcrypt.compareSync(ac, accessCode))
     return res.json({ error: "Invalid access code" });
   if (!profiles[username]) return res.json({ error: "Invalid username" });
+  if (profiles[username].id < 0) return res.json({ error: "Invalid username" });
   const p = profiles[username].password;
   if (!bcrypt.compareSync(password, p))
     return res.json({ error: "Invalid password" });
