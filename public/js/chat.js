@@ -122,8 +122,8 @@ chat.on("chat message", async ([m, u, d, lm, a, mId]) => {
   if (u.room != user.room || getCurrentTab() != "messages")
     createNotification([messageText, u, u.room]);
 });
-chat.on("ai error", () =>
-  createStatus("An error with the AI has occurred", "error"),
+chat.on("ai error", (e) =>
+  createStatus(e || "An error with the AI has occurred", "error"),
 );
 chat.on("edit", ({ id, message }) => {
   const m = document.querySelector(".m-" + id);

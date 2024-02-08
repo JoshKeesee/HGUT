@@ -76,11 +76,20 @@ const imageToDataURL = (img) => {
 };
 
 const linkify = (s, sc = false) => {
-  const urlPattern =
-    /\b(?:https?|ftp):\/\/[a-z0-9-+&@#\/%?=~_|!:,.;]*[a-z0-9-+&@#\/%=~_|]/gim;
+  const headerPattern = /(^|\s)#\s(.+)/g;
+  const subHeaderPattern = /(^|\s)##\s(.+)/g;
+  const linkPattern = /\[([^\]]+)]\(([^)]+)\)/g;
+  const urlPattern = /(?<!<a[^>]*?)\b(?:https?|ftp):\/\/[a-z0-9-+&@#\/%?=~_|!:,.;]*[a-z0-9-+&@#\/%=~_|](?!<\/a>)/gim;
   const pseudoUrlPattern = /(^|[^\/])(www\.[\S]+(\b|$))/gim;
   const emailAddressPattern = /[\w.]+@[a-zA-Z_-]+?(?:\.[a-zA-Z]{2,6})+/gim;
   const emojiPattern = /\p{Extended_Pictographic}/gu;
+  const boldPattern = /\*\*(.*?)\*\*/g;
+  const italicPattern = /\*(.*?)\*/g;
+  const strikePattern = /~~(.*?)~~/g;
+  const breakPattern = /\n/g;
+  const codeBlockPattern = /```(.*?)```/g;
+  const codePattern = /`(.*?)`/g;
+  const listPattern = /\n\*/g;
   if (s.startsWith("/images/")) {
     const src = (SERVER + s).replace("//images", "/images");
     if (src.includes(".svg+xml")) {
@@ -108,41 +117,42 @@ const linkify = (s, sc = false) => {
     };
     return `<img src="${src}">`;
   } else {
-    if (s.includes("@")) {
-      const words = s.split(" ");
-      words.forEach((w, i) => {
-        if (w.includes("@")) {
-          const u = w.replace("@", "").replaceAll("-", " ");
-          const p = profiles[u];
-          if (!p) return;
-          words[i] =
-            "<span class='mention' id='" +
-            p.id +
-            "' onclick='(" +
-            ((el) => {
-              const r =
-                document.querySelector(".c-" + el.id + "-" + user.id) ||
-                document.querySelector(".c-" + user.id + "-" + el.id);
-              if (r) return switchChat(r);
-            }) +
-            ")(this)'>@" +
-            p.name +
-            "</span>";
-        }
-      });
-      s = words.join(" ");
-    }
     if (s.replace(emojiPattern, "").length == 0)
       return `<p id="emoji" class="${
         user.settings.emoji ? "" : "disabled"
       }">${s}</p>`;
-    return s
+    s = s
+      .replace(headerPattern, "<h1>$2</h1>")
+      .replace(subHeaderPattern, "<h2>$2</h2>")
+      .replace(linkPattern, "<a target='_blank' href='$2'>$1</a>")
       .replace(urlPattern, "<a target='_blank' href='$&'>$&</a>")
       .replace(pseudoUrlPattern, "$1<a target='_blank' href='http://$2'>$2</a>")
-      .replace(
-        emailAddressPattern,
-        "<a target='_blank' href='mailto:$&'>$&</a>",
-      );
+      .replace(emailAddressPattern, "<a href='mailto:$&'>$&</a>")
+      .replace(boldPattern, "<b>$1</b>")
+      .replace(italicPattern, "<i>$1</i>")
+      .replace(strikePattern, "<s>$1</s>")
+      .replace(listPattern, "<li>")
+      .replace(breakPattern, "<br>")
+      .replace(codeBlockPattern, "<pre><code>$1</code></pre>")
+      .replace(codePattern, "<code>$1</code>");
+    if (s.includes("@")) {
+      Object.keys(profiles).forEach((p) => {
+        const u = p.replace(" ", "-");
+        if (s.includes("@" + u)) {
+          const mention = `<span class="mention" onclick="(${
+            (id) => {
+              const r =
+                document.querySelector(`.c-${id}-${user.id}`) ||
+                document.querySelector(`.c-${user.id}-${id}`);
+              if (r) switchChat(r);
+            }
+          })(${profiles[p].id})">@${p}</span>`;
+          const r = new RegExp("@" + u, "g");
+          s = s.replace(r, mention);
+        }
+      });
+    }
+    return s;
   }
 };
 
