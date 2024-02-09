@@ -67,8 +67,6 @@ body:has(#header #tabs #chats.selected) #notifications {
   grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
   gap: 5px;
   overflow-x: hidden;
-  scroll-snap-type: y mandatory;
-  padding-bottom: 100px;
 }
 
 #chat-room-container {
@@ -98,7 +96,6 @@ body:has(#header #tabs #chats.selected) #notifications {
   align-items: center;
   gap: 10px;
   overflow: hidden;
-  scroll-snap-align: end;
 }
 
 #chat-room:hover {
@@ -190,8 +187,7 @@ body.dark #unread {
   transition: opacity 0.2s ease;
   padding-left: 10px;
   padding-right: 10px;
-  scroll-snap-type: y mandatory;
-  padding-bottom: 100px;
+  scroll-behavior: smooth;
 }
 
 #loading {

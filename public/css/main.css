@@ -385,7 +385,6 @@ input[type="file"] {
   gap: 5px;
   max-width: 70%;
   width: fit-content;
-  scroll-snap-align: end;
 }
 
 #cont #name #time {
@@ -438,7 +437,6 @@ input[type="file"] {
   margin-bottom: 5px;
   max-width: 50%;
   min-width: 40%;
-  scroll-snap-align: end;
   padding: 20px;
   border-radius: 20px;
   border: dashed 4px rgba(var(--r), var(--g), var(--b), 0.5);
