@@ -125,6 +125,14 @@ chat.on("chat message", async ([m, u, d, lm, a, mId]) => {
 chat.on("ai error", (e) =>
   createStatus(e || "An error with the AI has occurred", "error"),
 );
+chat.on("clear", (u) => {
+  const cms = document.querySelector("#chat-messages");
+  cms.innerHTML = "Sorry, no messages here...";
+  currMessages = 0;
+  maxMessagesReached = true;
+  createStatus("Messages cleared by " + u.name, "info");
+});
+chat.on("cancel clear", () => createStatus("An error occurred while clearing messages", "error"));
 chat.on("edit", ({ id, message }) => {
   const m = document.querySelector(".m-" + id);
   if (!m) return;
