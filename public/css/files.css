@@ -45,6 +45,7 @@
   box-sizing: border-box;
   height: fit-content;
   gap: 10px;
+  text-align: center;
 }
 
 #files-content #file-cont {

@@ -3,6 +3,7 @@ const loadFiles = () => {
     const files = document.querySelector("#files-content");
     files.innerHTML = "";
     const e = f.reverse();
+    if (!e.length) return (files.innerHTML = "No files found");
     e.forEach((f) => {
       const c = document.createElement("div");
       c.id = "file-cont";

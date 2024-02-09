@@ -712,13 +712,13 @@ input[type="file"] {
 }
 
 #expand:not(.toggled) svg {
-  transform: scaleX(1);
+  transform: scaleX(1) translateY(-50%);
   transition: transform 0.2s ease;
 }
 
 #expand.toggled svg {
   transition: transform 0.2s ease;
-  transform: scaleX(-1);
+  transform: scaleX(-1) translateY(-50%);
 }
 
 #tabs {
@@ -742,8 +742,8 @@ input[type="file"] {
     width 0.2s ease,
     border-radius 0.2s ease;
   overflow: hidden;
-  width: 25px;
-  height: 25px;
+  width: 28px;
+  height: 28px;
   display: flex;
   justify-content: center;
   color: inherit;
@@ -753,8 +753,9 @@ input[type="file"] {
 #expand svg {
   opacity: 1;
   position: absolute;
-  top: 5px;
-  left: 5px;
+  top: 50%;
+  left: 7px;
+  transform: translateY(-50%);
   width: 25px;
   height: 25px;
   transition: opacity 0.2s ease;
@@ -791,7 +792,8 @@ body:has(#header.toggled) #tabs .tab div {
 
 body:has(#header.toggled) #tabs .tab {
   width: 200px;
-  border-radius: 30px;
+  border-top-right-radius: 30px;
+  border-bottom-right-radius: 30px;
 }
 
 #tabs .tab:hover,
@@ -802,6 +804,34 @@ body:has(#header.toggled) #tabs .tab {
 #tabs .tab.red:hover {
   color: #fff;
   background: rgba(150, 0, 0, 0.8);
+}
+
+#tabs .tab::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translate(-50%, -50%) scale(0, 0.7);
+  width: 6px;
+  height: 22px;
+  background: rgba(150, 150, 150, 0.2);
+  border-radius: 3px;
+  transition:
+    transform 0.2s ease 0.1s,
+    background 0.2s ease;
+}
+
+#tabs .tab.red::before {
+  background: rgb(150, 0, 0);
+}
+
+#tabs .tab:hover::before {
+  transform: translate(-50%, -50%) scale(1, 0.7);
+}
+
+#tabs .tab.selected::before {
+  transform: translate(-50%, -50%) scale(1, 1);
+  background: rgba(var(--r), var(--g), var(--b), 0.8);
 }
 
 #notifications {

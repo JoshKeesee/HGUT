@@ -79,7 +79,8 @@ const linkify = (s, sc = false) => {
   const headerPattern = /(^|\s)#\s(.+)/g;
   const subHeaderPattern = /(^|\s)##\s(.+)/g;
   const linkPattern = /\[([^\]]+)]\(([^)]+)\)/g;
-  const urlPattern = /(?<!<a[^>]*?)\b(?:https?|ftp):\/\/[a-z0-9-+&@#\/%?=~_|!:,.;]*[a-z0-9-+&@#\/%=~_|](?!<\/a>)/gim;
+  const urlPattern =
+    /(?<!<a[^>]*?)\b(?:https?|ftp):\/\/[a-z0-9-+&@#\/%?=~_|!:,.;]*[a-z0-9-+&@#\/%=~_|](?!<\/a>)/gim;
   const pseudoUrlPattern = /(^|[^\/])(www\.[\S]+(\b|$))/gim;
   const emailAddressPattern = /[\w.]+@[a-zA-Z_-]+?(?:\.[a-zA-Z]{2,6})+/gim;
   const emojiPattern = /\p{Extended_Pictographic}/gu;
@@ -139,14 +140,12 @@ const linkify = (s, sc = false) => {
       Object.keys(profiles).forEach((p) => {
         const u = p.replace(" ", "-");
         if (s.includes("@" + u)) {
-          const mention = `<span class="mention" onclick="(${
-            (id) => {
-              const r =
-                document.querySelector(`.c-${id}-${user.id}`) ||
-                document.querySelector(`.c-${user.id}-${id}`);
-              if (r) switchChat(r);
-            }
-          })(${profiles[p].id})">@${p}</span>`;
+          const mention = `<span class="mention" onclick="(${(id) => {
+            const r =
+              document.querySelector(`.c-${id}-${user.id}`) ||
+              document.querySelector(`.c-${user.id}-${id}`);
+            if (r) switchChat(r);
+          }})(${profiles[p].id})">@${p}</span>`;
           const r = new RegExp("@" + u, "g");
           s = s.replace(r, mention);
         }

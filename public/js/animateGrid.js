@@ -61,7 +61,10 @@ const animateGridItem = (
       ...opts,
     },
   );
-  setTimeout(() => setItemPosition(g, c, n), (i - maxI) * stagger + duration - 10);
+  setTimeout(
+    () => setItemPosition(g, c, n),
+    (i - maxI) * stagger + duration - 10,
+  );
 };
 
 const animateGrid = async (grid, after, opts = {}) => {
@@ -116,6 +119,8 @@ const animateGrid = async (grid, after, opts = {}) => {
   });
   resetI = setTimeout(
     () => resetItems(grid),
-    (children.length - maxI) * (opts.stagger || 0) + (opts.duration || 500) + 10,
+    (children.length - maxI) * (opts.stagger || 0) +
+      (opts.duration || 500) +
+      10,
   );
 };
