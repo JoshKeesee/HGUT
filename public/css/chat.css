@@ -199,12 +199,19 @@ body.dark #unread {
 }
 
 #typing {
+  position: relative;
   opacity: 0;
   transition: opacity 0.2s ease;
   overflow: hidden;
   font-size: 12px;
   min-height: 15px;
   height: fit-content;
+}
+
+#typing::after {
+  position: absolute;
+  content: "...";
+  animation: typing 2s steps(5, end) infinite;
 }
 
 #scroll-down {
@@ -322,4 +329,11 @@ a {
     transform: scale(1) translateY(0px);
     opacity: 1;
   }
+}
+
+@keyframes typing {
+  0%, 100% { content: "" }
+  25% { content: "." }
+  50% { content: ".." }
+  75% { content: "..." }
 }

@@ -89,7 +89,7 @@ chat.on("typing", (t) => {
             : ", " + n;
   });
   typing.innerText =
-    t.length == 1 ? text + " is typing..." : text + " are typing...";
+    t.length == 1 ? text + " is typing" : text + " are typing";
 });
 chat.on("unread", (u) => {
   user.unread = u;
