@@ -796,7 +796,7 @@ body:has(#header.toggled) #tabs .tab {
   border-bottom-right-radius: 30px;
 }
 
-#tabs .tab:hover,
+#tabs .tab:not(.selected):hover,
 #expand:hover {
   background: rgba(150, 150, 150, 0.1);
 }
