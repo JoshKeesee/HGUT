@@ -607,7 +607,7 @@ const addMessage = (
     cm.animate(
       {
         opacity: [0, 1],
-        transform: ["scale(0)", "scale(1)"],
+        transform: ["scale(0)", "scale(1.1)", "scale(1)"],
       },
       {
         duration: 300,
