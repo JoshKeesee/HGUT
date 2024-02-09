@@ -600,7 +600,10 @@ const addMessage = (
   updateReactOnclick();
 
   if (scroll && !start && atBottom) {
-    cms.scrollTop = cms.scrollHeight;
+    cms.scrollTo({
+      top: cms.scrollHeight,
+      behavior: "smooth",
+    });
     cm.animate(
       {
         opacity: [0, 1],
