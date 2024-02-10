@@ -422,7 +422,8 @@ const createMessage = (
     messageText = messageText
       .split(" ")
       .map((w) =>
-        w.charAt(w.length - 1).replace(/[.,\/#!?$%\^&\*;:{}=\-_`~()]/g, "")
+        w.charAt(w.length - 1).replace(/[.,\/#!?$%\^&\*;:{}=\-_`~()]/g, "") &&
+        !w.includes("/images/")
           ? w + "eth"
           : w,
       )

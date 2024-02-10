@@ -88,8 +88,7 @@ chat.on("typing", (t) => {
             ? ", and " + n
             : ", " + n;
   });
-  typing.innerText =
-    t.length == 1 ? text + " is typing" : text + " are typing";
+  typing.innerText = t.length == 1 ? text + " is typing" : text + " are typing";
 });
 chat.on("unread", (u) => {
   user.unread = u;
@@ -113,7 +112,8 @@ chat.on("chat message", async ([m, u, d, lm, a, mId]) => {
     messageText = messageText
       .split(" ")
       .map((w) =>
-        w.charAt(w.length - 1).replace(/[.,\/#!?$%\^&\*;:{}=\-_`~()]/g, "")
+        w.charAt(w.length - 1).replace(/[.,\/#!?$%\^&\*;:{}=\-_`~()]/g, "") &&
+        !w.includes("/images/")
           ? w + "eth"
           : w,
       )
@@ -132,7 +132,9 @@ chat.on("clear", (u) => {
   maxMessagesReached = true;
   createStatus("Messages cleared by " + u.name, "info");
 });
-chat.on("cancel clear", () => createStatus("An error occurred while clearing messages", "error"));
+chat.on("cancel clear", () =>
+  createStatus("An error occurred while clearing messages", "error"),
+);
 chat.on("edit", ({ id, message }) => {
   const m = document.querySelector(".m-" + id);
   if (!m) return;
