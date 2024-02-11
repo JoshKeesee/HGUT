@@ -122,9 +122,13 @@ chat.on("chat message", async ([m, u, d, lm, a, mId]) => {
   if (u.room != user.room || getCurrentTab() != "messages")
     createNotification([messageText, u, u.room]);
 });
-chat.on("ai error", (e) =>
-  createStatus(e || "An error with the AI has occurred", "error"),
-);
+chat.on("ai error", (error) => {
+  let e = "An error with the AI has occurred";
+  if (typeof error == "object")
+    e = "AI Error: " + error.response?.candidates[0]?.finishReason;
+  else if (typeof error == "string") e = error;
+  createStatus(e, "error");
+});
 chat.on("clear", (u) => {
   const cms = document.querySelector("#chat-messages");
   cms.innerHTML = "Sorry, no messages here...";
