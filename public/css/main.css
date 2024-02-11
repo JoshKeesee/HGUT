@@ -10,14 +10,26 @@
 body {
   background-image: radial-gradient(
     circle,
-    rgba(var(--bg-r), var(--bg-g), var(--bg-b), 0.3) 0%,
-    transparent 100%
+    rgba(var(--bg-r), var(--bg-g), var(--bg-b), var(--bg-a1)) 0%,
+    rgba(var(--bg-r), var(--bg-g), var(--bg-b), var(--bg-a2)) 100%
   );
   transition:
     all 0.2s ease,
     --bg-r 0.2s ease,
     --bg-g 0.2s ease,
-    --bg-b 0.2s ease;
+    --bg-b 0.2s ease,
+    --bg-a1 0.2s ease,
+    --bg-a2 0.2s ease;
+}
+
+body.dark {
+  --bg-a1: 0.3;
+  --bg-a2: 0.2;
+}
+
+body:not(.dark) {
+  --bg-a1: 0.1;
+  --bg-a2: 0.1;
 }
 
 body,
@@ -57,6 +69,18 @@ html {
   inherits: false;
 }
 
+@property --bg-a1 {
+  syntax: "<number>";
+  initial-value: 1;
+  inherits: false;
+}
+
+@property --bg-a2 {
+  syntax: "<number>";
+  initial-value: 1;
+  inherits: false;
+}
+
 body.dark #bg {
   background: #000;
 }
@@ -84,7 +108,7 @@ body.dark #tabs #dark-icon {
 }
 
 .light {
-  background-color: rgba(235, 235, 255, 1);
+  background-color: rgba(230, 230, 255, 1);
   color: black;
 }
 
@@ -340,7 +364,11 @@ input[type="file"] {
   padding-right: 5px;
   border-radius: 50px;
   height: fit-content;
-  transition: all 0.2s ease;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    opacity 0.2s ease,
+    margin 0.2s ease;
 }
 
 #chat-input-box svg {

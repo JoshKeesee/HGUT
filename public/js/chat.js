@@ -130,7 +130,6 @@ chat.on("ai error", (error) => {
   createStatus(e, "error");
 });
 chat.on("clear", (u) => {
-  const cms = document.querySelector("#chat-messages");
   cms.innerHTML = "Sorry, no messages here...";
   currMessages = 0;
   maxMessagesReached = true;
@@ -257,7 +256,6 @@ const switchChat = (el) => {
   lr.querySelector("#chat-room-bg").style = "";
   el.querySelector("#chat-room-bg").style.opacity = 1;
   el.querySelector("#unread").style.display = "none";
-  const cms = document.querySelector("#chat-messages");
   cms.innerHTML = "";
   cms.appendChild(loading);
   loadingMessages = true;
@@ -445,7 +443,7 @@ input.onpaste = (e) => {
   e.preventDefault();
   const text = e.clipboardData.getData("text/plain");
   input.innerHTML += text;
-  input.innerHTML = input.innerText.slice(0, 1000);
+  input.innerHTML = input.innerHTML.slice(0, 1000);
 };
 
 send.onclick = (e) => {
@@ -469,9 +467,9 @@ addFile.onchange = (e) => {
 document.querySelector("div[data-value='camera']").onclick = () => initCamera();
 document.querySelector("#theme").onclick = () => switchTheme();
 
-document.querySelector("#chat-messages").onscroll = (e) => {
-  const t = e.target.scrollTop;
-  if (e.target.scrollHeight - t - e.target.clientHeight > 100 + 50)
+const updateScroll = () => {
+  const t = cms.scrollTop;
+  if (cms.scrollHeight - t - cms.clientHeight > 100 + 50)
     sd.classList.add("active");
   else sd.classList.remove("active");
   if (t > 10 || maxMessagesReached || loadingMessages) return;
@@ -479,8 +477,9 @@ document.querySelector("#chat-messages").onscroll = (e) => {
   chat.emit("load messages", currMessages);
 };
 
+cms.onscroll = updateScroll;
+
 sd.onclick = () => {
-  const cms = document.querySelector("#chat-messages");
   cms.scrollTop = cms.scrollHeight;
   sd.classList.remove("active");
 };
@@ -488,7 +487,6 @@ sd.onclick = () => {
 const loadMessages = (messages, start = true) => {
   loadingMessages = true;
   if (!start) currMessages = messages.length;
-  const cms = document.querySelector("#chat-messages");
   if (cms.querySelector("#loading"))
     cms.removeChild(cms.querySelector("#loading"));
   if (!start) cms.innerHTML = "";

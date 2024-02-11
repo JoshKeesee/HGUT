@@ -19,12 +19,6 @@
   <link rel="stylesheet" href="css/loading.css" />
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="favicon.png" />
-  <script>
-    let user = <%- JSON.stringify(user) %>,
-    	profiles = <%- JSON.stringify(profiles) %>,
-    	rooms = <%- JSON.stringify(rooms) %>;
-  </script>
-  <script src="js/load.js"></script>
 </html>
 
 <body class="<%= user.settings.theme ? 'dark' : 'light' %>">
@@ -915,4 +909,10 @@
       </div>
     </div>
   </div>
+  <script>
+    let user = <%- JSON.stringify(user) %>,
+    	profiles = <%- JSON.stringify(profiles) %>,
+    	rooms = <%- JSON.stringify(rooms) %>;
+  </script>
+  <script src="js/load.js"></script>
 </body>

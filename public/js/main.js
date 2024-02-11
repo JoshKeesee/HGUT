@@ -17,9 +17,9 @@ const voice = io(SERVER + "voice", {
 });
 const icon = document.querySelector("#icon");
 const cb = document.querySelector("#chat-box");
+const cms = document.querySelector("#chat-messages");
 if (cb)
   cb.onanimationend = () => {
-    const cms = document.querySelector("#chat-messages");
     cms.scrollTop = cms.scrollHeight;
   };
 
@@ -98,7 +98,6 @@ const linkify = (s, sc = false) => {
       fetch(src)
         .then((r) => r.text())
         .then((r) => {
-          const cms = document.querySelector("#chat-messages");
           cms.scrollTop = cms.scrollHeight;
           const svg = document.querySelector(`#${randId}`);
           if (!svg) return;
@@ -113,7 +112,6 @@ const linkify = (s, sc = false) => {
     img.src = src;
     img.onload = () => {
       if (!sc) return;
-      const cms = document.querySelector("#chat-messages");
       cms.scrollTop = cms.scrollHeight;
     };
     return `<img src="${src}">`;
@@ -221,7 +219,6 @@ const getProfile = (u, info = true) => {
 };
 
 const updateMessageProfiles = () => {
-  const cms = document.querySelector("#chat-messages");
   let last;
   [].slice.call(cms.children).forEach((e, i) => {
     last = null;
@@ -237,6 +234,7 @@ const updateMessageProfiles = () => {
 const updateEditOnclick = () => {
   const edit = document.querySelectorAll("#edit");
   edit.forEach((e) => {
+    if (e.contentEditable != "inherit") return;
     e.onclick = () => {
       const cm = e.parentElement.parentElement;
       const m = cm.querySelector("#message");
@@ -416,7 +414,7 @@ const createMessage = (
   m.id = "message";
   if (!reply)
     m.classList.add(typeof currMessages != "undefined" ? "m-" + mId : "");
-  m.style.background = toRgba(u.color, 0.4);
+  m.style.background = toRgba(u.color, 0.5);
   let messageText = message;
   if (user.room == "eth")
     messageText = messageText
@@ -562,7 +560,7 @@ const addMessage = (
     document.title = "(" + missed + ") " + t;
   }
   const myUser = u.name == user.name;
-  if (typeof currMessages != "undefined" && start) currMessages++;
+  if (start) currMessages++;
   if (getCurrentTab() != "voice") maxMessagesReached = mId == 0;
   const cms =
     getCurrentTab() != "voice"
@@ -763,12 +761,3 @@ const playNotificationSound = () => {
   );
   s.play().catch(() => {});
 };
-
-const init = () => {
-  const url = new URL(window.location.href);
-  const tab = url.searchParams.get("tab") || "messages";
-  switchTab(document.querySelector(`#${tab}`));
-};
-
-window.onload = init;
-window.onpopstate = init;
