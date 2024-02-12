@@ -91,8 +91,8 @@ const linkify = (s, sc = false) => {
   const codeBlockPattern = /```(.*?)```/g;
   const codePattern = /`(.*?)`/g;
   const listPattern = /\n\*/g;
-  if (s.startsWith("/images/")) {
-    const src = (SERVER + s).replace("//images", "/images");
+  if (s.startsWith("/files/")) {
+    const src = (SERVER + s).replace("//files", "/files");
     if (src.includes(".svg+xml")) {
       const randId = "svg-" + crypto.randomUUID();
       fetch(src)
@@ -421,7 +421,7 @@ const createMessage = (
       .split(" ")
       .map((w) =>
         w.charAt(w.length - 1).replace(/[.,\/#!?$%\^&\*;:{}=\-_`~()]/g, "") &&
-        !w.includes("/images/")
+        !w.includes("/files/")
           ? w + "eth"
           : w,
       )

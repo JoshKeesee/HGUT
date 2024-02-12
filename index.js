@@ -53,8 +53,6 @@ const auth = (req, res, next) => {
     "login",
     "css",
     "js",
-    "profiles",
-    "images",
     "manifest.json",
     "favicon.png",
     "big_icon.png",

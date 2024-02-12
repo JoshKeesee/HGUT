@@ -113,7 +113,7 @@ chat.on("chat message", async ([m, u, d, lm, a, mId]) => {
       .split(" ")
       .map((w) =>
         w.charAt(w.length - 1).replace(/[.,\/#!?$%\^&\*;:{}=\-_`~()]/g, "") &&
-        !w.includes("/images/")
+        !w.includes("/files/")
           ? w + "eth"
           : w,
       )
