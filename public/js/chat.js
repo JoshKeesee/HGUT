@@ -181,12 +181,12 @@ chat.on("reply", ({ id, message, user: u, prev, date, i }) => {
 chat.on("delete", ({ id }) => {
   const m = document.querySelector(".m-" + id);
   if (!m) return;
+  const r = document.querySelector(".r-" + id);
+  if (r) r.remove();
   if ([].slice.call(m.parentElement.parentElement.children).length <= 3)
     m.parentElement.parentElement.remove();
   else m.parentElement.remove();
   updateMessageProfiles();
-  const r = document.querySelector(".r-" + id);
-  if (r) r.remove();
   const cm = document.querySelector("#chat-messages");
   if (cm.children.length == 0) cm.innerText = "Sorry, no messages here...";
   for (let i = id; i < currMessages; i++) {
