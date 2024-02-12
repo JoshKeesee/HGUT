@@ -130,7 +130,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  min-width: 300px;
+  width: 300px;
   border: dashed 4px rgba(var(--r), var(--g), var(--b), 0.5);
   background: rgba(150, 150, 150, 0.1);
   padding: 10px;
