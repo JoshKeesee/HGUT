@@ -108,13 +108,40 @@ const linkify = (s, sc = false) => {
         });
       return `<div id="${randId}"></div>`;
     }
-    const img = new Image();
-    img.src = src;
-    img.onload = () => {
-      if (!sc) return;
-      cms.scrollTop = cms.scrollHeight;
-    };
-    return `<img src="${src}">`;
+    const ext = src.split(".").pop();
+    if (ext == "mp4" || ext == "webm" || ext == "ogg") {
+      const v = document.createElement("video");
+      v.src = src;
+      v.controls = true;
+      v.onloadedmetadata = () => {
+        if (!sc) return;
+        cms.scrollTop = cms.scrollHeight;
+      };
+      return v.outerHTML;
+    } else if (ext == "mp3" || ext == "wav" || ext == "ogg") {
+      const a = document.createElement("audio");
+      a.src = src;
+      a.controls = true;
+      a.onloadedmetadata = () => {
+        if (!sc) return;
+        cms.scrollTop = cms.scrollHeight;
+      };
+      return a.outerHTML;
+    } else if (ext == "pdf") {
+      const a = document.createElement("a");
+      a.href = src;
+      a.target = "_blank";
+      a.innerText = "View PDF";
+      return a.outerHTML;
+    } else if (ext == "png" || ext == "jpg" || ext == "jpeg" || ext == "gif") {
+      const img = new Image();
+      img.src = src;
+      img.onload = () => {
+        if (!sc) return;
+        cms.scrollTop = cms.scrollHeight;
+      };
+      return `<img src="${src}">`;
+    }
   } else {
     if (s.replace(emojiPattern, "").length == 0)
       return `<p id="emoji" class="${

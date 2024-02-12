@@ -1,6 +1,9 @@
 const input = document.querySelector("#chat-input");
 const send = document.querySelector("#chat-send");
-const addFile = document.querySelector("#add-file");
+const addImg = document.querySelector("#add-img"),
+  addVideo = document.querySelector("#add-video"),
+  addAudio = document.querySelector("#add-audio"),
+  addPdf = document.querySelector("#add-pdf");
 const sd = document.querySelector("#scroll-down");
 const maxMessages = 50;
 let maxMessagesReached = false,
@@ -457,12 +460,30 @@ send.onclick = (e) => {
   input.innerHTML = "";
 };
 
-addFile.onchange = (e) => {
-  const img = e.target.files[0];
-  const fr = new FileReader();
-  fr.onload = () => chat.emit("chat message", fr.result);
-  fr.readAsDataURL(img);
+const uploadFile = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const fileSize = file.size / 1024 / 1024;
+  if (fileSize < 0.5) chat.emit("upload", [file, file.type]);
+  else {
+    const chunkSize = 0.5 * 1024 * 1024;
+    const totalChunks = Math.ceil(file.size / chunkSize);
+    const fr = new FileReader();
+    const name = Date.now();
+    const ext = file.name.split(".").pop();
+    fr.onload = (e) => {
+      const chunks = [];
+      for (let i = 0; i < totalChunks; i++) chunks.push(e.target.result.slice(i * chunkSize, (i + 1) * chunkSize));
+      chunks.forEach((c, i) => chat.emit("upload chunk", [c, name, ext, i, totalChunks]));
+    };
+    fr.readAsArrayBuffer(file);
+  }
 };
+
+addImg.onchange = uploadFile;
+addVideo.onchange = uploadFile;
+addAudio.onchange = uploadFile;
+addPdf.onchange = uploadFile;
 
 document.querySelector("div[data-value='camera']").onclick = () => initCamera();
 document.querySelector("#theme").onclick = () => switchTheme();

@@ -152,7 +152,7 @@ voice.on("user", async (u) => {
   const pec = document.querySelector("#people-container");
   pec.innerHTML = "";
   switchTheme(user.settings.theme, user.settings.accent ? user.color : null);
-  addVideo(user, stream, true);
+  addNewVideo(user, stream, true);
   updateVoiceOnline();
 });
 voice.on("online", (u) => {
@@ -186,7 +186,7 @@ voice.on("call list", async (c) => {
   c.forEach(addPerson);
 });
 
-const addVideo = async (p, s, self = false, big = false, pre = false) => {
+const addNewVideo = async (p, s, self = false, big = false, pre = false) => {
   const pec = document.querySelector("#people-container");
   const after = async () => {
     const id = pre ? "pres-" + p.peerId : p.peerId;
@@ -280,7 +280,7 @@ const addPerson = (p) => {
   call.on("stream", async (s) => {
     if (callList.includes(p.peerId)) return;
     callList.push(p.peerId);
-    addVideo(p, s);
+    addNewVideo(p, s);
   });
 };
 
@@ -311,7 +311,7 @@ peer.on("call", (call) => {
     call.on("stream", async (s) => {
       if (callList.includes(id)) return;
       callList.push(id);
-      addVideo(p, s, false, pre, pre);
+      addNewVideo(p, s, false, pre, pre);
     });
     if (pres) peer.call(p.peerId, pres, { metadata: { pres: true, id } });
   });
@@ -405,7 +405,7 @@ const togglePresent = async () => {
         metadata: { pres: true, id: "pres-" + peer.id },
       });
     }
-    addVideo(user, pres, false, true, true);
+    addNewVideo(user, pres, false, true, true);
   } else {
     present.style = "";
     if (pres)
