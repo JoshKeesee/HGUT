@@ -90,7 +90,7 @@ const linkify = (s, sc = false) => {
   const breakPattern = /\n/g;
   const codeBlockPattern = /```(.*?)```/g;
   const codePattern = /`(.*?)`/g;
-  const listPattern = /\n\*/g;
+  const listPattern = /\*/g;
   if (s.startsWith("/files/")) {
     const src = (SERVER + s).replace("//files", "/files");
     if (src.includes(".svg+xml")) {
