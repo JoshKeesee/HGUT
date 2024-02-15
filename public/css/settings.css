@@ -30,10 +30,32 @@
   font-weight: bold;
   color: transparent;
   background-clip: text;
-  background: rgba(255, 255, 255, 1) linear-gradient(90deg, rgba(var(--r), var(--g), var(--b), 0.8), rgba(var(--r), var(--g), var(--b), 0.5) 50%, rgba(var(--r), var(--g), var(--b), 0.8) 100%) 0% 100% / 300% 300% repeat;
+  background: rgba(var(--bg-a), var(--bg-a), var(--bg-a), 1)
+    linear-gradient(
+      90deg,
+      rgba(var(--bg-r), var(--bg-g), var(--bg-b), 1),
+      rgba(var(--bg-r), var(--bg-g), var(--bg-b), 1),
+      rgba(var(--bg-r), var(--bg-g), var(--bg-b), 0.2),
+      rgba(var(--bg-r), var(--bg-g), var(--bg-b), 1),
+      rgba(var(--bg-r), var(--bg-g), var(--bg-b), 1)
+    )
+    0% 100% / 300% 300% repeat;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: gradient 10s linear infinite;
+  --bg-r: 0;
+  --bg-g: 0;
+  --bg-b: 255;
+  --bg-a: 0;
+  transition:
+    --bg-r 0.2s ease,
+    --bg-g 0.2s ease,
+    --bg-b 0.2s ease,
+    --bg-a 0.2s ease;
+}
+
+body.dark #settings-username {
+  --bg-a: 255;
 }
 
 #settings-user #profile {
@@ -180,7 +202,9 @@ body:not(.dark) .settings-checkbox {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) scale(0);
-  transition: transform 0.1s ease, background 0.2s ease;
+  transition:
+    transform 0.1s ease,
+    background 0.2s ease;
 }
 
 .settings-checkbox:checked::after {
@@ -473,6 +497,10 @@ body:not(.dark) .settings-toggle-circle {
 }
 
 @keyframes gradient {
-  0% { background-position: 0% 0% }
-  100% { background-position: 300% 0% }
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 300% 0%;
+  }
 }

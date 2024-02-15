@@ -405,8 +405,10 @@ const switchTheme = (dark = !user.settings.theme, color) => {
   if (lr) lr.style.background = dark ? "#000" : "#fff";
   if (color) {
     const rgb = toRgba(color, 1, true);
+    const su = document.querySelector("#settings-username");
     Object.keys(rgb).forEach((k) => {
       document.body.style.setProperty("--bg-" + k, rgb[k]);
+      su.style.setProperty("--bg-" + k, rgb[k]);
       document.querySelector(":root").style.setProperty("--" + k, rgb[k]);
     });
   }
@@ -473,8 +475,11 @@ const uploadFile = (e) => {
     const ext = file.name.split(".").pop();
     fr.onload = (e) => {
       const chunks = [];
-      for (let i = 0; i < totalChunks; i++) chunks.push(e.target.result.slice(i * chunkSize, (i + 1) * chunkSize));
-      chunks.forEach((c, i) => chat.emit("upload chunk", [c, name, ext, i, totalChunks]));
+      for (let i = 0; i < totalChunks; i++)
+        chunks.push(e.target.result.slice(i * chunkSize, (i + 1) * chunkSize));
+      chunks.forEach((c, i) =>
+        chat.emit("upload chunk", [c, name, ext, i, totalChunks]),
+      );
     };
     fr.readAsArrayBuffer(file);
   }
