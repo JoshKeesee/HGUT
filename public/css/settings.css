@@ -59,8 +59,8 @@ body.dark #settings-username {
 }
 
 #settings-user #profile {
-  min-width: 60px;
-  min-height: 60px;
+  min-width: 100px;
+  min-height: 100px;
   border-radius: 50%;
 }
 
