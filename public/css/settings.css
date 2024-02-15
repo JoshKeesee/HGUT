@@ -25,6 +25,17 @@
   gap: 10px;
 }
 
+#settings-username {
+  font-size: 2rem;
+  font-weight: bold;
+  color: transparent;
+  background-clip: text;
+  background: rgba(255, 255, 255, 1) linear-gradient(90deg, rgba(var(--r), var(--g), var(--b), 0.8), rgba(var(--r), var(--g), var(--b), 0.5) 50%, rgba(var(--r), var(--g), var(--b), 0.8) 100%) 0% 100% / 300% 300% repeat;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient 10s linear infinite;
+}
+
 #settings-user #profile {
   min-width: 60px;
   min-height: 60px;
@@ -70,16 +81,6 @@
 
 #settings-user #profile #edit-profile:hover svg {
   transform: scale(1.2);
-}
-
-#settings-user #settings-username {
-  font-size: 1.2rem;
-  font-weight: bold;
-}
-
-#settings-user #settings-born-cont {
-  font-size: 0.8rem;
-  color: #666;
 }
 
 #settings-title {
@@ -165,6 +166,10 @@
   background: rgba(150, 150, 150, 0.2);
 }
 
+body:not(.dark) .settings-checkbox {
+  border-color: #000;
+}
+
 .settings-checkbox::after {
   content: "";
   width: 10px;
@@ -175,11 +180,15 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) scale(0);
-  transition: transform 0.1s ease;
+  transition: transform 0.1s ease, background 0.2s ease;
 }
 
 .settings-checkbox:checked::after {
   transform: translate(-50%, -50%) scale(1);
+}
+
+body:not(.dark) .settings-checkbox:checked::after {
+  background: #000;
 }
 
 .settings-option-title {
@@ -461,4 +470,9 @@ body:not(.dark) .settings-toggle-circle {
 
 .dropdown .submenu.active .option {
   display: block;
+}
+
+@keyframes gradient {
+  0% { background-position: 0% 0% }
+  100% { background-position: 300% 0% }
 }
