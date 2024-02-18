@@ -5,9 +5,6 @@ const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
 dotenv.config();
 const bcrypt = require("bcrypt");
-const ejs = require("ejs");
-
-app.engine("html", ejs.renderFile);
 
 const SERVER = "https://4xrv6hn1-8080.use.devtunnels.ms/";
 let profiles = {},
@@ -62,41 +59,15 @@ const auth = (req, res, next) => {
   if (req.user || cancel.includes(req.url.split("/")[1])) return next();
   res.redirect("/login");
 };
-const getUserData = async (req) => {
-  const user = req.cookies["user"];
-  return new Promise((res) => {
-    if (!profiles[user]) return res({});
-    fetch(SERVER + "user-data", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({
-        user: profiles[user].id,
-      }),
-    })
-      .then((r) => r.json())
-      .then((r) => res(r))
-      .catch(() => res({ error: true }));
-  });
-};
 app.use(async (req, res, next) => {
   await waitForProfiles();
-  const u = {
-    user: profiles[req.cookies["user"]],
-    profiles,
-    tab: req.query.tab || "messages",
-  };
-  req.user = u.user;
-  req.userData = u;
-  req.userData.tab = req.query.tab || "messages";
+  req.user = profiles[req.cookies["user"]];
   auth(req, res, next);
 });
 app.use(express.static(__dirname + "/public"));
 app.get("/", (req, res) => res.redirect("/chat"));
 app.get("/chat", (req, res) =>
-  res.render(__dirname + "/public/chat.html", req.userData),
+  res.sendFile(__dirname + "/public/chat.html"),
 );
 app.get("/login", (req, res) => {
   if (req.user) return res.redirect("/chat");

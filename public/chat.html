@@ -42,7 +42,7 @@
     <div id="header">
       <img id="icon" src="favicon.png" alt="icon" />
       <div id="tabs">
-        <div id="chats" class="tab <%= tab == 'chats' ? 'selected' : '' %>">
+        <div id="chats" class="tab">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -75,7 +75,7 @@
         </div>
         <div
           id="messages"
-          class="tab <%= tab == 'messages' ? 'selected' : '' %>"
+          class="tab"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -104,7 +104,7 @@
           </svg>
           <div>Messages</div>
         </div>
-        <div id="voice" class="tab <%= tab == 'voice' ? 'selected' : '' %>">
+        <div id="voice" class="tab">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -129,7 +129,7 @@
           </svg>
           <div>Voice Chat</div>
         </div>
-        <!-- <div id="music" class="tab <%= tab == 'music' ? 'selected' : '' %>">
+        <!-- <div id="music" class="tab">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -157,7 +157,7 @@
           </svg>
           <div>Music</div>
         </div> -->
-        <div id="files" class="tab <%= tab == 'files' ? 'selected' : '' %>">
+        <div id="files" class="tab">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -216,7 +216,7 @@
         </div>
         <div
           id="settings"
-          class="tab <%= tab == 'settings' ? 'selected' : '' %>"
+          class="tab"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -252,7 +252,7 @@
         </div>
         <div
           id="logout"
-          class="tab red <%= tab == 'logout' ? 'selected' : '' %>"
+          class="tab red"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -635,10 +635,8 @@
         <div id="settings-user">
           <div id="settings-profile"></div>
           <div>
-            <span id="settings-username"><%= user.name %></span><br />
-            <div class="settings-title small" id="settings-born">
-              <%= user.dob %>
-            </div>
+            <span id="settings-username"></span><br />
+            <div class="settings-title small" id="settings-born"></div>
           </div>
         </div>
         <div id="settings-content">
@@ -935,23 +933,32 @@
         })
         .join("");
     const SERVER = "https://4xrv6hn1-8080.use.devtunnels.ms/";
-    let user = <%- JSON.stringify(user) %>,
-    	profiles = <%- JSON.stringify(profiles) %>,
+    let user = {},
+    	profiles = {},
     	rooms = {};
+    const tab = new URL(window.location.href).searchParams.get("tab");
+    document.querySelectorAll(".tab").forEach((e) => e.classList.remove("selected"));
+    const el = document.querySelector("#" + tab);
+    if (el) el.classList.add("selected");
     const cache = JSON.parse(localStorage.getItem("cache"));
     if (cache) {
       const cms = document.querySelector("#chat-messages"), root = document.querySelector(":root");
       cache.user && (user = cache.user);
       cache.messages && (cms.innerHTML = cache.messages) && cms.scrollTo(0, cms.scrollHeight);
       user.settings?.theme && (document.body.className = user.settings.theme ? "dark" : "light");
+      const su = document.querySelector("#settings-username");
       if (user.settings?.accent) {
         const rgb = toRgba(user.color, 1, true);
-        const su = document.querySelector("#settings-username");
         Object.keys(rgb).forEach((k) => {
           document.body.style.setProperty("--bg-" + k, rgb[k]);
           su.style.setProperty("--bg-" + k, rgb[k]);
           document.querySelector(":root").style.setProperty("--" + k, rgb[k]);
         });
+      }
+      if (user) {
+        su.innerHTML = user.name;
+        document.querySelector("#settings-born").innerHTML = "Born: " + user.dob;
+        document.querySelector("#settings-profile").style.backgroundImage = "url(" + user.profile + ")";
       }
       localStorage.removeItem("cache");
     }
