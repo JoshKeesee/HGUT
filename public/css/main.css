@@ -811,6 +811,10 @@ input[type="file"] {
   background: rgba(150, 0, 0, 0.8);
 }
 
+#tabs .tab.selected svg {
+  animation: tab 0.5s ease;
+}
+
 #tabs .tab div {
   transform: scale(0.8);
   margin-left: 15px;
@@ -998,5 +1002,14 @@ body:has(#header.toggled) #tabs .tab {
   }
   100% {
     transform: translateY(0);
+  }
+}
+
+@keyframes tab {
+  0%, 100% {
+    transform: scale(1) translateY(-50%);
+  }
+  50% {
+    transform: scale(0.8) translateY(calc(-50% + 2px));
   }
 }

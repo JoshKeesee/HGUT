@@ -30,7 +30,7 @@
   font-weight: bold;
   color: transparent;
   background-clip: text;
-  background: rgba(var(--bg-a), var(--bg-a), var(--bg-a), 1)
+  background: rgba(var(--bg-a1), var(--bg-a1), var(--bg-a1), 1)
     linear-gradient(
       90deg,
       rgba(var(--bg-r), var(--bg-g), var(--bg-b), 1),
@@ -46,16 +46,16 @@
   --bg-r: 0;
   --bg-g: 0;
   --bg-b: 255;
-  --bg-a: 0;
+  --bg-a1: 0;
   transition:
     --bg-r 0.2s ease,
     --bg-g 0.2s ease,
     --bg-b 0.2s ease,
-    --bg-a 0.2s ease;
+    --bg-a1 0.2s ease;
 }
 
 body.dark #settings-username {
-  --bg-a: 255;
+  --bg-a1: 255;
 }
 
 #settings-user #profile {
@@ -95,8 +95,8 @@ body.dark #settings-username {
 }
 
 #settings-user #profile #edit-profile svg {
-  width: 20px;
-  height: 20px;
+  width: 30px;
+  height: 30px;
   pointer-events: none;
   transition: transform 0.2s ease;
 }
