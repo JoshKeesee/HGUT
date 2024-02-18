@@ -18,4 +18,3 @@ const createStatus = (text, type, u = null) => {
 
 window.addEventListener("offline", () => createStatus("Offline", "error"));
 window.addEventListener("online", () => createStatus("Online", "success"));
-if (user.settings.dontDisturb) createStatus("Do not disturb enabled", "info");

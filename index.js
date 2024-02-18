@@ -83,8 +83,11 @@ const getUserData = async (req) => {
 };
 app.use(async (req, res, next) => {
   await waitForProfiles();
-  let u = { error: true };
-  while (u.error) u = await getUserData(req);
+  const u = {
+    user: profiles[req.cookies["user"]],
+    profiles,
+    tab: req.query.tab || "messages",
+  };
   req.user = u.user;
   req.userData = u;
   req.userData.tab = req.query.tab || "messages";

@@ -596,12 +596,40 @@ const updateRooms = () => {
   });
 };
 
-const updateUser = async () => {
+const updateUser = () => {
   user.visible = document.visibilityState == "visible";
   updateSettings();
   updateRooms();
   updateProfiles();
   switchTheme(user.settings.theme, user.settings.accent ? user.color : null);
+  if (user.settings.dontDisturb) createStatus("Do not disturb enabled", "info");
 };
 
-updateUser();
+window.onbeforeunload = () => {
+  const cache = {
+    user: user,
+    messages: cms.innerHTML,
+    rooms,
+  };
+  localStorage.setItem("cache", JSON.stringify(cache));
+};
+
+const getData = async () => {
+  const res = await fetch(SERVER + "user-data", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify({ user: user.id }),
+  });
+  const data = await res.json();
+  return data;
+};
+
+getData().then((data) => {
+  user = data.user;
+  profiles = data.profiles;
+  rooms = data.rooms;
+  updateUser();
+});
