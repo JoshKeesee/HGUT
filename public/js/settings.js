@@ -20,7 +20,8 @@ settingToggles.forEach((t) => {
       document.querySelectorAll("#emoji").forEach((e) => {
         e.classList.toggle("disabled", !user.settings.emoji);
       });
-    if (s == "dontDisturb" && user.settings[s]) createStatus("Do not disturb enabled", "info");
+    if (s == "dontDisturb" && user.settings[s])
+      createStatus("Do not disturb enabled", "info");
     t.classList.toggle(
       "active",
       n ? user.settings[s][getDeviceId()] : user.settings[s],
@@ -46,10 +47,17 @@ settingForms.forEach((f) => {
       const n = f.querySelector("#settings-new-password").value;
       if (!o) return createStatus("Enter your old password", "error");
       if (!n) return createStatus("Enter a new password", "error");
-      if (o == n) return createStatus("New password can't be the same", "error");
-      if (n.length < 6) return createStatus("Password must be at least 6 characters", "error");
-      if (n.length > 50) return createStatus("Password can't be longer than 50 characters", "error");
-      if (n.match(/\s/)) return createStatus("Password can't contain spaces", "error");
+      if (o == n)
+        return createStatus("New password can't be the same", "error");
+      if (n.length < 6)
+        return createStatus("Password must be at least 6 characters", "error");
+      if (n.length > 50)
+        return createStatus(
+          "Password can't be longer than 50 characters",
+          "error",
+        );
+      if (n.match(/\s/))
+        return createStatus("Password can't contain spaces", "error");
       sub.disabled = true;
       const c = setTimeout(() => {
         createStatus("Error: request timed out", "error");
@@ -155,7 +163,9 @@ const updateSettings = () => {
       const reader = new FileReader();
       reader.onload = () => {
         pr.src = reader.result;
-        chat.emit("profile", pr.src, () => createStatus("Profile picture updated", "success"));
+        chat.emit("profile", pr.src, () =>
+          createStatus("Profile picture updated", "success"),
+        );
       };
       reader.readAsDataURL(e.target.files[0]);
       selectImg.remove();
@@ -231,11 +241,15 @@ const updateSettings = () => {
     const emoji = emojiInput.value;
     const ep = /[\p{Emoji}]/gu;
     if (!emoji) return;
-    if (user.emojis.length >= maxCustomEmojis) return createStatus("You can't add more emojis", "error");
-    if (user.emojis.includes(emoji)) return createStatus("You already have this emoji", "error");
-    if (emojis.includes(emoji)) return createStatus("You can't add a default emoji", "error");
+    if (user.emojis.length >= maxCustomEmojis)
+      return createStatus("You can't add more emojis", "error");
+    if (user.emojis.includes(emoji))
+      return createStatus("You already have this emoji", "error");
+    if (emojis.includes(emoji))
+      return createStatus("You can't add a default emoji", "error");
     if (!emoji.match(ep)) return createStatus("Invalid emoji", "error");
-    if (emoji.match(ep).length > 1) return createStatus("Only one emoji allowed", "error");
+    if (emoji.match(ep).length > 1)
+      return createStatus("Only one emoji allowed", "error");
     chat.emit("add emoji", emoji, (emojis) => {
       user.emojis = emojis;
       emojiCont.appendChild(createEmoji(emoji, true));

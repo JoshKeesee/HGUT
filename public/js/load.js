@@ -1,5 +1,5 @@
 const scripts = [
-  "https://cdn.socket.io/4.7.2/socket.io.min.js",
+  "https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.4/socket.io.min.js",
   "https://unpkg.com/peerjs@1.5.1/dist/peerjs.min.js",
   // "https://unpkg.com/tone@14.7.77/build/Tone.js",
   "js/animateGrid.js",
@@ -30,19 +30,27 @@ const createScript = async (src) => {
 
 window.onload = async () => {
   const tab = new URL(window.location.href).searchParams.get("tab");
-  document.querySelectorAll(".tab").forEach((e) => e.classList.remove("selected"));
+  document
+    .querySelectorAll(".tab")
+    .forEach((e) => e.classList.remove("selected"));
   const el = document.querySelector("#" + tab);
   if (el) el.classList.add("selected");
   const cache = JSON.parse(localStorage.getItem("cache"));
-  const su = document.querySelector("#settings-username"), cms = document.querySelector("#chat-messages"), root = document.querySelector(":root");
+  const su = document.querySelector("#settings-username"),
+    cms = document.querySelector("#chat-messages"),
+    root = document.querySelector(":root");
   if (cache) {
     cache.user && (user = cache.user);
-    cache.messages && (cms.innerHTML = cache.messages) && cms.scrollTo(0, cms.scrollHeight);
-    user.settings?.theme && (document.body.className = user.settings.theme ? "dark" : "light");
+    cache.messages &&
+      (cms.innerHTML = cache.messages) &&
+      cms.scrollTo(0, cms.scrollHeight);
+    user.settings?.theme &&
+      (document.body.className = user.settings.theme ? "dark" : "light");
     if (user) {
       su.innerHTML = user.name;
       document.querySelector("#settings-born").innerHTML = "Born: " + user.dob;
-      document.querySelector("#settings-profile").style.backgroundImage = "url(" + user.profile + ")";
+      document.querySelector("#settings-profile").style.backgroundImage =
+        "url(" + user.profile + ")";
     }
   }
   for (const src of scripts) await createScript(src);

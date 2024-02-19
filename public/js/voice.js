@@ -337,10 +337,12 @@ const updateVoiceOnline = () => {
 };
 
 const toggleCamera = async (set = !user.camera) => {
-  const s = await navigator.mediaDevices.getUserMedia({ video: true }).catch((e) => {
-    console.error(e);
-    if (e.name == "NotAllowedError") return e;
-  });
+  const s = await navigator.mediaDevices
+    .getUserMedia({ video: true })
+    .catch((e) => {
+      console.error(e);
+      if (e.name == "NotAllowedError") return e;
+    });
   if (s instanceof Error) return createStatus("Camera access denied", "error");
   if (!s) createStatus("Camera not found", "error");
   user.camera = stream && s ? set : false;
@@ -368,11 +370,14 @@ const toggleCamera = async (set = !user.camera) => {
 };
 
 const toggleAudio = async (set = !user.audio) => {
-  const s = await navigator.mediaDevices.getUserMedia({ audio: true }).catch((e) => {
-    console.error(e);
-    if (e.name == "NotAllowedError") return e;
-  });
-  if (s instanceof Error) return createStatus("Microphone access denied", "error");
+  const s = await navigator.mediaDevices
+    .getUserMedia({ audio: true })
+    .catch((e) => {
+      console.error(e);
+      if (e.name == "NotAllowedError") return e;
+    });
+  if (s instanceof Error)
+    return createStatus("Microphone access denied", "error");
   if (!s) return createStatus("Microphone not found", "error");
   user.audio = stream && s ? set : false;
   if (user.audio) {

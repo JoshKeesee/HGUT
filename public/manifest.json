@@ -1,47 +1,42 @@
 {
-	"description": "The chat app for The Hobo's Guide to the Universe of Texas.",
-	"dir": "ltr",
-	"display": "standalone",
-	"name": "HGUT",
-	"orientation": "any",
-	"scope": "/",
-	"short_name": "HGUT",
-	"start_url": "/chat",
-	"theme_color": "#000000",
-	"background_color": "#000000",
-	"categories": [
-		"books",
-		"chat",
-		"voice chat",
-		"hgut"
-	],
-	"screenshots": [],
-	"icons": [
-		{
-			"src": "/favicon.png",
-			"type": "image/png",
-			"sizes": "300x300",
-			"purpose": "any"
-		},
-		{
-			"src": "/big_icon.png",
-			"type": "image/png",
-			"sizes": "512x512",
-			"purpose": "maskable"
-		}
-	],
-	"shortcuts": [
-		{
-			"name": "Chat",
-			"url": "/chat?tab=messages",
-			"description": "Chat with friends!"
-		},
-		{
-			"name": "Voice Chat",
-			"url": "/chat?tab=voice",
-			"description": "Video chat with friends!"
-		}
-	],
-	"id": "hgut",
-	"lang": "en"
+  "description": "The chat app for The Hobo's Guide to the Universe of Texas.",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "HGUT",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "HGUT",
+  "start_url": "/chat",
+  "theme_color": "#000000",
+  "background_color": "#000000",
+  "categories": ["books", "chat", "voice chat", "hgut"],
+  "screenshots": [],
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "type": "image/png",
+      "sizes": "300x300",
+      "purpose": "any"
+    },
+    {
+      "src": "/big_icon.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Chat",
+      "url": "/chat?tab=messages",
+      "description": "Chat with friends!"
+    },
+    {
+      "name": "Voice Chat",
+      "url": "/chat?tab=voice",
+      "description": "Video chat with friends!"
+    }
+  ],
+  "id": "hgut",
+  "lang": "en"
 }

@@ -66,9 +66,7 @@ app.use(async (req, res, next) => {
 });
 app.use(express.static(__dirname + "/public"));
 app.get("/", (req, res) => res.redirect("/chat"));
-app.get("/chat", (req, res) =>
-  res.sendFile(__dirname + "/public/chat.html"),
-);
+app.get("/chat", (req, res) => res.sendFile(__dirname + "/public/chat.html"));
 app.get("/login", (req, res) => {
   if (req.user) return res.redirect("/chat");
   res.sendFile(__dirname + "/public/login.html");
