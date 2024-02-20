@@ -324,6 +324,16 @@ body:not(.dark) .settings-checkbox:checked::after {
   display: flex;
   align-items: center;
   gap: 10px;
+  width: fit-content;
+}
+
+.settings-text {
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.settings-text input {
+  width: 100%;
 }
 
 .settings-input {
