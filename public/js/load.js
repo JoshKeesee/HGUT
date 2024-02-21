@@ -67,6 +67,5 @@ window.onload = async () => {
     }
   }
   for (const src of scripts) await createScript(src);
-  switchTab(document.querySelector("#" + getCurrentTab()));
   document.querySelector("script[src='js/load.js']").remove();
 };

@@ -638,5 +638,6 @@ getData().then((d) => {
   user = d.user;
   profiles = d.profiles;
   rooms = d.rooms;
+  switchTab(document.querySelector("#" + getCurrentTab()));
   updateUser();
 });
