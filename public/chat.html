@@ -494,14 +494,14 @@
           <div id="chat-container">
             <div id="voice-chat-messages"></div>
             <div id="chat-input-box">
-              <input
-                type="text"
+              <div
                 id="voice-chat-input"
                 placeholder="Say something..."
                 autofocus
                 autocomplete="off"
-                maxlength="250"
-              />
+                contenteditable="true"
+                data-enable-grammarly="false"
+              ></div>
               <button id="voice-chat-send">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

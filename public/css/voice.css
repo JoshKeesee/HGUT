@@ -38,6 +38,11 @@
   grid-template-columns: calc(100% - 300px) 300px;
 }
 
+#main-cont #chat-input-box {
+  min-width: 290px;
+  max-width: 100%;
+}
+
 #controls {
   display: flex;
   position: relative;

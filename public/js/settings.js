@@ -123,6 +123,21 @@ const createEmoji = (e, d) => {
   const emoji = document.createElement("div");
   emoji.className = "emoji";
   emoji.innerText = e;
+  emoji.onclick = () => {
+    const a = emojiAnimations[emojis.indexOf(e)];
+    if (a) {
+      emoji.innerText = "";
+      const em = document.createElement("div");
+      em.className = "emoji-animation";
+      em.style.animationName = "emoji-" + a;
+      em.style.animationDuration = a == "tada" ? "2s" : "1s";
+      em.style.animationIterationCount = a == "tada" ? "1" : "2";
+      em.style.animationTimingFunction = "ease-in-out";
+      em.innerText = e;
+      em.addEventListener("animationend", () => em.style = "");
+      emoji.appendChild(em);
+    }
+  };
   const del = document.createElement("div");
   del.className = "delete";
   const delSvg = getSvg("x-svg", "M18 6L6 18M6 6l12 12", {

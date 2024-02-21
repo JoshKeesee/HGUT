@@ -143,7 +143,25 @@ voice.on("disconnect", () => {
   };
   i(false);
 });
-voice.on("chat message", addMessage);
+voice.on("chat message", ([msg, u, d]) => {
+  const vcm = document.querySelector("#voice-chat-messages");
+  const id = vcm.querySelectorAll("#chat-message").length;
+  const l = vcm.querySelectorAll("#chat-message")[id - 1];
+  const ld = l ? l.parentElement.querySelector("#time").innerText : null;
+  const lastDate = new Date();
+  if (ld) {
+    const t = ld.split(" ").find((e) => e.includes(":"));
+    const h = parseInt(t.split(":")[0]);
+    const m = parseInt(t.split(":")[1]);
+    const ldt = ld.split(" ").find((e) => e.includes("M")) == "AM" ? h * 60 + m : h * 60 + m + 720;
+    lastDate.setHours(Math.floor(ldt / 60));
+    lastDate.setMinutes(ldt % 60);
+    lastDate.setSeconds(0);
+    lastDate.setMilliseconds(0);
+  }
+  const lm = l ? { date: lastDate } : null;
+  addMessage([msg, u, d, lm, id]);
+});
 voice.on("profiles", (p) => (p ? (profiles = p) : ""));
 voice.on("user", async (u) => {
   user = u;
@@ -197,6 +215,7 @@ const addNewVideo = async (p, s, self = false, big = false, pre = false) => {
     const person = document.createElement("div");
     person.id = "person";
     person.classList.add("person-" + id);
+    person.style.background = p.peerId == user.peerId && !user.settings.accent ? "" : toRgba(p.color, 0.4);
     if (self) person.classList.add("self");
     if (pre) person.classList.add("pres");
     const video = document.createElement("video");
@@ -448,20 +467,31 @@ mic.onclick = () => toggleAudio();
 leave.onclick = () => switchTab(document.querySelector("#messages"));
 
 chatInput.onkeydown = (e) => {
-  const i = chatInput.value;
+  const i = chatInput.innerHTML,
+    ml = 1000;
+  if (e.key == "Enter") e.preventDefault();
+  if (i.length > ml) {
+    e.preventDefault();
+    chatInput.innerHTML = i.slice(0, ml);
+  }
   if (!i.replace(/\s/g, "").length) return;
-  if (e.key != "Enter" || i.length == 0 || i.length > 250 || !voice.connected)
+  if (
+    e.key != "Enter" ||
+    i.length == 0 ||
+    i.length > 250 ||
+    !voice.connected ||
+    e.shiftKey
+  )
     return;
   voice.emit("chat message", i);
-  chatInput.value = "";
+  chatInput.innerHTML = "";
 };
 
-voiceSend.onclick = (e) => {
-  const i = chatInput.value;
-  if (!i.replace(/\s/g, "").length) return;
-  if (i.length == 0 || i.length > 250 || !voice.connected) return;
-  voice.emit("chat message", i);
-  chatInput.value = "";
+chatInput.onpaste = (e) => {
+  e.preventDefault();
+  const text = e.clipboardData.getData("text/plain");
+  chatInput.innerHTML += text;
+  chatInput.innerHTML = chatInput.innerHTML.slice(0, 1000);
 };
 
 toggleChat.onclick = () => {
