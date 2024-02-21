@@ -620,7 +620,12 @@ const getData = async () => {
   r = await fetch(SERVER + "p");
   d = await r.json();
   profiles = d;
-  const name = document.cookie.split("user=")[1].replace(/%20/g, " ");
+  const name = document.cookie
+    .split(";")
+    .find((e) => e.includes("user="))
+    .split("=")[1]
+    .replace(/%20/g, " ");
+  if (!name) return window.location.reload();
   user = profiles[name].id;
   r = await fetch(SERVER + "user-data", {
     method: "POST",
