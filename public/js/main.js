@@ -7,9 +7,6 @@ const chat = io(SERVER + "chat", {
   reconnection: false,
   forceNew: true,
   closeOnBeforeunload: true,
-  query: {
-    user: document.cookie,
-  },
   extraHeaders: {
     user: document.cookie,
   },
@@ -19,9 +16,6 @@ const voice = io(SERVER + "voice", {
   reconnection: false,
   forceNew: true,
   closeOnBeforeunload: true,
-  query: {
-    user: document.cookie,
-  },
   extraHeaders: {
     user: document.cookie,
   },
