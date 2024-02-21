@@ -598,6 +598,7 @@ const updateRooms = () => {
 
 const updateUser = () => {
   user.visible = document.visibilityState == "visible";
+  setEmojis();
   updateSettings();
   updateRooms();
   updateProfiles();

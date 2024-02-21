@@ -1,11 +1,11 @@
 let resetI = null,
   currGrid = null;
 
-const resetItems = (grid) => {
+const resetItems = (grid, r = true) => {
   resetI = null;
   if (currGrid != grid.id) return;
   const children = [...grid.children];
-  children.forEach((c) => setItemPosition(null, c, null, true));
+  children.forEach((c) => setItemPosition(null, c, null, r));
 };
 
 const setItemPosition = (g, c, p, r = false) => {
@@ -67,11 +67,8 @@ const animateGridItem = (
   );
 };
 
-const animateGrid = async (grid, after, opts = {}) => {
-  if (resetI) {
-    resetItems(grid);
-    clearTimeout(resetI);
-  }
+const animateGrid = async (grid, after, opts = {}, afterAll = () => {}) => {
+  if (resetI) clearTimeout(resetI);
   currGrid = grid.id;
   const prevFilePositions = [],
     nextFilePositions = [];
@@ -86,6 +83,7 @@ const animateGrid = async (grid, after, opts = {}) => {
       y: n.y.toFixed(0),
     };
   });
+  resetItems(grid);
   if (opts.sync) await after();
   else after();
   children = [...grid.children];
@@ -123,4 +121,5 @@ const animateGrid = async (grid, after, opts = {}) => {
       (opts.duration || 500) +
       10,
   );
+  afterAll();
 };

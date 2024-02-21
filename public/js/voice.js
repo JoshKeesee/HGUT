@@ -465,31 +465,64 @@ voiceSend.onclick = (e) => {
 };
 
 toggleChat.onclick = () => {
-  toggleChat.classList.toggle("toggled");
-  const c = document.querySelector("#main-cont");
-  const ci = document.querySelector("#voice-chat-input");
-  if (toggleChat.classList.contains("toggled")) {
-    toggleChat.style.background = "rgba(var(--r), var(--g), var(--b), 0.9)";
-    c.classList.add("toggled");
-    ci.focus();
-  } else {
-    toggleChat.style = "";
-    c.classList.remove("toggled");
-    ci.blur();
-  }
+  const pec = document.querySelector("#people-container"),
+    c = document.querySelector("#main-cont"),
+    ci = document.querySelector("#voice-chat-input");
+  let t;
+  animateGrid(
+    pec,
+    () => {
+      c.getAnimations().forEach((a) => a.cancel());
+      toggleChat.classList.toggle("toggled");
+      t = toggleChat.classList.contains("toggled");
+      if (t) {
+        toggleChat.style.background = "rgba(var(--r), var(--g), var(--b), 0.9)";
+        c.classList.add("toggled");
+        ci.focus();
+      } else {
+        toggleChat.style = "";
+        c.classList.remove("toggled");
+        ci.blur();
+      }
+    },
+    {},
+    () => {
+      const n = [
+        "100% 0",
+        window.innerWidth > 700 ? "calc(100% - 300px) 300px" : "0 100%",
+      ];
+      c.animate(
+        { gridTemplateColumns: t ? n : n.reverse() },
+        { duration: 200, easing: "ease" },
+      );
+    },
+  );
 };
 
 present.onclick = togglePresent;
 
 toggleEmoji.onclick = () => {
-  toggleEmoji.classList.toggle("toggled");
-  if (toggleEmoji.classList.contains("toggled")) {
-    toggleEmoji.style.background = "rgba(var(--r), var(--g), var(--b), 0.9)";
-    emojiReactions.classList.remove("closed");
-  } else {
-    toggleEmoji.style = "";
-    emojiReactions.classList.add("closed");
-  }
+  const pec = document.querySelector("#people-container");
+  let t;
+  const a = () => {
+    emojiReactions.getAnimations().forEach((a) => a.cancel());
+    toggleEmoji.classList.toggle("toggled");
+    t = toggleEmoji.classList.contains("toggled");
+    if (t) {
+      toggleEmoji.style.background = "rgba(var(--r), var(--g), var(--b), 0.9)";
+      emojiReactions.classList.remove("closed");
+    } else {
+      toggleEmoji.style = "";
+      emojiReactions.classList.add("closed");
+    }
+  };
+  animateGrid(pec, a, {}, () => {
+    const n = ["0", "55px"];
+    emojiReactions.animate(
+      { height: t ? n : n.reverse() },
+      { duration: 200, easing: "ease" },
+    );
+  });
 };
 
 const createEmojiReaction = (emoji, u) => {

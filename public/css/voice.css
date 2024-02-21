@@ -32,7 +32,6 @@
   height: 100%;
   margin-left: auto;
   margin-right: auto;
-  transition: grid-template-columns 0.2s ease;
 }
 
 #main-cont.toggled {
@@ -344,8 +343,7 @@ body.dark #meeting-cont #divider {
 }
 
 #voice-chat-messages {
-  height: 90%;
-  max-height: 90%;
+  height: 100%;
   width: calc(100% - 0);
   overflow-y: scroll;
   display: flex;
@@ -403,7 +401,6 @@ body.dark #meeting-cont #divider {
   margin-top: -2.5px;
   margin-bottom: -2.5px;
   overflow: hidden;
-  transition: all 0.2s ease;
   user-select: none;
 }
 

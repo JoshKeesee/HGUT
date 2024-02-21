@@ -1,13 +1,23 @@
-const loadFiles = () => {
+let filesLoaded = false;
+
+const loadFiles = (a) => {
+  const fr = a?.target?.id == "files-refresh";
   chat.emit("files", (f) => {
+    if (fr) createStatus("Files refreshed", "success");
+    filesLoaded = true;
     const files = document.querySelector("#files-content");
     files.innerHTML = "";
     const e = f.reverse();
     if (!e.length) return (files.innerHTML = "No files found");
-    e.forEach((f) => {
+    let li = null;
+    e.forEach((f, i) => {
       const c = document.createElement("div");
       c.id = "file-cont";
       c.style.backgroundImage = `url(${SERVER + f.url})`;
+      if (Math.floor(Math.random() * 5) == 0 && (i - li > 3 || !li)) {
+        c.classList.add("active");
+        li = i;
+      }
       let r = roomNames[f.room];
       if (r.includes(user.id))
         r =
@@ -36,3 +46,5 @@ const loadFiles = () => {
     });
   });
 };
+
+document.querySelector("#files-refresh").onclick = loadFiles;

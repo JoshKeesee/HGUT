@@ -51,17 +51,22 @@ window.onload = async () => {
       document.querySelector("#settings-born").innerHTML = "Born: " + user.dob;
       document.querySelector("#settings-profile").style.backgroundImage =
         "url(" + user.profile + ")";
+      if (user.settings?.accent) {
+        const hex = user.color;
+        const rgb = {
+          r: parseInt(hex.slice(1, 3), 16),
+          g: parseInt(hex.slice(3, 5), 16),
+          b: parseInt(hex.slice(5, 7), 16),
+        };
+        Object.keys(rgb).forEach((k) => {
+          document.body.style.setProperty("--bg-" + k, rgb[k]);
+          su.style.setProperty("--bg-" + k, rgb[k]);
+          root.style.setProperty("--" + k, rgb[k]);
+        });
+      }
     }
   }
   for (const src of scripts) await createScript(src);
   switchTab(document.querySelector("#" + getCurrentTab()));
-  if (user.settings?.accent) {
-    const rgb = toRgba(user.color, 1, true);
-    Object.keys(rgb).forEach((k) => {
-      document.body.style.setProperty("--bg-" + k, rgb[k]);
-      su.style.setProperty("--bg-" + k, rgb[k]);
-      root.style.setProperty("--" + k, rgb[k]);
-    });
-  }
   document.querySelector("script[src='js/load.js']").remove();
 };

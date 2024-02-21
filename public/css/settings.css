@@ -251,7 +251,7 @@ body:not(.dark) .settings-checkbox:checked::after {
 }
 
 .settings-button.logout:not(:disabled):hover {
-  background: rgba(150, 0, 0, 0.8);
+  background: rgba(150, 0, 0, 0.4);
 }
 
 .settings-toggle {
@@ -273,18 +273,19 @@ body:not(.dark) .settings-checkbox:checked::after {
   gap: 10px;
   flex-wrap: wrap;
   padding: 10px 0;
+  padding-right: 10px;
   user-select: none;
 }
 
 .custom-emojis .emoji {
   position: relative;
-  width: 40px;
-  height: 40px;
+  width: 60px;
+  height: 60px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  font-size: 3rem;
   border-radius: 10px;
   background: rgba(150, 150, 150, 0.2);
   cursor: pointer;
@@ -512,5 +513,13 @@ body:not(.dark) .settings-toggle-circle {
   }
   100% {
     background-position: 300% 0%;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .custom-emojis .emoji {
+    width: 40px;
+    height: 40px;
+    font-size: 2rem;
   }
 }

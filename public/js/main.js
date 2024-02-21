@@ -730,7 +730,7 @@ const switchTab = async (tab) => {
     for (const m in peer.connections)
       peer.connections[m].forEach((c) => c.close());
   }
-  if (tab.id == "files") loadFiles();
+  if (tab.id == "files" && !filesLoaded) loadFiles();
 };
 
 const createNotification = ([m, u, r]) => {

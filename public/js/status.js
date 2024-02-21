@@ -18,3 +18,4 @@ const createStatus = (text, type, u = null) => {
 
 window.addEventListener("offline", () => createStatus("Offline", "error"));
 window.addEventListener("online", () => createStatus("Online", "success"));
+window.addEventListener("error", (e) => createStatus(e.error, "error"));

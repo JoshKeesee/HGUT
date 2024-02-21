@@ -846,7 +846,6 @@ body:has(#header.toggled) #tabs .tab {
 }
 
 #tabs .tab.red:hover {
-  color: #fff;
   background: rgba(150, 0, 0, 0.4);
 }
 
