@@ -5,9 +5,9 @@ const addImg = document.querySelector("#add-img"),
   addAudio = document.querySelector("#add-audio"),
   addPdf = document.querySelector("#add-pdf");
 const sd = document.querySelector("#scroll-down");
-const maxMessages = 50;
+const initMessages = 20, messagesPerLoad = 10;
 let maxMessagesReached = false,
-  currMessages = maxMessages,
+  currMessages = initMessages,
   mobile = window.innerWidth < 700,
   rn = [],
   roomNames = {},
@@ -67,7 +67,7 @@ chat.on("disconnect", () => {
   createStatus("Disconnected", "error");
   const i = (msg = true) => {
     if (getCurrentTab() == "voice") return;
-    if (chat.connected) return (currMessages = maxMessages);
+    if (chat.connected) return (currMessages = initMessages);
     if (msg) createStatus("Reconnecting...", "info");
     chat.connect();
     setTimeout(() => i(), 10000);
@@ -278,7 +278,7 @@ const switchChat = (el) => {
   }
   setTimeout(() => {
     cn.innerHTML = n;
-    chat.emit("join room", el.className.replace("c-", ""));
+    chat.emit("join room", el.className.replace("c-", ""), initMessages);
   }, 200);
 };
 
@@ -314,9 +314,6 @@ const updateProfiles = () => {
     .map((e) => e.character)
     .forEach((k) => {
       const r = findProfile(k, "character");
-      const cn = rn[r.id + "-" + user.id]
-        ? "c-" + r.id + "-" + user.id
-        : "c-" + user.id + "-" + r.id;
       const o = document.createElement("div");
       o.classList.add("option");
       o.innerText = r.name;
@@ -500,7 +497,7 @@ const updateScroll = () => {
   else sd.classList.remove("active");
   if (t > 10 || maxMessagesReached || loadingMessages) return;
   loadingMessages = true;
-  chat.emit("load messages", currMessages);
+  chat.emit("load messages", currMessages, messagesPerLoad);
 };
 
 cms.onscroll = updateScroll;
@@ -633,7 +630,7 @@ const getData = async () => {
       "Content-Type": "application/json",
       Accept: "application/json",
     },
-    body: JSON.stringify({ user }),
+    body: JSON.stringify({ user, mm: initMessages }),
   });
   d = await r.json();
   return d;
