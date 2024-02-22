@@ -152,7 +152,10 @@ voice.on("chat message", ([msg, u, d]) => {
     const t = ld.split(" ").find((e) => e.includes(":"));
     const h = parseInt(t.split(":")[0]);
     const m = parseInt(t.split(":")[1]);
-    const ldt = ld.split(" ").find((e) => e.includes("M")) == "AM" ? h * 60 + m : h * 60 + m + 720;
+    const ldt =
+      ld.split(" ").find((e) => e.includes("M")) == "AM"
+        ? h * 60 + m
+        : h * 60 + m + 720;
     lastDate.setHours(Math.floor(ldt / 60));
     lastDate.setMinutes(ldt % 60);
     lastDate.setSeconds(0);
@@ -214,7 +217,6 @@ const addNewVideo = async (p, s, self = false, big = false, pre = false) => {
     const person = document.createElement("div");
     person.id = "person";
     person.classList.add("person-" + id);
-    person.style.background = p.peerId == user.peerId && !user.settings.accent ? "" : toRgba(p.color, 0.4);
     if (self) person.classList.add("self");
     if (pre) person.classList.add("pres");
     const video = document.createElement("video");
