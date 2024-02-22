@@ -2,6 +2,7 @@ let user = {},
   profiles = {},
   rooms = {};
 const SERVER = "https://4xrv6hn1-8080.use.devtunnels.ms/";
+const appName = document.title.split(" - ")[0];
 const chat = io(SERVER + "chat", {
   autoConnect: false,
   reconnection: false,
@@ -681,7 +682,9 @@ const switchTab = async (tab) => {
   if (tab.id == "logout") return (window.location.href = "logout");
   const url = new URL(window.location.href);
   url.searchParams.set("tab", tab.id);
-  window.history.pushState({}, "", url);
+  const tabId = tab.dataset.id || tab.id;
+  document.title = appName + " - " + tabId.split(" ").map((e) => e[0].toUpperCase() + e.slice(1)).join(" ");
+  window.history.replaceState({}, "", url);
   tabs
     .querySelectorAll("div.tab")
     .forEach((e) => e.classList.remove("selected"));
