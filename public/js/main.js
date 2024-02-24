@@ -192,7 +192,7 @@ const getSvg = (id, path, opts = {}) => {
   svg.setAttribute("viewBox", "0 0 512 512");
   svg.setAttribute("fill", "currentColor");
   Object.keys(opts).forEach((k) => svg.setAttribute(k, opts[k]));
-  svg.innerHTML = `<path d="${path}"/>`;
+  svg.innerHTML = `<path d="${path}" id="${id}-path"/>`;
   return svg;
 };
 
@@ -264,119 +264,115 @@ const updateMessageProfiles = () => {
   });
 };
 
-const updateEditOnclick = () => {
-  const edit = document.querySelectorAll("#edit");
-  edit.forEach((e) => {
-    if (e.contentEditable != "inherit") return;
-    e.onclick = () => {
-      const cm = e.parentElement.parentElement;
-      const m = cm.querySelector("#message");
-      const u =
-        profiles[cm.querySelector("#profile").className.replace("-", " ")].name;
-      const id = m.className.split(" ")[0].replace("m-", "");
-      if (u != user.name) return;
-      const val = m.innerText;
-      m.contentEditable = true;
-      m.focus();
-      m.onblur = () => {
-        m.contentEditable = false;
-        if (m.innerText == val || m.innerText.length == 0)
-          return (m.innerHTML = linkify(val));
-        m.innerHTML = linkify(m.innerText);
-        chat.emit("edit", {
-          id,
-          message: m.innerText,
-          profile: u,
-          room: user.room,
-        });
-      };
-      m.onkeydown = (e) => {
-        if (e.key == "Enter") m.blur();
-      };
-    };
+const messageOnclick = (e) => {
+  let el = e.target;
+  const id = el.id;
+  if (!id) return;
+  const c = id.split("-");
+  if (c.length == 2) el = el.parentElement;
+  else if (c.length == 3) el = el.parentElement.parentElement;
+  if (id.includes("edit")) editOnclick(el);
+  else if (id.includes("reply")) replyOnclick(el);
+  else if (id.includes("delete")) deleteOnclick(el);
+  else if (id.includes("react")) reactOnclick(el);
+};
+
+cms.onclick = messageOnclick;
+
+const editOnclick = (e) => {
+  if (e.contentEditable != "inherit") return;
+  const cm = e.parentElement.parentElement;
+  const m = cm.querySelector("#message");
+  const u =
+    profiles[cm.querySelector("#profile").className.replace("-", " ")].name;
+  const id = m.className.split(" ")[0].replace("m-", "");
+  if (u != user.name) return;
+  const val = m.innerText;
+  m.contentEditable = true;
+  m.focus();
+  m.onblur = () => {
+    m.contentEditable = false;
+    if (m.innerText == val || m.innerText.length == 0)
+      return (m.innerHTML = linkify(val));
+    m.innerHTML = linkify(m.innerText);
+    chat.emit("edit", {
+      id,
+      message: m.innerText,
+      profile: u,
+      room: user.room,
+    });
+  };
+  m.onkeydown = (e) => {
+    if (e.key == "Enter" || e.key == "Escape") m.blur();
+  };
+};
+
+const replyOnclick = (e) => {
+  if (e.contentEditable != "inherit") return;
+  const cm = e.parentElement.parentElement;
+  const m = cm.querySelector("#message");
+  const myUser =
+    cm.querySelector("#profile").className.replace("-", " ") == user.name;
+  const id = m.className.split(" ")[0].replace("m-", "");
+  // const r = cm.cloneNode(true);
+  const r = createMessage(["", user, new Date(), null, -1], false, true, 0)[0];
+  // const pc = getProfile(user, false);
+  // pc.id = "profile";
+  // if (!myUser) r.querySelector("#message").before(pc);
+  document.querySelector(".r-" + id).appendChild(r);
+  const rm = r.querySelector("#message");
+  rm.style.background = toRgba(user.color, 0.4);
+  rm.contentEditable = true;
+  rm.innerText = "";
+  rm.focus();
+  rm.scrollIntoView({
+    behavior: "smooth",
+    block: "end",
+    inline: "nearest",
+  });
+  rm.onblur = () => {
+    if (rm.innerText.length == 0) return r.remove();
+    rm.contentEditable = false;
+    chat.emit("reply", {
+      id,
+      message: rm.innerText,
+      profile: user.name,
+      room: user.room,
+    });
+    r.remove();
+  };
+  rm.onkeydown = (e) => {
+    if (e.key == "Enter" || e.key == "Escape") rm.blur();
+  };
+  updateMessageProfiles();
+};
+
+const deleteOnclick = (e) => {
+  const cm = e.parentElement.parentElement;
+  const m = cm.querySelector("#message");
+  const u =
+    profiles[cm.querySelector("#profile").className.replace("-", " ")].name;
+  const id = m.className.split(" ")[0].replace("m-", "");
+  if (u != user.name) return;
+  chat.emit("delete", {
+    id,
+    profile: u,
+    room: user.room,
   });
 };
 
-const updateReplyOnclick = () => {
-  const reply = document.querySelectorAll("#reply");
-  reply.forEach((e) => {
-    if (e.contentEditable != "inherit") return;
-    e.onclick = () => {
-      const cm = e.parentElement.parentElement;
-      const m = cm.querySelector("#message");
-      const myUser =
-        cm.querySelector("#profile").className.replace("-", " ") == user.name;
-      const id = m.className.split(" ")[0].replace("m-", "");
-      const r = cm.cloneNode(true);
-      const pc = getProfile(user, false);
-      pc.id = "profile";
-      if (!myUser) r.querySelector("#message").before(pc);
-      document.querySelector(".r-" + id).appendChild(r);
-      const rm = r.querySelector("#message");
-      rm.style.background = toRgba(user.color, 0.4);
-      rm.contentEditable = true;
-      rm.innerText = "";
-      rm.focus();
-      rm.scrollIntoView({
-        behavior: "smooth",
-        block: "end",
-        inline: "nearest",
-      });
-      rm.onblur = () => {
-        if (rm.innerText.length == 0) return r.remove();
-        rm.contentEditable = false;
-        chat.emit("reply", {
-          id,
-          message: rm.innerText,
-          profile: user.name,
-          room: user.room,
-        });
-        r.remove();
-      };
-      rm.onkeydown = (e) => {
-        if (e.key == "Enter") rm.blur();
-      };
-      updateMessageProfiles();
-    };
+const reactOnclick = (e) => {
+  const cm = e.parentElement.parentElement;
+  const m = cm.querySelector("#message");
+  const u =
+    profiles[cm.querySelector("#profile").className.replace("-", " ")].name;
+  const id = m.className.split(" ")[0].replace("m-", "");
+  chat.emit("react", {
+    id,
+    profile: u,
+    room: user.room,
   });
-};
-
-const updateDeleteOnclick = () => {
-  const del = document.querySelectorAll("#delete");
-  del.forEach((e) => {
-    e.onclick = () => {
-      const cm = e.parentElement.parentElement;
-      const m = cm.querySelector("#message");
-      const u =
-        profiles[cm.querySelector("#profile").className.replace("-", " ")].name;
-      const id = m.className.split(" ")[0].replace("m-", "");
-      if (u != user.name) return;
-      chat.emit("delete", {
-        id,
-        profile: u,
-        room: user.room,
-      });
-    };
-  });
-};
-
-const updateReactOnclick = () => {
-  const react = document.querySelectorAll("#react");
-  react.forEach((e) => {
-    e.onclick = () => {
-      const cm = e.parentElement.parentElement;
-      const m = cm.querySelector("#message");
-      const u =
-        profiles[cm.querySelector("#profile").className.replace("-", " ")].name;
-      const id = m.className.split(" ")[0].replace("m-", "");
-      chat.emit("react", {
-        id,
-        profile: u,
-        room: user.room,
-      });
-      e.remove();
-    };
-  });
+  e.remove();
 };
 
 const addReplies = (m) => {
@@ -441,6 +437,7 @@ const createMessage = (
 ) => {
   const cm = document.createElement("div");
   cm.id = "chat-message";
+  // cm.onclick = messageOnclick;
   if (!reply) cm.classList.add("msg");
   const pc = getProfile(u, false);
   const m = document.createElement("div");
@@ -625,10 +622,6 @@ const addMessage = (
   });
 
   updateMessageProfiles();
-  updateEditOnclick();
-  updateReplyOnclick();
-  updateDeleteOnclick();
-  updateReactOnclick();
 
   if (scroll && !start && atBottom) {
     cms.scrollTo({
@@ -683,7 +676,13 @@ const switchTab = async (tab) => {
   const url = new URL(window.location.href);
   url.searchParams.set("tab", tab.id);
   const tabId = tab.dataset.id || tab.id;
-  document.title = appName + " - " + tabId.split(" ").map((e) => e[0].toUpperCase() + e.slice(1)).join(" ");
+  document.title =
+    appName +
+    " - " +
+    tabId
+      .split(" ")
+      .map((e) => e[0].toUpperCase() + e.slice(1))
+      .join(" ");
   window.history.replaceState({}, "", url);
   tabs
     .querySelectorAll("div.tab")
@@ -717,13 +716,13 @@ const switchTab = async (tab) => {
   pc.innerHTML = "";
   pc.appendChild(loading);
   if (tab.id == "voice") {
-    chat.disconnect();
-    voice.connect();
+    if (chat.connected) chat.disconnect();
+    if (!voice.connected) voice.connect();
     document.querySelector("#voice-chat-messages").innerHTML = "";
     document.querySelector("#chat-messages").innerHTML = "";
   } else {
-    voice.disconnect();
-    chat.connect();
+    if (voice.connected) voice.disconnect();
+    if (!chat.connected) chat.connect();
     for (const m in peer.connections)
       peer.connections[m].forEach((c) => c.close());
   }

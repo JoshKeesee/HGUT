@@ -81,6 +81,30 @@ html {
   inherits: false;
 }
 
+@property --cols {
+  syntax: "<number>";
+  initial-value: 1;
+  inherits: true;
+}
+
+@property --rows {
+  syntax: "<number>";
+  initial-value: 1;
+  inherits: true;
+}
+
+@property --mw {
+  syntax: "<any>";
+  initial-value: 100%;
+  inherits: true;
+}
+
+@property --mh {
+  syntax: "<any>";
+  initial-value: 100%;
+  inherits: true;
+}
+
 body.dark #bg {
   background: #000;
 }

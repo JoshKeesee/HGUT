@@ -5,7 +5,8 @@ const addImg = document.querySelector("#add-img"),
   addAudio = document.querySelector("#add-audio"),
   addPdf = document.querySelector("#add-pdf");
 const sd = document.querySelector("#scroll-down");
-const initMessages = 20, messagesPerLoad = 10;
+const initMessages = 20,
+  messagesPerLoad = 10;
 let maxMessagesReached = false,
   currMessages = initMessages,
   mobile = window.innerWidth < 700,
@@ -136,6 +137,7 @@ chat.on("clear", (u) => {
   cms.innerHTML = "Sorry, no messages here...";
   currMessages = 0;
   maxMessagesReached = true;
+  sd.classList.remove("active");
   createStatus("Messages cleared by " + u.name, "info");
 });
 chat.on("cancel clear", () =>
@@ -162,10 +164,6 @@ chat.on("reply", ({ id, message, user: u, prev, date, i }) => {
   if (c.id == "cont") r.appendChild(c);
   else if (appendEl) appendEl.appendChild(c);
   else if (appendBefore) appendEl.insertBefore(c, appendBefore);
-  updateMessageProfiles();
-  updateEditOnclick();
-  updateReplyOnclick();
-  updateDeleteOnclick();
   const cm = c.id == "cont" ? c.querySelector("#chat-message") : c;
   cm.animate(
     {
@@ -605,7 +603,7 @@ const updateUser = () => {
 
 window.onbeforeunload = () => {
   const cache = {
-    user: user,
+    user,
     messages: cms.innerHTML,
     rooms,
   };
