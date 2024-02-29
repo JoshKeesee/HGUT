@@ -94,13 +94,13 @@ html {
 }
 
 @property --mw {
-  syntax: "<any>";
+  syntax: "*";
   initial-value: 100%;
   inherits: true;
 }
 
 @property --mh {
-  syntax: "<any>";
+  syntax: "*";
   initial-value: 100%;
   inherits: true;
 }

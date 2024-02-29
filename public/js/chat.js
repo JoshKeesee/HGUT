@@ -612,23 +612,25 @@ window.onbeforeunload = () => {
 
 const getData = async () => {
   let r, d;
-  r = await fetch(SERVER + "p");
-  d = await r.json();
-  profiles = d;
+  if (typeof user != "number") {
+    r = await fetch(SERVER + "p");
+    d = await r.json();
+    profiles = d;
+  }
   const name = document.cookie
     .split(";")
     .find((e) => e.includes("user="))
     .split("=")[1]
     .replace(/%20/g, " ");
   if (!name) return window.location.reload();
-  user = profiles[name].id;
+  user = profiles[name]?.id || user;
   r = await fetch(SERVER + "user-data", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
     },
-    body: JSON.stringify({ user, mm: initMessages }),
+    body: JSON.stringify({ user }),
   });
   d = await r.json();
   return d;
