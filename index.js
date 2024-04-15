@@ -6,7 +6,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 const bcrypt = require("bcrypt");
 
-const SERVER = "https://4xrv6hn1-80.use.devtunnels.ms/";
+const SERVER = "https://2ms7px-3000.csb.app/";
 let profiles = {},
   accessCode = null;
 
