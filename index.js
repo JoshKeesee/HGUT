@@ -6,7 +6,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 const bcrypt = require("bcrypt");
 
-const SERVER = "https://2ms7px-3000.csb.app/";
+const SERVER = "https://yrn4rf-3000.csb.app/";
 let profiles = {},
   accessCode = null;
 
