@@ -87,10 +87,10 @@ chat.on("typing", (t) => {
       i == 0
         ? n
         : i == t.length - 1 && t.length == 2
-          ? " and " + n
-          : i == t.length - 1
-            ? ", and " + n
-            : ", " + n;
+        ? " and " + n
+        : i == t.length - 1
+        ? ", and " + n
+        : ", " + n;
   });
   typing.innerText = t.length == 1 ? text + " is typing" : text + " are typing";
 });
@@ -100,7 +100,7 @@ chat.on("unread", (u) => {
     const d =
       document.querySelector(".c-" + c + " #unread") ||
       document.querySelector(
-        ".c-" + c.replace("-", ",").split(",").reverse().join("-") + " #unread",
+        ".c-" + c.replace("-", ",").split(",").reverse().join("-") + " #unread"
       ) ||
       document.querySelector("." + c + " #unread");
     if (d) d.style.display = "block";
@@ -119,7 +119,7 @@ chat.on("chat message", async ([m, u, d, lm, a, mId]) => {
         w.charAt(w.length - 1).replace(/[.,\/#!?$%\^&\*;:{}=\-_`~()]/g, "") &&
         !w.includes("/files/")
           ? w + "eth"
-          : w,
+          : w
       )
       .join(" ");
   if (u.room == user.room) addMessage([m, u, d, lm, mId]);
@@ -141,7 +141,7 @@ chat.on("clear", (u) => {
   createStatus("Messages cleared by " + u.name, "info");
 });
 chat.on("cancel clear", () =>
-  createStatus("An error occurred while clearing messages", "error"),
+  createStatus("An error occurred while clearing messages", "error")
 );
 chat.on("edit", ({ id, message }) => {
   const m = document.querySelector(".m-" + id);
@@ -159,7 +159,7 @@ chat.on("reply", ({ id, message, user: u, prev, date, i }) => {
     i,
     false,
     true,
-    r,
+    r
   );
   if (c.id == "cont") r.appendChild(c);
   else if (appendEl) appendEl.appendChild(c);
@@ -173,7 +173,7 @@ chat.on("reply", ({ id, message, user: u, prev, date, i }) => {
     {
       duration: 300,
       easing: "ease-out",
-    },
+    }
   );
 });
 chat.on("delete", ({ id }) => {
@@ -250,7 +250,7 @@ const switchChat = (el) => {
   const lr =
     document.querySelector(".c-" + user.room) ||
     document.querySelector(
-      ".c-" + user.room.replace("-", ",").split(",").reverse().join("-"),
+      ".c-" + user.room.replace("-", ",").split(",").reverse().join("-")
     ) ||
     document.querySelector("." + user.room);
   lr.style = "";
@@ -270,7 +270,7 @@ const switchChat = (el) => {
       (e) =>
         (e.id == n.replace("-", ",").split(",")[0] ||
           e.id == n.replace("-", ",").split(",")[1]) &&
-        e.id != user.id,
+        e.id != user.id
     );
     if (p) n = p.name;
   }
@@ -297,7 +297,7 @@ const updateProfiles = () => {
         cn,
         true,
         user.unread.includes(cn.replace("c-", "")),
-        true,
+        true
       );
       crs.appendChild(cr);
       if (
@@ -343,8 +343,8 @@ const updateOnline = () => {
           document.querySelector(
             rn[r.id + "-" + user.id]
               ? ".c-" + r.id + "-" + user.id
-              : ".c-" + user.id + "-" + r.id,
-          ),
+              : ".c-" + user.id + "-" + r.id
+          )
         );
       pc.style.opacity = online[r.id].visible ? 1 : 0.5;
       bg.appendChild(pc);
@@ -376,8 +376,8 @@ const updateOnline = () => {
             document.querySelector(
               rn[r.id + "-" + user.id]
                 ? ".c-" + r.id + "-" + user.id
-                : ".c-" + user.id + "-" + r.id,
-            ),
+                : ".c-" + user.id + "-" + r.id
+            )
           );
         bg.appendChild(pc);
         onl.appendChild(bg);
@@ -393,7 +393,7 @@ const switchTheme = (dark = !user.settings.theme, color) => {
       ? null
       : document.querySelector(".c-" + user.room) ||
         document.querySelector(
-          ".c-" + user.room?.replace("-", ",").split(",").reverse().join("-"),
+          ".c-" + user.room?.replace("-", ",").split(",").reverse().join("-")
         ) ||
         document.querySelector("." + user.room) ||
         null;
@@ -473,7 +473,7 @@ const uploadFile = (e) => {
       for (let i = 0; i < totalChunks; i++)
         chunks.push(e.target.result.slice(i * chunkSize, (i + 1) * chunkSize));
       chunks.forEach((c, i) =>
-        chat.emit("upload chunk", [c, name, ext, i, totalChunks]),
+        chat.emit("upload chunk", [c, name, ext, i, totalChunks])
       );
     };
     fr.readAsArrayBuffer(file);
@@ -525,7 +525,7 @@ const loadMessages = (messages, start = true) => {
         m.reactions,
       ],
       false,
-      start,
+      start
     );
   });
   maxMessagesReached = !messages[0] || messages[0].id == 0;
@@ -547,7 +547,7 @@ const updateRoomName = (cr) => {
       (e) =>
         (e.id == n.replace("-", ",").split(",")[0] ||
           e.id == n.replace("-", ",").split(",")[1]) &&
-        e.id != user.id,
+        e.id != user.id
     );
     if (p) n = p.name;
   }
@@ -567,9 +567,9 @@ const updateRooms = () => {
   crs.appendChild(
     roomButton("Book Link", "", false, () =>
       window.open(
-        "https://docs.google.com/document/d/1xsxMONOYieKK_a87PTJwvmgwRZVNxOE4OhxtWc2oz7I/edit",
-      ),
-    ),
+        "https://docs.google.com/document/d/1xsxMONOYieKK_a87PTJwvmgwRZVNxOE4OhxtWc2oz7I/edit"
+      )
+    )
   );
   Object.keys(rooms).forEach((k) => {
     if (!rooms[k].allowed.includes(user.id) && rooms[k].allowed != "all")
@@ -580,7 +580,7 @@ const updateRooms = () => {
       r.name,
       k.replaceAll(" ", "-"),
       true,
-      user.unread.includes(k),
+      user.unread.includes(k)
     );
     if (
       !Object.values(profiles).find((e) => e.id == u[0]) &&
@@ -623,7 +623,8 @@ const getData = async () => {
     .split("=")[1]
     .replace(/%20/g, " ");
   if (!name) return window.location.reload();
-  user = profiles[name]?.id || user;
+  const id = profiles[name]?.id;
+  user = typeof id == "number" ? id : user;
   r = await fetch(SERVER + "user-data", {
     method: "POST",
     headers: {
@@ -637,6 +638,7 @@ const getData = async () => {
 };
 
 getData().then((d) => {
+  if (d.error) return;
   user = d.user;
   profiles = d.profiles;
   rooms = d.rooms;

@@ -16,6 +16,7 @@ const scripts = [
 ];
 
 const sync = [0, 1, 6, 7, 8, 9];
+window.user = {};
 
 const createScript = async (src) => {
   const script = document.createElement("script");
