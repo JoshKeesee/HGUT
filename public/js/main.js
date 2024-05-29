@@ -274,7 +274,7 @@ const messageOnclick = (e) => {
   if (id.includes("edit")) editOnclick(el);
   else if (id.includes("reply")) replyOnclick(el);
   else if (id.includes("delete")) deleteOnclick(el);
-  else if (id.includes("react")) reactOnclick(el);
+  else if (id.includes("react") && !id.includes("reacts")) reactOnclick(el);
 };
 
 cms.onclick = messageOnclick;

@@ -40,10 +40,6 @@
   display: flex;
 }
 
-body:has(#header #tabs #chats.selected) #notifications {
-  display: none;
-}
-
 #chat-sidebar {
   display: none;
   flex-direction: column;
@@ -109,6 +105,28 @@ body:has(#header #tabs #chats.selected) #notifications {
   z-index: 1;
 }
 
+#tag {
+  font-size: 12px;
+  font-weight: 600;
+  color: #006eff;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: #fff;
+  padding: 5px;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+body.dark #tag {
+  background: #000;
+}
+
+#tag svg {
+  width: 12px;
+  height: 12px;
+}
+
 #chat-room-bg {
   position: absolute;
   top: 0;
@@ -136,13 +154,7 @@ body:has(#header #tabs #chats.selected) #notifications {
   width: 15px;
   height: 15px;
   padding: 2px;
-  background: #fff;
   border-radius: 50%;
-  transition: background 0.2s ease;
-}
-
-body.dark #unread {
-  background: #000;
 }
 
 #unread #dot {
