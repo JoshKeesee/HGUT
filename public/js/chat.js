@@ -112,16 +112,6 @@ chat.on("load messages", ([messages, start = true]) => {
 chat.on("chat message", async ([m, u, d, lm, a, mId]) => {
   if (!(a.includes(user.id) || a == "all")) return;
   let messageText = m;
-  if (u.room == "eth")
-    messageText = messageText
-      .split(" ")
-      .map((w) =>
-        w.charAt(w.length - 1).replace(/[.,\/#!?$%\^&\*;:{}=\-_`~()]/g, "") &&
-        !w.includes("/files/")
-          ? w + "eth"
-          : w
-      )
-      .join(" ");
   if (u.room == user.room) addMessage([m, u, d, lm, mId]);
   if (u.room != user.room || getCurrentTab() != "messages")
     createNotification([messageText, u, u.room]);

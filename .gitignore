@@ -6,3 +6,4 @@ node_modules
 public/js/min.js
 .replit
 replit.nix
+package-lock.json

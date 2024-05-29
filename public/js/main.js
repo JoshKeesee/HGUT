@@ -445,19 +445,8 @@ const createMessage = (
   if (!reply)
     m.classList.add(typeof currMessages != "undefined" ? "m-" + mId : "");
   m.style.background = toRgba(u.color, 0.5);
-  let messageText = message;
-  if (user.room == "eth")
-    messageText = messageText
-      .split(" ")
-      .map((w) =>
-        w.charAt(w.length - 1).replace(/[.,\/#!?$%\^&\*;:{}=\-_`~()]/g, "") &&
-        !w.includes("/files/")
-          ? w + "eth"
-          : w,
-      )
-      .join(" ");
   const t =
-    messageText.replace(/<\s*br[^>]?>/, "\n").replace(/(<([^>]+)>)/g, "") ||
+    message.replace(/<\s*br[^>]?>/, "\n").replace(/(<([^>]+)>)/g, "") ||
     " ";
   m.innerHTML = linkify(t, !start);
   const opts = document.createElement("div");
