@@ -6,7 +6,8 @@ const addImg = document.querySelector("#add-img"),
   addPdf = document.querySelector("#add-pdf");
 const sd = document.querySelector("#scroll-down");
 const initMessages = 20,
-  messagesPerLoad = 10;
+  messagesPerLoad = 10,
+  ml = 1000;
 let maxMessagesReached = false,
   currMessages = initMessages,
   mobile = window.innerWidth < 700,
@@ -416,18 +417,18 @@ const switchTheme = (dark = !user.settings.theme, color) => {
 };
 
 input.onkeydown = (e) => {
-  const i = input.innerHTML,
-    ml = 1000;
+  const i = input.innerHTML;
   if (e.key == "Enter") e.preventDefault();
   if (i.length > ml) {
     e.preventDefault();
     input.innerHTML = i.slice(0, ml);
+    setCursor(input, ml);
   }
   if (!i.replace(/\s/g, "").length) return;
   if (
     e.key != "Enter" ||
     i.length == 0 ||
-    i.length > 250 ||
+    i.length > ml ||
     loadingMessages ||
     !chat.connected ||
     e.shiftKey
@@ -441,6 +442,11 @@ input.onkeyup = (e) => {
   const i = input.innerHTML;
   if (i.length > 0) chat.emit("typing", true);
   else chat.emit("typing", false);
+  if (i.length > ml) {
+    e.preventDefault();
+    input.innerHTML = i.slice(0, ml);
+    setCursor(input, ml);
+  }
 };
 
 input.onpaste = (e) => {
@@ -448,6 +454,7 @@ input.onpaste = (e) => {
   const text = e.clipboardData.getData("text/plain");
   input.innerHTML += text;
   input.innerHTML = input.innerHTML.slice(0, 1000);
+  setCursor(input, input.innerHTML.length);
 };
 
 send.onclick = (e) => {
@@ -455,7 +462,7 @@ send.onclick = (e) => {
   if (!i.replace(/\s/g, "").length) return;
   if (!i.replace(/<\s*br[^>]?>/, "\n").replace(/(<([^>]+)>)/g, "").length)
     return;
-  if (i.length == 0 || i.length > 250 || loadingMessages || !chat.connected)
+  if (i.length == 0 || i.length > ml || loadingMessages || !chat.connected)
     return;
   chat.emit("chat message", i);
   input.innerHTML = "";

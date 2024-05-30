@@ -1,5 +1,7 @@
 const cInput = document.querySelector("#chat-input");
 const vcInput = document.querySelector("#voice-chat-input");
+const maxTokens = 5
+let lastInput, numTokens = 1;
 
 const predictText = async (text) => {
     if (!text) return;
@@ -11,7 +13,7 @@ const predictText = async (text) => {
         },
         body: JSON.stringify({
             text,
-            max_tokens: 1,
+            max_tokens: numTokens,
             user: decodeURI(
                 document.cookie
                   .split(";")
@@ -37,7 +39,9 @@ const setCursor = (el, pos) => {
 
 const predictFn = async (e, el) => {
     if (!user?.settings?.predictText) return el.dataset.predicted = "";
-    if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey || e.key == "Escape" || e.key == "ArrowLeft" || e.key == "ArrowRight" || e.key == "ArrowUp" || e.key == "ArrowDown") return;
+    if (e.key == "Tab") e.preventDefault();
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (e.key == "ArrowLeft" || e.key == "ArrowRight" || e.key == "ArrowUp" || e.key == "ArrowDown" || e.key == "Escape") return el.dataset.predicted = "";
     const cp = window.getSelection().getRangeAt(0).startOffset;
     if (cp < el.innerText.length) return;
     if (e.key == "Enter" || e.key == "Backspace") return;
@@ -48,17 +52,32 @@ const predictFn = async (e, el) => {
         el.innerText += el.dataset.predicted.replace(" [TAB]", "");
         setCursor(el, el.innerText.length);
         el.dataset.predicted = "";
+        numTokens += 1;
+        if (numTokens > maxTokens) numTokens = maxTokens;
     } else if (el.dataset.predicted) {
         if (e.key == el.dataset.predicted[0]) {
             el.dataset.predicted = el.dataset.predicted.slice(1);
             if (el.dataset.predicted != " [TAB]") return;
         }
         el.dataset.predicted = "";
-    }
-    const p = await predictText(el.innerText);
-    if (!p || !p.trim()) return el.dataset.predicted = "";
-    el.dataset.predicted = p + " [TAB]";
+    } else numTokens = 1;
+    if (el.innerText.length < 2) return el.dataset.predicted = "";
+};
+
+const waitFn = async (e, el) => {
+    clearTimeout(lastInput);
+    lastInput = setTimeout(async () => {
+        if (!user?.settings?.predictText) return el.dataset.predicted = "";
+        if (el.dataset.predicted) return;
+        let p = await predictText(el.innerText);
+        if (!p || !p.trim()) return el.dataset.predicted = "";
+        p += " [TAB]";
+        el.dataset.predicted = p;
+        if (el.innerHTML.endsWith(" ")) el.dataset.predicted = p.trim();
+    }, 100);
 };
 
 cInput.addEventListener("keydown", (e) => predictFn(e, cInput));
+cInput.addEventListener("keyup", (e) => waitFn(e, cInput));
 vcInput.addEventListener("keydown", (e) => predictFn(e, vcInput));
+vcInput.addEventListener("keyup", (e) => waitFn(e, vcInput));

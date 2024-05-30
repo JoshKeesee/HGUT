@@ -468,18 +468,18 @@ mic.onclick = () => toggleAudio();
 leave.onclick = () => switchTab(document.querySelector("#messages"));
 
 chatInput.onkeydown = (e) => {
-  const i = chatInput.innerHTML,
-    ml = 1000;
+  const i = chatInput.innerHTML;
   if (e.key == "Enter") e.preventDefault();
   if (i.length > ml) {
     e.preventDefault();
     chatInput.innerHTML = i.slice(0, ml);
+    setCursor(chatInput, ml);
   }
   if (!i.replace(/\s/g, "").length) return;
   if (
     e.key != "Enter" ||
     i.length == 0 ||
-    i.length > 250 ||
+    i.length > ml ||
     !voice.connected ||
     e.shiftKey
   )
@@ -488,11 +488,21 @@ chatInput.onkeydown = (e) => {
   chatInput.innerHTML = "";
 };
 
+chatInput.onkeyup = (e) => {
+  const i = chatInput.innerHTML;
+  if (i.length > ml) {
+    e.preventDefault();
+    chatInput.innerHTML = i.slice(0, ml);
+    setCursor(chatInput, ml);
+  }
+};
+
 chatInput.onpaste = (e) => {
   e.preventDefault();
   const text = e.clipboardData.getData("text/plain");
   chatInput.innerHTML += text;
-  chatInput.innerHTML = chatInput.innerHTML.slice(0, 1000);
+  chatInput.innerHTML = chatInput.innerHTML.slice(0, ml);
+  setCursor(chatInput, chatInput.innerHTML.length);
 };
 
 toggleChat.onclick = () => {
