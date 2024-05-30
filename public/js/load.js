@@ -11,6 +11,7 @@ const scripts = [
   "js/settings.js",
   "js/chat.js",
   "js/camera.js",
+  "js/predictText.js",
   // "js/music.js",
   "js/reg.js",
 ];
