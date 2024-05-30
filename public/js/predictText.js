@@ -47,7 +47,6 @@ const predictFn = async (e, el) => {
     if (e.key == "Enter" || e.key == "Backspace") return;
     if (el.innerText.endsWith(" ") && el.dataset.predicted) el.dataset.predicted = "";
     if (e.key == "Tab") {
-        e.preventDefault();
         if (!el.dataset.predicted) return;
         el.innerText += el.dataset.predicted.replace(" [TAB]", "");
         setCursor(el, el.innerText.length);
