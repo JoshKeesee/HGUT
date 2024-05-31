@@ -2,8 +2,7 @@ node_modules
 .devcontainer
 .codesandbox
 .vscode
+.firebase
+.github
 .env
-public/js/min.js
-.replit
-replit.nix
 package-lock.json
