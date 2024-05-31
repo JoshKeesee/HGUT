@@ -231,6 +231,7 @@ body.dark #person #vol {
   transform: translateY(-50%);
   user-select: none;
   display: flex;
+  align-items: center;
   transition: font-size 0.2s ease;
 }
 
@@ -486,6 +487,13 @@ body.dark #meeting-cont #divider {
 
   #main-cont.toggled {
     grid-template-columns: 0 100%;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  #controls #control-bar {
+    justify-content: flex-end;
+    width: 100%;
   }
 }
 

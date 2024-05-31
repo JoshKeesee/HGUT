@@ -277,7 +277,7 @@ const messageOnclick = (e) => {
   else if (id.includes("react") && !id.includes("reacts")) reactOnclick(el);
 };
 
-cms.onclick = messageOnclick;
+if (cms) cms.onclick = messageOnclick;
 
 const editOnclick = (e) => {
   if (e.contentEditable != "inherit") return;
