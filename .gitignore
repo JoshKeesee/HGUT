@@ -2,7 +2,6 @@ node_modules
 .devcontainer
 .codesandbox
 .vscode
-.firebase
 .github
 .env
 package-lock.json
