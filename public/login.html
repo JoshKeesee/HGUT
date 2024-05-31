@@ -6,6 +6,14 @@
 	<link rel="stylesheet" href="css/login.css" />
 	<link rel="manifest" href="manifest.json" />
 	<link rel="icon" href="favicon.png" />
+	<script>
+		if (decodeURI(
+		  document.cookie
+			.split("; ")
+			.find(e => e.startsWith("user="))
+			?.split("=")[1]
+		) != "undefined") location.href = "/chat.html";
+	</script>
 </html>
 
 <body class="light">
@@ -41,7 +49,7 @@
 			</form>
 		</div>
 	</div>
-  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  	<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 	<script src="js/main.js"></script>
 	<script src="js/login.js"></script>
 </body>

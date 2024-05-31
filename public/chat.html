@@ -19,6 +19,14 @@
   <link rel="stylesheet" href="css/loading.css" />
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="favicon.png" />
+  <script>
+    if (decodeURI(
+      document.cookie
+        .split("; ")
+        .find(e => e.startsWith("user="))
+        ?.split("=")[1]
+    ) == "undefined") location.href = "/login.html";
+  </script>
 </html>
 
 <body>

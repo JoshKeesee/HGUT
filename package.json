@@ -1,17 +1,14 @@
 {
-  "dependencies": {
-    "bcrypt": "^5.1.1",
-    "cookie-parser": "^1.4.6",
-    "dotenv": "^16.4.1",
-    "express": "^4.19.2"
-  },
   "name": "hgut",
   "version": "1.0.0",
   "description": "The chat app for The Hobo's Guide to the Universe of Texas",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "http-server -c-1 -s -p 3000"
   },
   "author": "JoshKeesee",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "http-server": "^14.1.1"
+  }
 }

@@ -661,7 +661,11 @@ const getCurrentTab = () => {
 const switchTab = async (tab) => {
   if (!tab) return;
   if (tab.id == "theme") return;
-  if (tab.id == "logout") return (window.location.href = "logout");
+  if (tab.id == "logout") {
+    document.cookie = "user=; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+    window.location.href = "/";
+    return;
+  }
   const url = new URL(window.location.href);
   url.searchParams.set("tab", tab.id);
   const tabId = tab.dataset.id || tab.id;

@@ -1,0 +1,10 @@
+<script>
+  const user = decodeURI(
+    document.cookie
+      .split("; ")
+      .find(e => e.startsWith("user="))
+      ?.split("=")[1]
+  );
+  if (user != "undefined") location.href = "/chat.html";
+  else location.href = "/login.html";
+</script>

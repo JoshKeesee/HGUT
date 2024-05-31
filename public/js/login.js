@@ -4,7 +4,7 @@ const form = document.querySelector("form");
 form.onsubmit = async (e) => {
   e.preventDefault();
   const data = new FormData(form);
-  const r = await fetch("login", {
+  const r = await fetch(SERVER + "login", {
     method: "POST",
     body: JSON.stringify(Object.fromEntries(data)),
     headers: {
@@ -14,7 +14,10 @@ form.onsubmit = async (e) => {
   });
   const j = await r.json();
   if (j.error) form.querySelector(".error").textContent = j.error;
-  else window.location.href = j.redirect;
+  else {
+    document.cookie = `user=${j.user}; max-age=9999999999999; expires=${new Date(Date.now() + 9999999999999)};`;
+    window.location.href = j.redirect;
+  }
 };
 
 const switchTheme = (dark = !theme) => {
