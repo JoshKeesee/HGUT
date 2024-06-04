@@ -199,7 +199,7 @@ const getSvg = (id, path, opts = {}) => {
 const findProfile = (id, k = "id") => {
   const keys = Object.keys(profiles);
   for (const p in keys)
-    if (profiles[keys[p]][k] == id) return profiles[keys[p]];
+    if (profiles[keys[p]][k] === id) return profiles[keys[p]];
   return null;
 };
 

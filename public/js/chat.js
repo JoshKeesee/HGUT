@@ -26,11 +26,13 @@ const roomButton = (text, cn, un = true, d, p = false) => {
   cr.onclick = typeof d == "function" ? d : () => switchChat(cr);
   const crbg = document.createElement("div");
   crbg.id = "chat-room-bg";
-  const id = cn
+  const id = parseInt(
+    cn
       .replace("c-", "")
       .replace("-", ",")
       .split(",")
-      .find((e) => e != user.id);
+      .find((e) => e != user.id)
+  );
   const u = findProfile(id);
   if (p) {
     const profile = getProfile(u);
