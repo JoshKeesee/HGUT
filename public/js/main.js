@@ -311,14 +311,8 @@ const replyOnclick = (e) => {
   if (e.contentEditable != "inherit") return;
   const cm = e.parentElement.parentElement;
   const m = cm.querySelector("#message");
-  const myUser =
-    cm.querySelector("#profile").className.replace("-", " ") == user.name;
   const id = m.className.split(" ")[0].replace("m-", "");
-  // const r = cm.cloneNode(true);
   const r = createMessage(["", user, new Date(), null, -1], false, true, 0)[0];
-  // const pc = getProfile(user, false);
-  // pc.id = "profile";
-  // if (!myUser) r.querySelector("#message").before(pc);
   document.querySelector(".r-" + id).appendChild(r);
   const rm = r.querySelector("#message");
   rm.style.background = toRgba(user.color, 0.4);
@@ -437,7 +431,6 @@ const createMessage = (
 ) => {
   const cm = document.createElement("div");
   cm.id = "chat-message";
-  // cm.onclick = messageOnclick;
   if (!reply) cm.classList.add("msg");
   const pc = getProfile(u, false);
   const m = document.createElement("div");

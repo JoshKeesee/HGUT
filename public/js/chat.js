@@ -281,10 +281,8 @@ const switchChat = (el) => {
     );
     if (p) n = p.name;
   }
-  setTimeout(() => {
-    cn.innerHTML = n;
-    chat.emit("join room", el.className.replace("c-", ""), initMessages);
-  }, 200);
+  cn.innerHTML = n;
+  chat.emit("join room", el.className.replace("c-", ""), initMessages);
 };
 
 const updateProfiles = () => {
