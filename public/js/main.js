@@ -139,7 +139,7 @@ const linkify = (s, sc = false) => {
       a.target = "_blank";
       a.innerText = "View PDF";
       return a.outerHTML;
-    } else if (ext == "png" || ext == "jpg" || ext == "jpeg" || ext == "gif") {
+    } else if (ext == "png" || ext == "jpg" || ext == "jpeg" || ext == "gif" || ext == "webp") {
       const img = new Image();
       img.src = src;
       img.onload = () => {
