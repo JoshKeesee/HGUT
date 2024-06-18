@@ -236,11 +236,10 @@ chat.on("update profile", (u) => {
   profiles[u.name] = u;
   const pics = document.querySelectorAll("." + u.name.replaceAll(" ", "-"));
   pics.forEach((p) => {
-    const img = p.querySelector("img"),
-      initials = p.querySelector("#initials");
-    img.src = SERVER + u.profile;
-    img.style.display = u.profile ? "" : "none";
-    initials.style.display = u.profile ? "none" : "";
+    const i = p.querySelector("img");
+    const ic = i.cloneNode(true);
+    ic.src = SERVER + u.profile;
+    i.parentNode.replaceChild(ic, i);
   });
   createStatus(u.name + " updated their profile", "person", u);
 });
