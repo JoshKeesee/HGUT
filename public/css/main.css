@@ -334,12 +334,6 @@ body:not(.dark) #online {
   color: #999;
 }
 
-#chat-input:not(:empty)::after,
-#voice-chat-input:not(:empty)::after {
-  content: attr(data-predicted);
-  color: #999;
-}
-
 #chat-input-box:has(#chat-input:not(:empty)) .btn {
   transform: scale(0);
   opacity: 0;
