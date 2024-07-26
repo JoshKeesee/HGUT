@@ -1,4 +1,4 @@
-const SERVER = "https://vtxy7h-3000.csb.app/";
+const SERVER = "https://3l7m6r-3000.csb.app/";
 
 self.addEventListener("install", (e) => e.waitUntil(self.skipWaiting()));
 self.addEventListener("activate", (e) => e.waitUntil(self.clients.claim()));

@@ -1,7 +1,7 @@
 let user = {},
   profiles = {},
   rooms = {};
-const SERVER = "https://vtxy7h-3000.csb.app/";
+const SERVER = "https://3l7m6r-3000.csb.app/";
 const appName = document.title.split(" - ")[0];
 const chat = io(SERVER + "chat", {
   autoConnect: false,
