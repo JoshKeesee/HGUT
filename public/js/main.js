@@ -21,6 +21,7 @@ const voice = io(SERVER + "voice", {
     user: document.cookie,
   },
 });
+const converter = new showdown.Converter();
 const icon = document.querySelector("#icon");
 const cb = document.querySelector("#chat-box");
 const cms = document.querySelector("#chat-messages");
@@ -82,21 +83,7 @@ const imageToDataURL = (img) => {
 };
 
 const linkify = (s, sc = false) => {
-  const headerPattern = /(^|\s)#\s(.+)/g;
-  const subHeaderPattern = /(^|\s)##\s(.+)/g;
-  const linkPattern = /\[([^\]]+)]\(([^)]+)\)/g;
-  const urlPattern =
-    /(?<!<a[^>]*?)\b(?:https?|ftp):\/\/[a-z0-9-+&@#\/%?=~_|!:,.;]*[a-z0-9-+&@#\/%=~_|](?!<\/a>)/gim;
-  const pseudoUrlPattern = /(^|[^\/])(www\.[\S]+(\b|$))/gim;
-  const emailAddressPattern = /[\w.]+@[a-zA-Z_-]+?(?:\.[a-zA-Z]{2,6})+/gim;
   const emojiPattern = /\p{Extended_Pictographic}/gu;
-  const boldPattern = /\*\*(.*?)\*\*/g;
-  const italicPattern = /\*(.*?)\*/g;
-  const strikePattern = /~~(.*?)~~/g;
-  const breakPattern = /\n/g;
-  const codeBlockPattern = /```(.*?)```/g;
-  const codePattern = /`(.*?)`/g;
-  const listPattern = /\*/g;
   if (s.startsWith("/files/")) {
     const src = (SERVER + s).replace("//files", "/files");
     if (src.includes(".svg+xml")) {
@@ -153,20 +140,10 @@ const linkify = (s, sc = false) => {
       return `<p id="emoji" class="${
         user.settings.emoji ? "" : "disabled"
       }">${s}</p>`;
-    s = s
-      .replace(headerPattern, "<h1>$2</h1>")
-      .replace(subHeaderPattern, "<h2>$2</h2>")
-      .replace(linkPattern, "<a target='_blank' href='$2'>$1</a>")
-      .replace(urlPattern, "<a target='_blank' href='$&'>$&</a>")
-      .replace(pseudoUrlPattern, "$1<a target='_blank' href='http://$2'>$2</a>")
-      .replace(emailAddressPattern, "<a href='mailto:$&'>$&</a>")
-      .replace(boldPattern, "<b>$1</b>")
-      .replace(italicPattern, "<i>$1</i>")
-      .replace(strikePattern, "<s>$1</s>")
-      .replace(listPattern, "<li>")
-      .replace(breakPattern, "<br>")
-      .replace(codeBlockPattern, "<pre><code>$1</code></pre>")
-      .replace(codePattern, "<code>$1</code>");
+    s = converter.makeHtml(s);
+    s = s.replace(/<img[^>]*>/g, "");
+    s = s.replace(/<video[^>]*>/g, "");
+    s = s.replace(/<audio[^>]*>/g, "");
     if (s.includes("@")) {
       Object.keys(profiles).forEach((p) => {
         const u = p.replace(" ", "-");
@@ -602,6 +579,8 @@ const addMessage = (
     id: mId,
     replies,
   });
+
+  c.querySelectorAll("pre code").forEach((el) => hljs.highlightBlock(el));
 
   updateMessageProfiles();
 

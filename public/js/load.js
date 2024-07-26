@@ -1,6 +1,8 @@
 const scripts = [
   "https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.4/socket.io.min.js",
   "https://unpkg.com/peerjs@1.5.1/dist/peerjs.min.js",
+  "https://unpkg.com/showdown/dist/showdown.min.js",
+  "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js",
   // "https://unpkg.com/tone@14.7.77/build/Tone.js",
   "js/animateGrid.js",
   "js/files.js",
@@ -15,7 +17,7 @@ const scripts = [
   "js/reg.js",
 ];
 
-const sync = [0, 1, 6, 7, 8, 9];
+const sync = [0, 1, 2, 3, 8, 9, 10, 11];
 window.user = {};
 
 const createScript = async (src) => {

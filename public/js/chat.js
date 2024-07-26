@@ -413,6 +413,12 @@ const switchTheme = (dark = !user.settings.theme, color) => {
   }
   updateSettings();
   chat.emit("settings", user.settings);
+  document.querySelector("link[href*='highlight.js']")?.remove();
+  const link = document.createElement("link");
+  const theme = dark ? "github-dark" : "github";
+  link.rel = "stylesheet";
+  link.href = `https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/${theme}.min.css`;
+  document.querySelector("head").append(link);
 };
 
 input.onkeydown = (e) => {
