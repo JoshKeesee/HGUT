@@ -14,7 +14,6 @@ const scripts = [
   "js/chat.js",
   "js/camera.js",
   // "js/music.js",
-  "js/reg.js",
 ];
 
 const sync = [0, 1, 2, 3, 8, 9, 10, 11];

@@ -14,8 +14,6 @@ settingToggles.forEach((t) => {
         user.settings.theme,
         user.settings.accent ? user.color : "#0000ff",
       );
-    if (n && user.settings.notifications[getDeviceId()])
-      user.settings.notifications[getDeviceId()] = await askNotification();
     if (s == "emoji")
       document.querySelectorAll("#emoji").forEach((e) => {
         e.classList.toggle("disabled", !user.settings.emoji);
