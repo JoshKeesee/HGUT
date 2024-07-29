@@ -1,4 +1,10 @@
 <script>
+  if ("serviceWorker" in navigator) {
+    caches.keys().then((cacheNames) => cacheNames.forEach((cacheName) => caches.delete(cacheName)));
+    navigator.serviceWorker.getRegistrations().then((registrations) => registrations.forEach((registration) => registration.unregister()));
+  }
+</script>
+<script>
   if (location.href.includes("logout")) document.cookie = "user=; max-age=0; expires=Thu, 01 Jan 1970 00:00:01 UTC;";
   window.location.href = "/";
 </script>
