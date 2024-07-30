@@ -84,6 +84,23 @@ const imageToDataURL = (img) => {
 
 const linkify = (s, sc = false) => {
   const emojiPattern = /\p{Extended_Pictographic}/gu;
+  if (s.startsWith("<tool-status>")) {
+    const m = s.replace("<tool-status>", "").replace("</tool-status>", "").split("|");
+    const id = m[0], tn = m[1].charAt(0).toUpperCase() + m[1].slice(1);
+    const shape = getSvg("shape", "M8 2.5H30C30 2.5 35.5 2.5 35.5 8V30C35.5 30 35.5 35.5 30 35.5H8C8 35.5 2.5 35.5 2.5 30V8C2.5 8 2.5 2.5 8 2.5Z", { width: "25", height: "25", strokeWidth: "1", strokeLinecap: "round", viewBox: "0 0 38 38" });
+    const pic = getSvg("pic", "M12.1 2a9.8 9.8 0 0 0-5.4 1.6l6.4 6.4a2.1 2.1 0 0 1 .2 3a2.1 2.1 0 0 1-3-.2L3.7 6.4A9.84 9.84 0 0 0 2 12.1a10.14 10.14 0 0 0 10.1 10.1a10.9 10.9 0 0 0 2.6-.3l6.7 6.7a5 5 0 0 0 7.1-7.1l-6.7-6.7a10.9 10.9 0 0 0 .3-2.6A10 10 0 0 0 12.1 2Zm8 10.1a7.61 7.61 0 0 1-.3 2.1l-.3 1.1l.8.8l6.7 6.7a2.88 2.88 0 0 1 .9 2.1A2.72 2.72 0 0 1 27 27a2.9 2.9 0 0 1-4.2 0l-6.7-6.7l-.8-.8l-1.1.3a7.61 7.61 0 0 1-2.1.3a8.27 8.27 0 0 1-5.7-2.3A7.63 7.63 0 0 1 4 12.1a8.33 8.33 0 0 1 .3-2.2l4.4 4.4a4.14 4.14 0 0 0 5.9.2a4.14 4.14 0 0 0-.2-5.9L10 4.2a6.45 6.45 0 0 1 2-.3a8.27 8.27 0 0 1 5.7 2.3a8.49 8.49 0 0 1 2.4 5.9Z", { width: "1em", height: "1em", fill: "currentColor", viewBox: "0 0 32 32" });
+    return `
+      <div id="tool-status" class="status-${id} complete">
+        <div id="icon">
+          ${shape.outerHTML}
+          ${pic.outerHTML}
+        </div>
+        <div id="tool-text">${tn} tool completed</div>
+        <div id="loader"></div>
+      </div>
+    `;
+  }
+  s = s.replace(/<\s*br[^>]?>/, "\n").replace(/(<([^>]+)>)/g, "") || " ";
   if (s.startsWith("/files/")) {
     const src = (SERVER + s).replace("//files", "/files");
     if (src.includes(".svg+xml")) {
@@ -415,10 +432,7 @@ const createMessage = (
   if (!reply)
     m.classList.add(typeof currMessages != "undefined" ? "m-" + mId : "");
   m.style.background = toRgba(u.color, 0.5);
-  const t =
-    message.replace(/<\s*br[^>]?>/, "\n").replace(/(<([^>]+)>)/g, "") ||
-    " ";
-  m.innerHTML = linkify(t, !start);
+  m.innerHTML = linkify(message, !start);
   const opts = document.createElement("div");
   opts.id = "options";
   if (buttons) {

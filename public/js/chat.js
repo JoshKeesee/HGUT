@@ -140,6 +140,13 @@ chat.on("ai error", (error) => {
   else if (typeof error == "string") e = error;
   createStatus(e, "error");
 });
+chat.on("tool status", ([id, s]) => {
+  const t = document.querySelector("#tool-status.status-" + id);
+  if (!t) return;
+  t.querySelector("#tool-text").innerHTML = s;
+  if (s.includes("completed")) t.classList.add("complete");
+  else t.classList.remove("complete");
+});
 chat.on("clear", (u) => {
   cms.innerHTML = "Sorry, no messages here...";
   currMessages = 0;
@@ -419,6 +426,16 @@ const switchTheme = (dark = !user.settings.theme, color) => {
   link.rel = "stylesheet";
   link.href = `https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/${theme}.min.css`;
   document.querySelector("head").append(link);
+};
+
+const setCursor = (el, pos) => {
+  const range = document.createRange();
+  const sel = window.getSelection();
+  range.setStart(el.childNodes[0], pos);
+  range.collapse(true);
+  sel.removeAllRanges();
+  sel.addRange(range);
+  el.focus();
 };
 
 input.onkeydown = (e) => {

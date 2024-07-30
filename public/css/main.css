@@ -675,7 +675,8 @@ body:not(.dark) #message pre {
 
 #message:has(img),
 #message:has(video),
-#message:has(audio) {
+#message:has(audio),
+#message:has(#tool-status) {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -700,6 +701,82 @@ body:not(.dark) #message pre {
 
 #message audio::-webkit-media-controls-enclosure {
   border-radius: 0;
+}
+
+#message #tool-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  gap: 10px;
+  padding: 10px;
+  width: 100%;
+  height: 30px;
+  transition: background 0.2s ease;
+}
+
+#message:has(#tool-status) {
+  background: rgb(240, 240, 240) !important;
+}
+
+body.dark #message:has(#tool-status) {
+  background: rgb(0, 0, 0) !important;
+}
+
+#message #tool-status #icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+#message #tool-status #icon svg {
+  position: absolute;
+}
+
+#message #tool-status #icon #shape {
+  fill: rgba(var(--r), var(--g), var(--b), 0.9);
+}
+
+#message #tool-status::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  left: 0;
+  background: rgba(var(--r), var(--g), var(--b), 0.5);
+  width: 100%;
+  height: 100%;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  animation: loading-bar 10s linear;
+}
+
+#message #tool-status #loader {
+  content: "";
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 3px solid rgba(150, 150, 150, 0.5);
+  border-top-color: rgb(0, 0, 0);
+  animation: spin 1s linear infinite;
+  transition: border-top-color 0.2s ease, opacity 0.2s ease, margin 0.2s ease;
+}
+
+body.dark #message #tool-status #loader {
+  border-top-color: rgb(255, 255, 255);
+}
+
+#message #tool-status.complete::before {
+  width: 100%;
+  animation: none;
+}
+
+#message #tool-status.complete #loader {
+  opacity: 0;
+  margin-left: -30px;
 }
 
 #reacts {
@@ -1078,5 +1155,23 @@ body:has(#header.toggled) #tabs .tab {
   }
   50% {
     transform: scale(0.8) translateY(calc(-50% + 2px));
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes loading-bar {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: calc(100% + 10px);
   }
 }
