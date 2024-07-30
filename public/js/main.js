@@ -84,6 +84,8 @@ const imageToDataURL = (img) => {
 
 const linkify = (s, sc = false) => {
   const emojiPattern = /\p{Extended_Pictographic}/gu;
+  const urlPattern = /((https?:\/\/)[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/g;
+  const emailPattern = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/g;
   if (s.startsWith("<tool-status>")) {
     const m = s.replace("<tool-status>", "").replace("</tool-status>", "").split("|");
     const id = m[0], tn = m[1].charAt(0).toUpperCase() + m[1].slice(1);
@@ -101,6 +103,11 @@ const linkify = (s, sc = false) => {
     `;
   }
   s = s.replace(/<\s*br[^>]?>/, "\n").replace(/(<([^>]+)>)/g, "") || " ";
+  s = s.replace(urlPattern, (m) => {
+    if (m.startsWith("http")) return `<a href="${m}" target="_blank">${m}</a>`;
+    return `<a href="http://${m}" target="_blank">${m}</a>`;
+  });
+  s = s.replace(emailPattern, (m) => `<a href="mailto:${m}">${m}</a>`);
   if (s.startsWith("/files/")) {
     const src = (SERVER + s).replace("//files", "/files");
     if (src.includes(".svg+xml")) {
