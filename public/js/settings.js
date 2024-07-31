@@ -202,9 +202,7 @@ const updateSettings = () => {
   p.appendChild(pr);
   Object.keys(user.settings || {}).forEach((k) => {
     const t = document.querySelector(`.settings-toggle[data-setting="${k}"]`);
-    if (k == "notifications")
-      t.classList.toggle("active", user.settings[k][getDeviceId()] || false);
-    else if (t) t.classList.toggle("active", user.settings[k]);
+    if (t) t.classList.toggle("active", user.settings[k]);
     else {
       const d = document.querySelector(`.dropdown[data-setting="${k}"]`);
       if (!d) return;
